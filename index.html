@@ -6,113 +6,61 @@
 <title>Nyelvtanuló</title>
 
 <style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  padding: 20px;
-}
+body { font-family: -apple-system, sans-serif; padding: 20px; }
 input, textarea, select, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  font-size: 16px;
+  width: 100%; padding: 12px; margin-top: 8px; font-size: 16px;
 }
-textarea { height: 110px; }
-button {
-  background: #007AFF;
-  color: white;
-  border: none;
-  border-radius: 8px;
-}
-button.secondary {
-  background: #888;
-}
-.section {
-  margin-top: 24px;
-  padding-top: 10px;
-  border-top: 1px solid #ccc;
-}
+textarea { height: 100px; }
+button { background:#007AFF; color:white; border:none; border-radius:8px; }
+button.secondary { background:#999; }
+.section { margin-top:24px; padding-top:10px; border-top:1px solid #ccc; }
 </style>
 </head>
 
 <body>
 
 <h2>📁 Szócsoport</h2>
-<input id="groupName" placeholder="Új szócsoport neve">
-<button onclick="createGroup()">Szócsoport létrehozása</button>
-
+<input id="groupNameInput" placeholder="Új szócsoport neve">
+<button id="createGroupBtn">Szócsoport létrehozása</button>
 <select id="groupSelect"></select>
 
 <div class="section">
 <h3>➕ Egy szó</h3>
-<input id="foreign" placeholder="Idegen szó">
-<input id="hu" placeholder="Magyar jelentés">
-<button onclick="addSingle()">Hozzáadás</button>
+<input id="foreignInput" placeholder="Idegen szó">
+<input id="huInput" placeholder="Magyar jelentés">
+<button id="addSingleBtn">Hozzáadás</button>
 </div>
 
 <div class="section">
 <h3>📋 Tömeges bevitel</h3>
-<textarea id="bulk" placeholder="andare - menni"></textarea>
-<button onclick="addBulk()">Szavak hozzáadása</button>
+<textarea id="bulkInput" placeholder="andare - menni"></textarea>
+<button id="addBulkBtn">Szavak hozzáadása</button>
 </div>
 
 <div class="section">
 <h3>▶️ Lejátszás</h3>
-<input id="delay" type="number" value="3" placeholder="Szünet (mp)">
-<input id="repeat" type="number" value="3" placeholder="Ismétlés">
-<button onclick="start()">START</button>
-<button class="secondary" onclick="pause()">PAUSE</button>
-<button class="secondary" onclick="resume()">RESUME</button>
-<button class="secondary" onclick="stop()">STOP</button>
+<input id="delayInput" type="number" value="3">
+<input id="repeatInput" type="number" value="3">
+<button id="startBtn">START</button>
+<button class="secondary" id="pauseBtn">PAUSE</button>
+<button class="secondary" id="resumeBtn">RESUME</button>
+<button class="secondary" id="stopBtn">STOP</button>
 </div>
 
 <script>
-/* ===== ADAT ===== */
+/* ===== DOM ===== */
+const groupNameInput = document.getElementById("groupNameInput");
+const groupSelect = document.getElementById("groupSelect");
+const foreignInput = document.getElementById("foreignInput");
+const huInput = document.getElementById("huInput");
+const bulkInput = document.getElementById("bulkInput");
+const delayInput = document.getElementById("delayInput");
+const repeatInput = document.getElementById("repeatInput");
+
+/* ===== DATA ===== */
 let store = JSON.parse(localStorage.getItem("groups") || "{}");
-let playing = false;
-let paused = false;
 
-/* ===== AUDIO ===== */
-let ctx, leftGain, rightGain, noise;
-
-function initAudio() {
-  ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-  const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
-  const d = buffer.getChannelData(0);
-  for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1)*0.04;
-
-  noise = ctx.createBufferSource();
-  noise.buffer = buffer;
-  noise.loop = true;
-
-  leftGain = ctx.createGain();
-  rightGain = ctx.createGain();
-  leftGain.gain.value = 0.12;
-  rightGain.gain.value = 0.05;
-
-  const split = ctx.createChannelSplitter(2);
-  const merge = ctx.createChannelMerger(2);
-
-  noise.connect(split);
-  split.connect(leftGain,0);
-  split.connect(rightGain,0);
-  leftGain.connect(merge,0,0);
-  rightGain.connect(merge,0,1);
-  merge.connect(ctx.destination);
-
-  noise.start();
-}
-
-function focusLeft() {
-  leftGain.gain.setTargetAtTime(0.16, ctx.currentTime, 1);
-  rightGain.gain.setTargetAtTime(0.03, ctx.currentTime, 1);
-}
-function focusRight() {
-  leftGain.gain.setTargetAtTime(0.03, ctx.currentTime, 1);
-  rightGain.gain.setTargetAtTime(0.16, ctx.currentTime, 1);
-}
-
-/* ===== SEGÉD ===== */
+/* ===== HELPERS ===== */
 function save() {
   localStorage.setItem("groups", JSON.stringify(store));
 }
@@ -126,97 +74,42 @@ function refreshGroups() {
 }
 refreshGroups();
 
-function current() {
+function currentGroup() {
   return groupSelect.value;
 }
 
-/* ===== BEVITEL ===== */
-function createGroup() {
-  const n = groupName.value.trim();
-  if (!n || store[n]) return;
-  store[n] = [];
+/* ===== ACTIONS ===== */
+document.getElementById("createGroupBtn").onclick = () => {
+  const name = groupNameInput.value.trim();
+  if (!name || store[name]) return alert("Érvénytelen vagy létező név");
+  store[name] = [];
   save();
   refreshGroups();
-  groupSelect.value = n;
-  groupName.value = "";
-}
+  groupSelect.value = name;
+  groupNameInput.value = "";
+};
 
-function addSingle() {
-  if (!current()) return alert("Nincs szócsoport!");
-  if (!foreign.value || !hu.value) return;
-  store[current()].push({ f: foreign.value, h: hu.value });
+document.getElementById("addSingleBtn").onclick = () => {
+  const g = currentGroup();
+  if (!g) return alert("Nincs szócsoport");
+  if (!foreignInput.value || !huInput.value) return;
+  store[g].push({ f: foreignInput.value, h: huInput.value });
   save();
-  foreign.value = hu.value = "";
-}
+  foreignInput.value = huInput.value = "";
+};
 
-function addBulk() {
-  if (!current()) return alert("Nincs szócsoport!");
-  bulk.value.split("\n").forEach(l => {
+document.getElementById("addBulkBtn").onclick = () => {
+  const g = currentGroup();
+  if (!g) return alert("Nincs szócsoport");
+  bulkInput.value.split("\n").forEach(l => {
     const p = l.split(/[-=–\t]/);
     if (p.length >= 2) {
-      store[current()].push({ f: p[0].trim(), h: p.slice(1).join("-").trim() });
+      store[g].push({ f: p[0].trim(), h: p.slice(1).join("-").trim() });
     }
   });
-  bulk.value = "";
+  bulkInput.value = "";
   save();
-}
-
-/* ===== HANG ===== */
-function speak(t, lang) {
-  return new Promise(r => {
-    const u = new SpeechSynthesisUtterance(t);
-    u.lang = lang;
-    u.onend = r;
-    speechSynthesis.speak(u);
-  });
-}
-function wait(s) {
-  return new Promise(async r => {
-    while (paused) await new Promise(x=>setTimeout(x,200));
-    setTimeout(r, s*1000);
-  });
-}
-
-/* ===== LEJÁTSZÁS ===== */
-async function start() {
-  const g = current();
-  if (!g) return alert("Nincs szócsoport!");
-  if (store[g].length === 0) return alert("A szócsoport üres!");
-
-  playing = true; paused = false;
-  if (!ctx) initAudio();
-  await ctx.resume();
-
-  const d = Number(delay.value);
-  const r = Number(repeat.value);
-
-  for (let w of store[g]) {
-    if (!playing) break;
-
-    for (let i=0;i<r;i++) {
-      focusLeft(); await speak(w.f,"it-IT"); await wait(d);
-      focusRight(); await speak(w.h,"hu-HU"); await wait(d);
-    }
-    for (let i=0;i<r;i++) {
-      focusRight(); await speak(w.f,"it-IT"); await wait(d);
-      focusLeft(); await speak(w.h,"hu-HU"); await wait(d);
-    }
-  }
-}
-
-function pause() {
-  paused = true;
-  speechSynthesis.pause();
-}
-function resume() {
-  paused = false;
-  speechSynthesis.resume();
-}
-function stop() {
-  playing = false;
-  paused = false;
-  speechSynthesis.cancel();
-}
+};
 </script>
 
 </body>
