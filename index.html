@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nyelvtanuló App</title>
+<style>
+body {
+  font-family: -apple-system, sans-serif;
+  padding: 20px;
+}
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+</style>
+</head>
+<body>
+
+<h2>Idegen szó</h2>
+<input id="foreign" placeholder="pl. andare">
+
+<h2>Magyar jelentés</h2>
+<input id="hungarian" placeholder="pl. menni">
+
+<h2>Várakozás (mp)</h2>
+<input id="delay" type="number" value="3">
+
+<button onclick="start()">START</button>
+
+<script>
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function speak(text, lang, panValue) {
+  return new Promise(resolve => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+
+    const source = audioCtx.createMediaStreamDestination();
+    const panNode = audioCtx.createStereoPanner();
+    panNode.pan.value = panValue;
+    panNode.connect(audioCtx.destination);
+
+    speechSynthesis.speak(utterance);
+    utterance.onend = resolve;
+  });
+}
+
+function wait(sec) {
+  return new Promise(res => setTimeout(res, sec * 1000));
+}
+
+async function cycle(foreign, hu, delay, panA, panB) {
+  for (let i = 0; i < 5; i++) {
+    await speak(foreign, "it-IT", panA);
+    await wait(delay);
+    await speak(hu, "hu-HU", panB);
+    await wait(delay);
+  }
+}
+
+async function start() {
+  await audioCtx.resume();
+
+  const foreign = document.getElementById("foreign").value;
+  const hu = document.getElementById("hungarian").value;
+  const delay = Number(document.getElementById("delay").value);
+
+  // bal idegen, jobb magyar
+  await cycle(foreign, hu, delay, -1, 1);
+
+  // jobb idegen, bal magyar
+  await cycle(foreign, hu, delay, 1, -1);
+}
+</script>
+
+</body>
+</html>
