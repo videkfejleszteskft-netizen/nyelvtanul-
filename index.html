@@ -3,164 +3,155 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nyelvtanuló</title>
+<title>Nyelvtanuló – Szócsoportok</title>
 
 <style>
 body {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   padding: 20px;
 }
-input, button {
+input, textarea, select, button {
   width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  font-size: 18px;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 16px;
+}
+textarea {
+  height: 120px;
 }
 button {
   background: #007AFF;
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
+}
+.section {
+  margin-top: 25px;
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+}
+.wordlist {
+  margin-top: 10px;
+  font-size: 14px;
+}
+.wordlist div {
+  padding: 4px 0;
 }
 </style>
 </head>
 
 <body>
 
-<h3>Idegen szó</h3>
-<input id="foreign" placeholder="pl. andare">
+<h2>📁 Szócsoportok</h2>
 
-<h3>Magyar jelentés</h3>
-<input id="hu" placeholder="pl. menni">
+<input id="newGroup" placeholder="Új szócsoport neve">
+<button onclick="addGroup()">Szócsoport létrehozása</button>
 
-<h3>Várakozás (mp)</h3>
-<input id="delay" type="number" value="3">
+<select id="groupSelect" onchange="renderWords()"></select>
 
-<h3>Ismétlések száma</h3>
-<input id="repeat" type="number" value="5">
+<div class="section">
+<h3>➕ Egy szó hozzáadása</h3>
+<input id="singleForeign" placeholder="Idegen szó">
+<input id="singleHu" placeholder="Magyar jelentés">
+<button onclick="addSingleWord()">Hozzáadás</button>
+</div>
 
-<button onclick="start()">START</button>
+<div class="section">
+<h3>📋 Tömeges szóbeillesztés</h3>
+<textarea id="bulkInput" placeholder="andare - menni&#10;venire = jönni"></textarea>
+<button onclick="addBulkWords()">Szavak hozzáadása</button>
+</div>
+
+<div class="section">
+<h3>📄 Szavak ebben a csoportban</h3>
+<div class="wordlist" id="wordList"></div>
+</div>
+
+<div class="section">
+<h3>▶️ Lejátszás</h3>
+<button onclick="startPlayback()">Kijelölt szócsoport lejátszása</button>
+</div>
 
 <script>
-let audioCtx;
-let leftGain, rightGain;
-let noiseSource;
-let panDirection = -1;
+let data = JSON.parse(localStorage.getItem("wordGroups") || "{}");
 
-function initAudio() {
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-  // vízszerű zaj
-  const bufferSize = audioCtx.sampleRate * 2;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = (Math.random() * 2 - 1) * 0.05;
-  }
-
-  noiseSource = audioCtx.createBufferSource();
-  noiseSource.buffer = buffer;
-  noiseSource.loop = true;
-
-  leftGain = audioCtx.createGain();
-  rightGain = audioCtx.createGain();
-
-  leftGain.gain.value = 0.15;
-  rightGain.gain.value = 0.05;
-
-  const splitter = audioCtx.createChannelSplitter(2);
-  const merger = audioCtx.createChannelMerger(2);
-
-  noiseSource.connect(splitter);
-  splitter.connect(leftGain, 0);
-  splitter.connect(rightGain, 0);
-
-  leftGain.connect(merger, 0, 0);
-  rightGain.connect(merger, 0, 1);
-
-  merger.connect(audioCtx.destination);
-
-  noiseSource.start();
-  wavePan();
+function save() {
+  localStorage.setItem("wordGroups", JSON.stringify(data));
 }
 
-function wavePan() {
-  setInterval(() => {
-    panDirection *= -1;
-    if (panDirection < 0) {
-      leftGain.gain.setTargetAtTime(0.15, audioCtx.currentTime, 2);
-      rightGain.gain.setTargetAtTime(0.05, audioCtx.currentTime, 2);
-    } else {
-      leftGain.gain.setTargetAtTime(0.05, audioCtx.currentTime, 2);
-      rightGain.gain.setTargetAtTime(0.15, audioCtx.currentTime, 2);
+function addGroup() {
+  const name = document.getElementById("newGroup").value.trim();
+  if (!name || data[name]) return;
+  data[name] = [];
+  save();
+  document.getElementById("newGroup").value = "";
+  refreshGroups();
+}
+
+function refreshGroups() {
+  const sel = document.getElementById("groupSelect");
+  sel.innerHTML = "";
+  Object.keys(data).forEach(g => {
+    const o = document.createElement("option");
+    o.value = g;
+    o.textContent = g;
+    sel.appendChild(o);
+  });
+  renderWords();
+}
+
+function currentGroup() {
+  return document.getElementById("groupSelect").value;
+}
+
+function addSingleWord() {
+  const f = document.getElementById("singleForeign").value.trim();
+  const h = document.getElementById("singleHu").value.trim();
+  if (!f || !h) return;
+  data[currentGroup()].push({ foreign: f, hu: h });
+  save();
+  document.getElementById("singleForeign").value = "";
+  document.getElementById("singleHu").value = "";
+  renderWords();
+}
+
+function addBulkWords() {
+  const lines = document.getElementById("bulkInput").value.split("\n");
+  lines.forEach(l => {
+    const parts = l.split(/[-=–\t]/);
+    if (parts.length >= 2) {
+      data[currentGroup()].push({
+        foreign: parts[0].trim(),
+        hu: parts.slice(1).join("-").trim()
+      });
     }
-  }, 6000);
+  });
+  document.getElementById("bulkInput").value = "";
+  save();
+  renderWords();
 }
 
-function focusLeft() {
-  leftGain.gain.setTargetAtTime(0.18, audioCtx.currentTime, 1);
-  rightGain.gain.setTargetAtTime(0.03, audioCtx.currentTime, 1);
-}
-
-function focusRight() {
-  leftGain.gain.setTargetAtTime(0.03, audioCtx.currentTime, 1);
-  rightGain.gain.setTargetAtTime(0.18, audioCtx.currentTime, 1);
-}
-
-function speak(text, lang) {
-  return new Promise(resolve => {
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = lang;
-    u.rate = 0.9;
-    u.onend = resolve;
-    speechSynthesis.speak(u);
+function renderWords() {
+  const list = document.getElementById("wordList");
+  list.innerHTML = "";
+  const g = currentGroup();
+  if (!g) return;
+  data[g].forEach(w => {
+    const d = document.createElement("div");
+    d.textContent = `${w.foreign} – ${w.hu}`;
+    list.appendChild(d);
   });
 }
 
-function wait(sec) {
-  return new Promise(r => setTimeout(r, sec * 1000));
+function startPlayback() {
+  const g = currentGroup();
+  if (!g) return;
+  alert(`A(z) "${g}" szócsoport ${data[g].length} szót tartalmaz.\n\nA hangos lejátszás a következő lépésben jön 😉`);
 }
 
-async function start() {
-  speechSynthesis.cancel();
-
-  const foreign = document.getElementById("foreign").value;
-  const hu = document.getElementById("hu").value;
-  const delay = Number(document.getElementById("delay").value);
-  const repeat = Number(document.getElementById("repeat").value);
-
-  if (!foreign || !hu) {
-    alert("Írd be a szót és a jelentést!");
-    return;
-  }
-
-  if (!audioCtx) initAudio();
-  await audioCtx.resume();
-
-  // 1. fázis: idegen bal, magyar jobb
-  for (let i = 0; i < repeat; i++) {
-    focusLeft();
-    await speak(foreign, "it-IT");
-    await wait(delay);
-
-    focusRight();
-    await speak(hu, "hu-HU");
-    await wait(delay);
-  }
-
-  // 2. fázis: idegen jobb, magyar bal
-  for (let i = 0; i < repeat; i++) {
-    focusRight();
-    await speak(foreign, "it-IT");
-    await wait(delay);
-
-    focusLeft();
-    await speak(hu, "hu-HU");
-    await wait(delay);
-  }
-}
+refreshGroups();
 </script>
 
 </body>
 </html>
+
