@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nyelvtanuló</title>
+
 <style>
 body {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -19,29 +20,99 @@ button {
   background: #007AFF;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 </style>
 </head>
+
 <body>
 
-<h2>Idegen szó</h2>
+<h3>Idegen szó</h3>
 <input id="foreign" placeholder="pl. andare">
 
-<h2>Magyar jelentés</h2>
+<h3>Magyar jelentés</h3>
 <input id="hu" placeholder="pl. menni">
 
-<h2>Várakozás (mp)</h2>
+<h3>Várakozás (mp)</h3>
 <input id="delay" type="number" value="3">
+
+<h3>Ismétlések száma</h3>
+<input id="repeat" type="number" value="5">
 
 <button onclick="start()">START</button>
 
 <script>
-function speak(text, lang, rate = 0.9) {
+let audioCtx;
+let leftGain, rightGain;
+let noiseSource;
+let panDirection = -1;
+
+function initAudio() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  // vízszerű zaj
+  const bufferSize = audioCtx.sampleRate * 2;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * 0.05;
+  }
+
+  noiseSource = audioCtx.createBufferSource();
+  noiseSource.buffer = buffer;
+  noiseSource.loop = true;
+
+  leftGain = audioCtx.createGain();
+  rightGain = audioCtx.createGain();
+
+  leftGain.gain.value = 0.15;
+  rightGain.gain.value = 0.05;
+
+  const splitter = audioCtx.createChannelSplitter(2);
+  const merger = audioCtx.createChannelMerger(2);
+
+  noiseSource.connect(splitter);
+  splitter.connect(leftGain, 0);
+  splitter.connect(rightGain, 0);
+
+  leftGain.connect(merger, 0, 0);
+  rightGain.connect(merger, 0, 1);
+
+  merger.connect(audioCtx.destination);
+
+  noiseSource.start();
+  wavePan();
+}
+
+function wavePan() {
+  setInterval(() => {
+    panDirection *= -1;
+    if (panDirection < 0) {
+      leftGain.gain.setTargetAtTime(0.15, audioCtx.currentTime, 2);
+      rightGain.gain.setTargetAtTime(0.05, audioCtx.currentTime, 2);
+    } else {
+      leftGain.gain.setTargetAtTime(0.05, audioCtx.currentTime, 2);
+      rightGain.gain.setTargetAtTime(0.15, audioCtx.currentTime, 2);
+    }
+  }, 6000);
+}
+
+function focusLeft() {
+  leftGain.gain.setTargetAtTime(0.18, audioCtx.currentTime, 1);
+  rightGain.gain.setTargetAtTime(0.03, audioCtx.currentTime, 1);
+}
+
+function focusRight() {
+  leftGain.gain.setTargetAtTime(0.03, audioCtx.currentTime, 1);
+  rightGain.gain.setTargetAtTime(0.18, audioCtx.currentTime, 1);
+}
+
+function speak(text, lang) {
   return new Promise(resolve => {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
-    u.rate = rate;
+    u.rate = 0.9;
     u.onend = resolve;
     speechSynthesis.speak(u);
   });
@@ -51,36 +122,43 @@ function wait(sec) {
   return new Promise(r => setTimeout(r, sec * 1000));
 }
 
-async function runCycle(foreign, hu, delay) {
-  // 5x: idegen → magyar
-  for (let i = 0; i < 5; i++) {
-    await speak(foreign, "it-IT");
-    await wait(delay);
-    await speak(hu, "hu-HU");
-    await wait(delay);
-  }
+async function start() {
+  speechSynthesis.cancel();
 
-  // 5x: idegen → magyar (ismétlés)
-  for (let i = 0; i < 5; i++) {
-    await speak(foreign, "it-IT");
-    await wait(delay);
-    await speak(hu, "hu-HU");
-    await wait(delay);
-  }
-}
-
-function start() {
-  speechSynthesis.cancel(); // iOS miatt fontos
   const foreign = document.getElementById("foreign").value;
   const hu = document.getElementById("hu").value;
   const delay = Number(document.getElementById("delay").value);
+  const repeat = Number(document.getElementById("repeat").value);
 
   if (!foreign || !hu) {
     alert("Írd be a szót és a jelentést!");
     return;
   }
 
-  runCycle(foreign, hu, delay);
+  if (!audioCtx) initAudio();
+  await audioCtx.resume();
+
+  // 1. fázis: idegen bal, magyar jobb
+  for (let i = 0; i < repeat; i++) {
+    focusLeft();
+    await speak(foreign, "it-IT");
+    await wait(delay);
+
+    focusRight();
+    await speak(hu, "hu-HU");
+    await wait(delay);
+  }
+
+  // 2. fázis: idegen jobb, magyar bal
+  for (let i = 0; i < repeat; i++) {
+    focusRight();
+    await speak(foreign, "it-IT");
+    await wait(delay);
+
+    focusLeft();
+    await speak(hu, "hu-HU");
+    await wait(delay);
+  }
 }
 </script>
 
