@@ -78,13 +78,15 @@ let audioCtx, leftGain, rightGain, noise;
 function save() {
   localStorage.setItem("wordGroups", JSON.stringify(data));
 }
-
 function addGroup() {
   const n = newGroup.value.trim();
   if (!n || data[n]) return;
   data[n] = [];
   save();
   refreshGroups();
+  groupSelect.value = n;
+  newGroup.value = "";
+
 }
 
 function refreshGroups() {
