@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nyelvtanuló – Szócsoportok</title>
+<title>Nyelvtanuló</title>
 
 <style>
 body {
@@ -16,26 +16,23 @@ input, textarea, select, button {
   margin-top: 8px;
   font-size: 16px;
 }
-textarea {
-  height: 120px;
-}
+textarea { height: 100px; }
 button {
   background: #007AFF;
   color: white;
   border: none;
   border-radius: 8px;
 }
+.controls button {
+  margin-top: 10px;
+}
 .section {
   margin-top: 25px;
   padding-top: 10px;
   border-top: 1px solid #ccc;
 }
-.wordlist {
-  margin-top: 10px;
-  font-size: 14px;
-}
 .wordlist div {
-  padding: 4px 0;
+  font-size: 14px;
 }
 </style>
 </head>
@@ -43,115 +40,186 @@ button {
 <body>
 
 <h2>📁 Szócsoportok</h2>
-
 <input id="newGroup" placeholder="Új szócsoport neve">
 <button onclick="addGroup()">Szócsoport létrehozása</button>
-
-<select id="groupSelect" onchange="renderWords()"></select>
+<select id="groupSelect"></select>
 
 <div class="section">
-<h3>➕ Egy szó hozzáadása</h3>
+<h3>➕ Egy szó</h3>
 <input id="singleForeign" placeholder="Idegen szó">
 <input id="singleHu" placeholder="Magyar jelentés">
 <button onclick="addSingleWord()">Hozzáadás</button>
 </div>
 
 <div class="section">
-<h3>📋 Tömeges szóbeillesztés</h3>
-<textarea id="bulkInput" placeholder="andare - menni&#10;venire = jönni"></textarea>
-<button onclick="addBulkWords()">Szavak hozzáadása</button>
-</div>
-
-<div class="section">
-<h3>📄 Szavak ebben a csoportban</h3>
-<div class="wordlist" id="wordList"></div>
+<h3>📋 Tömeges bevitel</h3>
+<textarea id="bulkInput" placeholder="andare - menni"></textarea>
+<button onclick="addBulkWords()">Hozzáadás</button>
 </div>
 
 <div class="section">
 <h3>▶️ Lejátszás</h3>
-<button onclick="startPlayback()">Kijelölt szócsoport lejátszása</button>
+<input id="delay" type="number" value="3" placeholder="Szünet (mp)">
+<input id="repeat" type="number" value="3" placeholder="Ismétlés">
+<div class="controls">
+<button onclick="startPlayback()">START</button>
+<button onclick="pausePlayback()">PAUSE</button>
+<button onclick="resumePlayback()">RESUME</button>
+<button onclick="stopPlayback()">STOP</button>
+</div>
 </div>
 
 <script>
 let data = JSON.parse(localStorage.getItem("wordGroups") || "{}");
+let playing = false;
+let paused = false;
+let audioCtx, leftGain, rightGain, noise;
 
 function save() {
   localStorage.setItem("wordGroups", JSON.stringify(data));
 }
 
 function addGroup() {
-  const name = document.getElementById("newGroup").value.trim();
-  if (!name || data[name]) return;
-  data[name] = [];
+  const n = newGroup.value.trim();
+  if (!n || data[n]) return;
+  data[n] = [];
   save();
-  document.getElementById("newGroup").value = "";
   refreshGroups();
 }
 
 function refreshGroups() {
-  const sel = document.getElementById("groupSelect");
-  sel.innerHTML = "";
+  groupSelect.innerHTML = "";
   Object.keys(data).forEach(g => {
     const o = document.createElement("option");
-    o.value = g;
-    o.textContent = g;
-    sel.appendChild(o);
+    o.value = g; o.textContent = g;
+    groupSelect.appendChild(o);
   });
-  renderWords();
 }
+refreshGroups();
 
 function currentGroup() {
-  return document.getElementById("groupSelect").value;
+  return groupSelect.value;
 }
 
 function addSingleWord() {
-  const f = document.getElementById("singleForeign").value.trim();
-  const h = document.getElementById("singleHu").value.trim();
-  if (!f || !h) return;
-  data[currentGroup()].push({ foreign: f, hu: h });
+  if (!currentGroup()) return;
+  data[currentGroup()].push({
+    foreign: singleForeign.value.trim(),
+    hu: singleHu.value.trim()
+  });
   save();
-  document.getElementById("singleForeign").value = "";
-  document.getElementById("singleHu").value = "";
-  renderWords();
+  singleForeign.value = singleHu.value = "";
 }
 
 function addBulkWords() {
-  const lines = document.getElementById("bulkInput").value.split("\n");
-  lines.forEach(l => {
-    const parts = l.split(/[-=–\t]/);
-    if (parts.length >= 2) {
-      data[currentGroup()].push({
-        foreign: parts[0].trim(),
-        hu: parts.slice(1).join("-").trim()
-      });
+  if (!currentGroup()) return;
+  bulkInput.value.split("\n").forEach(l => {
+    const p = l.split(/[-=–\t]/);
+    if (p.length >= 2) {
+      data[currentGroup()].push({ foreign: p[0].trim(), hu: p.slice(1).join("-").trim() });
     }
   });
-  document.getElementById("bulkInput").value = "";
+  bulkInput.value = "";
   save();
-  renderWords();
 }
 
-function renderWords() {
-  const list = document.getElementById("wordList");
-  list.innerHTML = "";
-  const g = currentGroup();
-  if (!g) return;
-  data[g].forEach(w => {
-    const d = document.createElement("div");
-    d.textContent = `${w.foreign} – ${w.hu}`;
-    list.appendChild(d);
+function initAudio() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
+  const d = buffer.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1)*0.05;
+
+  noise = audioCtx.createBufferSource();
+  noise.buffer = buffer;
+  noise.loop = true;
+
+  leftGain = audioCtx.createGain();
+  rightGain = audioCtx.createGain();
+  leftGain.gain.value = 0.15;
+  rightGain.gain.value = 0.05;
+
+  const split = audioCtx.createChannelSplitter(2);
+  const merge = audioCtx.createChannelMerger(2);
+
+  noise.connect(split);
+  split.connect(leftGain,0);
+  split.connect(rightGain,0);
+  leftGain.connect(merge,0,0);
+  rightGain.connect(merge,0,1);
+  merge.connect(audioCtx.destination);
+  noise.start();
+}
+
+function focusLeft() {
+  leftGain.gain.setTargetAtTime(0.18,audioCtx.currentTime,1);
+  rightGain.gain.setTargetAtTime(0.03,audioCtx.currentTime,1);
+}
+function focusRight() {
+  leftGain.gain.setTargetAtTime(0.03,audioCtx.currentTime,1);
+  rightGain.gain.setTargetAtTime(0.18,audioCtx.currentTime,1);
+}
+
+function speak(text, lang) {
+  return new Promise(res => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    u.onend = res;
+    speechSynthesis.speak(u);
   });
 }
 
-function startPlayback() {
-  const g = currentGroup();
-  if (!g) return;
-  alert(`A(z) "${g}" szócsoport ${data[g].length} szót tartalmaz.\n\nA hangos lejátszás a következő lépésben jön 😉`);
+function wait(sec) {
+  return new Promise(async r => {
+    while (paused) await new Promise(x=>setTimeout(x,200));
+    setTimeout(r, sec*1000);
+  });
 }
 
-refreshGroups();
+async function startPlayback() {
+  if (!currentGroup()) return;
+  playing = true; paused = false;
+  if (!audioCtx) initAudio();
+  await audioCtx.resume();
+
+  const words = data[currentGroup()];
+  const delay = Number(delayInput.value || delay.value);
+  const repeat = Number(repeatInput?.value || repeat.value);
+
+  for (let w of words) {
+    if (!playing) break;
+    for (let i=0;i<repeat;i++) {
+      focusLeft();
+      await speak(w.foreign,"it-IT");
+      await wait(delay);
+      focusRight();
+      await speak(w.hu,"hu-HU");
+      await wait(delay);
+    }
+    for (let i=0;i<repeat;i++) {
+      focusRight();
+      await speak(w.foreign,"it-IT");
+      await wait(delay);
+      focusLeft();
+      await speak(w.hu,"hu-HU");
+      await wait(delay);
+    }
+  }
+}
+
+function pausePlayback() {
+  paused = true;
+  speechSynthesis.pause();
+}
+function resumePlayback() {
+  paused = false;
+  speechSynthesis.resume();
+}
+function stopPlayback() {
+  playing = false;
+  paused = false;
+  speechSynthesis.cancel();
+}
 </script>
 
 </body>
 </html>
-
