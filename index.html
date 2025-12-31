@@ -3,46 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nyelvtanuló – stabil hang</title>
+<title>Nyelvtanuló – OpenAI TTS</title>
 
 <style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  padding: 20px;
-}
-input, select, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  font-size: 16px;
-}
-button {
-  background: #007AFF;
-  color: white;
-  border: none;
-  border-radius: 8px;
-}
-button.secondary { background: #888; }
-hr { margin: 24px 0; }
-.list div { padding: 3px 0; }
+body { font-family:-apple-system,BlinkMacSystemFont,sans-serif; padding:20px; }
+input, select, button { width:100%; padding:12px; margin-top:8px; font-size:16px; }
+button { background:#007AFF; color:white; border:none; border-radius:8px; }
+button.secondary { background:#888; }
+.list div { padding:3px 0; }
+hr { margin:24px 0; }
 </style>
 </head>
 
 <body>
 
-<h2>🌍 Idegen nyelv (szócsoporthoz kötve)</h2>
+<h2>🌍 Idegen nyelv</h2>
 <select id="langSelect">
-  <option value="it-IT">🇮🇹 Olasz</option>
-  <option value="en-US">🇬🇧 Angol</option>
-  <option value="fr-FR">🇫🇷 Francia</option>
-  <option value="de-DE">🇩🇪 Német</option>
-  <option value="es-ES">🇪🇸 Spanyol</option>
+  <option value="it">🇮🇹 Olasz</option>
+  <option value="en">🇬🇧 Angol</option>
+  <option value="fr">🇫🇷 Francia</option>
+  <option value="de">🇩🇪 Német</option>
+  <option value="es">🇪🇸 Spanyol</option>
 </select>
 
-<h2>📁 Szócsoport létrehozása</h2>
+<h2>📁 Szócsoport</h2>
 <input id="groupInput" placeholder="Szócsoport neve">
 <button id="createGroupBtn">Szócsoport létrehozása</button>
-
 <select id="groupSelect"></select>
 
 <hr>
@@ -58,7 +44,7 @@ hr { margin: 24px 0; }
 
 <h3>▶️ Lejátszás</h3>
 <input id="delayInput" type="number" value="3">
-<input id="repeatInput" type="number" value="3">
+<input id="repeatInput" type="number" value="2">
 
 <button id="startBtn">START</button>
 <button class="secondary" id="pauseBtn">PAUSE</button>
@@ -66,24 +52,15 @@ hr { margin: 24px 0; }
 <button class="secondary" id="stopBtn">STOP</button>
 
 <script>
-/* ===== VOICE ===== */
-let voices = [];
-function loadVoices() {
-  voices = speechSynthesis.getVoices();
-}
-speechSynthesis.onvoiceschanged = loadVoices;
-loadVoices();
+/* ===================== BEÁLLÍTÁS ===================== */
+const OPENAI_API_KEY = "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";
 
-function getVoice(lang) {
-  return voices.find(v => v.lang === lang) || null;
-}
-
-/* ===== DATA ===== */
-let data = JSON.parse(localStorage.getItem("wordDataV3") || "{}");
+/* ===================== ÁLLAPOT ===================== */
+let data = JSON.parse(localStorage.getItem("wordDataOpenAI") || "{}");
 let playing = false;
 let paused = false;
 
-/* ===== DOM ===== */
+/* ===================== DOM ===================== */
 const groupInput = document.getElementById("groupInput");
 const groupSelect = document.getElementById("groupSelect");
 const foreignInput = document.getElementById("foreignInput");
@@ -93,9 +70,9 @@ const langSelect = document.getElementById("langSelect");
 const delayInput = document.getElementById("delayInput");
 const repeatInput = document.getElementById("repeatInput");
 
-/* ===== UTILS ===== */
+/* ===================== SEGÉD ===================== */
 function save() {
-  localStorage.setItem("wordDataV3", JSON.stringify(data));
+  localStorage.setItem("wordDataOpenAI", JSON.stringify(data));
 }
 
 function refreshGroups() {
@@ -124,34 +101,43 @@ function shuffle(arr) {
   return arr.slice().sort(() => Math.random() - 0.5);
 }
 
-/* ===== SPEAK ===== */
-function speak(text, lang) {
-  return new Promise(resolve => {
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = lang;
-    const v = getVoice(lang);
-    if (v) u.voice = v;
-    u.rate = 0.9;
-    u.onend = resolve;
-    speechSynthesis.speak(u);
+async function speak(text, lang) {
+  const res = await fetch("https://api.openai.com/v1/audio/speech", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + OPENAI_API_KEY,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini-tts",
+      voice: "alloy",
+      input: text,
+      language: lang
+    })
+  });
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+
+  return new Promise(r => {
+    audio.onended = r;
+    audio.play();
   });
 }
 
 function wait(sec) {
   return new Promise(async r => {
-    while (paused) await new Promise(x => setTimeout(x, 200));
-    setTimeout(r, sec * 1000);
+    while (paused) await new Promise(x => setTimeout(x,200));
+    setTimeout(r, sec*1000);
   });
 }
 
-/* ===== EVENTS ===== */
+/* ===================== ESEMÉNYEK ===================== */
 document.getElementById("createGroupBtn").onclick = () => {
   const name = groupInput.value.trim();
   if (!name || data[name]) return alert("Hibás vagy létező név");
-  data[name] = {
-    lang: langSelect.value,
-    words: []
-  };
+  data[name] = { lang: langSelect.value, words: [] };
   save();
   refreshGroups();
   groupSelect.value = name;
@@ -160,11 +146,8 @@ document.getElementById("createGroupBtn").onclick = () => {
 
 document.getElementById("addWordBtn").onclick = () => {
   const g = groupSelect.value;
-  if (!g) return alert("Nincs szócsoport");
-  data[g].words.push({
-    f: foreignInput.value.trim(),
-    h: huInput.value.trim()
-  });
+  if (!g) return;
+  data[g].words.push({ f: foreignInput.value.trim(), h: huInput.value.trim() });
   save();
   foreignInput.value = huInput.value = "";
   renderWords();
@@ -175,38 +158,26 @@ document.getElementById("startBtn").onclick = async () => {
   if (!g) return;
   playing = true;
   paused = false;
-  speechSynthesis.cancel();
 
-  const lang = data[g].lang;
-  const words = shuffle(data[g].words);
   const delay = Number(delayInput.value);
   const repeat = Number(repeatInput.value);
+  const lang = data[g].lang;
+  const words = shuffle(data[g].words);
 
   for (const w of words) {
     if (!playing) break;
-
-    for (let i = 0; i < repeat; i++) {
+    for (let i=0;i<repeat;i++) {
       await speak(w.f, lang);
       await wait(delay);
-      await speak(w.h, "hu-HU");
+      await speak(w.h, "hu");
       await wait(delay);
     }
   }
 };
 
-document.getElementById("pauseBtn").onclick = () => {
-  paused = true;
-  speechSynthesis.pause();
-};
-document.getElementById("resumeBtn").onclick = () => {
-  paused = false;
-  speechSynthesis.resume();
-};
-document.getElementById("stopBtn").onclick = () => {
-  playing = false;
-  paused = false;
-  speechSynthesis.cancel();
-};
+document.getElementById("pauseBtn").onclick = () => paused = true;
+document.getElementById("resumeBtn").onclick = () => paused = false;
+document.getElementById("stopBtn").onclick = () => { playing=false; paused=false; };
 
 groupSelect.onchange = renderWords;
 
