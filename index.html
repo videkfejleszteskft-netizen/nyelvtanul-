@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nyelvtanuló – hangos</title>
+<title>Nyelvtanuló – nyelvválasztó</title>
 
 <style>
 body {
@@ -46,6 +46,15 @@ hr {
 
 <body>
 
+<h2>🌍 Idegen nyelv</h2>
+<select id="langSelect">
+  <option value="it-IT">🇮🇹 Olasz</option>
+  <option value="en-US">🇬🇧 Angol</option>
+  <option value="fr-FR">🇫🇷 Francia</option>
+  <option value="de-DE">🇩🇪 Német</option>
+  <option value="es-ES">🇪🇸 Spanyol</option>
+</select>
+
 <h2>📁 Szócsoportok</h2>
 
 <input id="groupInput" placeholder="Új szócsoport neve">
@@ -57,7 +66,7 @@ hr {
 
 <h3>➕ Új szó</h3>
 
-<input id="foreignInput" placeholder="Idegen szó">
+<input id="foreignInput" placeholder="Idegen szó / kifejezés">
 <input id="huInput" placeholder="Magyar jelentés">
 <button id="addWordBtn">Szó hozzáadása</button>
 
@@ -86,6 +95,7 @@ const huInput = document.getElementById("huInput");
 const wordList = document.getElementById("wordList");
 const delayInput = document.getElementById("delayInput");
 const repeatInput = document.getElementById("repeatInput");
+const langSelect = document.getElementById("langSelect");
 
 /* ===== ADAT ===== */
 let data = JSON.parse(localStorage.getItem("wordData") || {});
@@ -120,8 +130,8 @@ function renderWords() {
 }
 
 /* ===== RANDOM ===== */
-function shuffle(array) {
-  const a = array.slice();
+function shuffle(arr) {
+  const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
@@ -135,6 +145,7 @@ function speak(text, lang) {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
     u.rate = 0.9;
+    u.pitch = 1.0;
     u.onend = resolve;
     speechSynthesis.speak(u);
   });
@@ -161,6 +172,7 @@ async function startPlayback() {
 
   const delay = Number(delayInput.value);
   const repeat = Number(repeatInput.value);
+  const foreignLang = langSelect.value;
 
   const words = shuffle(data[g]);
 
@@ -168,14 +180,14 @@ async function startPlayback() {
     if (!playing) break;
 
     for (let i = 0; i < repeat; i++) {
-      await speak(w.foreign, "it-IT");
+      await speak(w.foreign, foreignLang);
       await wait(delay);
       await speak(w.hu, "hu-HU");
       await wait(delay);
     }
 
     for (let i = 0; i < repeat; i++) {
-      await speak(w.foreign, "it-IT");
+      await speak(w.foreign, foreignLang);
       await wait(delay);
       await speak(w.hu, "hu-HU");
       await wait(delay);
@@ -231,4 +243,3 @@ refreshGroups();
 
 </body>
 </html>
-
