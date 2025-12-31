@@ -3,15 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nyelvtanuló – nyelvválasztó</title>
+<title>Nyelvtanuló – stabil hang</title>
 
 <style>
 body {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   padding: 20px;
-}
-h2, h3 {
-  margin-top: 20px;
 }
 input, select, button {
   width: 100%;
@@ -25,28 +22,15 @@ button {
   border: none;
   border-radius: 8px;
 }
-button.secondary {
-  background: #888;
-}
-.controls button {
-  margin-top: 10px;
-}
-.list {
-  margin-top: 10px;
-  font-size: 15px;
-}
-.list div {
-  padding: 3px 0;
-}
-hr {
-  margin-top: 25px;
-}
+button.secondary { background: #888; }
+hr { margin: 24px 0; }
+.list div { padding: 3px 0; }
 </style>
 </head>
 
 <body>
 
-<h2>🌍 Idegen nyelv</h2>
+<h2>🌍 Idegen nyelv (szócsoporthoz kötve)</h2>
 <select id="langSelect">
   <option value="it-IT">🇮🇹 Olasz</option>
   <option value="en-US">🇬🇧 Angol</option>
@@ -55,9 +39,8 @@ hr {
   <option value="es-ES">🇪🇸 Spanyol</option>
 </select>
 
-<h2>📁 Szócsoportok</h2>
-
-<input id="groupInput" placeholder="Új szócsoport neve">
+<h2>📁 Szócsoport létrehozása</h2>
+<input id="groupInput" placeholder="Szócsoport neve">
 <button id="createGroupBtn">Szócsoport létrehozása</button>
 
 <select id="groupSelect"></select>
@@ -65,7 +48,6 @@ hr {
 <hr>
 
 <h3>➕ Új szó</h3>
-
 <input id="foreignInput" placeholder="Idegen szó / kifejezés">
 <input id="huInput" placeholder="Magyar jelentés">
 <button id="addWordBtn">Szó hozzáadása</button>
@@ -75,45 +57,54 @@ hr {
 <hr>
 
 <h3>▶️ Lejátszás</h3>
+<input id="delayInput" type="number" value="3">
+<input id="repeatInput" type="number" value="3">
 
-<input id="delayInput" type="number" value="3" placeholder="Szünet (mp)">
-<input id="repeatInput" type="number" value="3" placeholder="Ismétlések száma">
-
-<div class="controls">
-  <button id="startBtn">START</button>
-  <button class="secondary" id="pauseBtn">PAUSE</button>
-  <button class="secondary" id="resumeBtn">RESUME</button>
-  <button class="secondary" id="stopBtn">STOP</button>
-</div>
+<button id="startBtn">START</button>
+<button class="secondary" id="pauseBtn">PAUSE</button>
+<button class="secondary" id="resumeBtn">RESUME</button>
+<button class="secondary" id="stopBtn">STOP</button>
 
 <script>
+/* ===== VOICE ===== */
+let voices = [];
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+}
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function getVoice(lang) {
+  return voices.find(v => v.lang === lang) || null;
+}
+
+/* ===== DATA ===== */
+let data = JSON.parse(localStorage.getItem("wordDataV3") || "{}");
+let playing = false;
+let paused = false;
+
 /* ===== DOM ===== */
 const groupInput = document.getElementById("groupInput");
 const groupSelect = document.getElementById("groupSelect");
 const foreignInput = document.getElementById("foreignInput");
 const huInput = document.getElementById("huInput");
 const wordList = document.getElementById("wordList");
+const langSelect = document.getElementById("langSelect");
 const delayInput = document.getElementById("delayInput");
 const repeatInput = document.getElementById("repeatInput");
-const langSelect = document.getElementById("langSelect");
 
-/* ===== ADAT ===== */
-let data = JSON.parse(localStorage.getItem("wordData") || {});
-let playing = false;
-let paused = false;
-
-/* ===== SEGÉD ===== */
+/* ===== UTILS ===== */
 function save() {
-  localStorage.setItem("wordData", JSON.stringify(data));
+  localStorage.setItem("wordDataV3", JSON.stringify(data));
 }
 
 function refreshGroups() {
   groupSelect.innerHTML = "";
-  Object.keys(data).forEach(name => {
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    groupSelect.appendChild(opt);
+  Object.keys(data).forEach(g => {
+    const o = document.createElement("option");
+    o.value = g;
+    o.textContent = `${g} (${data[g].lang})`;
+    groupSelect.appendChild(o);
   });
   renderWords();
 }
@@ -121,86 +112,46 @@ function refreshGroups() {
 function renderWords() {
   wordList.innerHTML = "";
   const g = groupSelect.value;
-  if (!g || !data[g]) return;
-  data[g].forEach(pair => {
+  if (!g) return;
+  data[g].words.forEach(w => {
     const d = document.createElement("div");
-    d.textContent = `${pair.foreign} – ${pair.hu}`;
+    d.textContent = `${w.f} – ${w.h}`;
     wordList.appendChild(d);
   });
 }
 
-/* ===== RANDOM ===== */
 function shuffle(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
+  return arr.slice().sort(() => Math.random() - 0.5);
 }
 
-/* ===== BESZÉD ===== */
+/* ===== SPEAK ===== */
 function speak(text, lang) {
   return new Promise(resolve => {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
+    const v = getVoice(lang);
+    if (v) u.voice = v;
     u.rate = 0.9;
-    u.pitch = 1.0;
     u.onend = resolve;
     speechSynthesis.speak(u);
   });
 }
 
 function wait(sec) {
-  return new Promise(async resolve => {
-    while (paused) await new Promise(r => setTimeout(r, 200));
-    setTimeout(resolve, sec * 1000);
+  return new Promise(async r => {
+    while (paused) await new Promise(x => setTimeout(x, 200));
+    setTimeout(r, sec * 1000);
   });
 }
 
-/* ===== LEJÁTSZÁS ===== */
-async function startPlayback() {
-  const g = groupSelect.value;
-  if (!g || !data[g] || data[g].length === 0) {
-    alert("Nincs lejátszható szó!");
-    return;
-  }
-
-  playing = true;
-  paused = false;
-  speechSynthesis.cancel();
-
-  const delay = Number(delayInput.value);
-  const repeat = Number(repeatInput.value);
-  const foreignLang = langSelect.value;
-
-  const words = shuffle(data[g]);
-
-  for (const w of words) {
-    if (!playing) break;
-
-    for (let i = 0; i < repeat; i++) {
-      await speak(w.foreign, foreignLang);
-      await wait(delay);
-      await speak(w.hu, "hu-HU");
-      await wait(delay);
-    }
-
-    for (let i = 0; i < repeat; i++) {
-      await speak(w.foreign, foreignLang);
-      await wait(delay);
-      await speak(w.hu, "hu-HU");
-      await wait(delay);
-    }
-  }
-}
-
-/* ===== GOMBOK ===== */
+/* ===== EVENTS ===== */
 document.getElementById("createGroupBtn").onclick = () => {
   const name = groupInput.value.trim();
-  if (!name) return alert("Adj meg nevet!");
-  if (data[name]) return alert("Ilyen szócsoport már létezik!");
-  data[name] = [];
+  if (!name || data[name]) return alert("Hibás vagy létező név");
+  data[name] = {
+    lang: langSelect.value,
+    words: []
+  };
   save();
   refreshGroups();
   groupSelect.value = name;
@@ -209,18 +160,40 @@ document.getElementById("createGroupBtn").onclick = () => {
 
 document.getElementById("addWordBtn").onclick = () => {
   const g = groupSelect.value;
-  if (!g) return alert("Nincs kiválasztott szócsoport!");
-  const f = foreignInput.value.trim();
-  const h = huInput.value.trim();
-  if (!f || !h) return;
-  data[g].push({ foreign: f, hu: h });
+  if (!g) return alert("Nincs szócsoport");
+  data[g].words.push({
+    f: foreignInput.value.trim(),
+    h: huInput.value.trim()
+  });
   save();
-  foreignInput.value = "";
-  huInput.value = "";
+  foreignInput.value = huInput.value = "";
   renderWords();
 };
 
-document.getElementById("startBtn").onclick = startPlayback;
+document.getElementById("startBtn").onclick = async () => {
+  const g = groupSelect.value;
+  if (!g) return;
+  playing = true;
+  paused = false;
+  speechSynthesis.cancel();
+
+  const lang = data[g].lang;
+  const words = shuffle(data[g].words);
+  const delay = Number(delayInput.value);
+  const repeat = Number(repeatInput.value);
+
+  for (const w of words) {
+    if (!playing) break;
+
+    for (let i = 0; i < repeat; i++) {
+      await speak(w.f, lang);
+      await wait(delay);
+      await speak(w.h, "hu-HU");
+      await wait(delay);
+    }
+  }
+};
+
 document.getElementById("pauseBtn").onclick = () => {
   paused = true;
   speechSynthesis.pause();
@@ -237,7 +210,6 @@ document.getElementById("stopBtn").onclick = () => {
 
 groupSelect.onchange = renderWords;
 
-/* ===== INDULÁS ===== */
 refreshGroups();
 </script>
 
