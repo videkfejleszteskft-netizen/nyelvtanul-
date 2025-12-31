@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nyelvtanuló – OpenAI TTS</title>
+<title>Nyelvtanuló – OpenAI TTS (iOS fix)</title>
 
 <style>
-body { font-family:-apple-system,BlinkMacSystemFont,sans-serif; padding:20px; }
+body { font-family:-apple-system,sans-serif; padding:20px; }
 input, select, button { width:100%; padding:12px; margin-top:8px; font-size:16px; }
 button { background:#007AFF; color:white; border:none; border-radius:8px; }
 button.secondary { background:#888; }
 .list div { padding:3px 0; }
 hr { margin:24px 0; }
+.status { margin-top:10px; font-size:14px; color:#555; }
 </style>
 </head>
 
@@ -47,20 +48,20 @@ hr { margin:24px 0; }
 <input id="repeatInput" type="number" value="2">
 
 <button id="startBtn">START</button>
-<button class="secondary" id="pauseBtn">PAUSE</button>
-<button class="secondary" id="resumeBtn">RESUME</button>
 <button class="secondary" id="stopBtn">STOP</button>
 
+<div class="status" id="status">Állapot: várakozás</div>
+
 <script>
-/* ===================== BEÁLLÍTÁS ===================== */
+/* ====== IDE ÍRD A SAJÁT KULCSOD ====== */
 const OPENAI_API_KEY = "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";
 
-/* ===================== ÁLLAPOT ===================== */
-let data = JSON.parse(localStorage.getItem("wordDataOpenAI") || "{}");
+/* ====== ÁLLAPOT ====== */
+let data = JSON.parse(localStorage.getItem("wordDataOpenAI_v5") || "{}");
 let playing = false;
-let paused = false;
 
-/* ===================== DOM ===================== */
+/* ====== DOM ====== */
+const statusEl = document.getElementById("status");
 const groupInput = document.getElementById("groupInput");
 const groupSelect = document.getElementById("groupSelect");
 const foreignInput = document.getElementById("foreignInput");
@@ -70,9 +71,9 @@ const langSelect = document.getElementById("langSelect");
 const delayInput = document.getElementById("delayInput");
 const repeatInput = document.getElementById("repeatInput");
 
-/* ===================== SEGÉD ===================== */
+/* ====== SEGÉD ====== */
 function save() {
-  localStorage.setItem("wordDataOpenAI", JSON.stringify(data));
+  localStorage.setItem("wordDataOpenAI_v5", JSON.stringify(data));
 }
 
 function refreshGroups() {
@@ -80,7 +81,7 @@ function refreshGroups() {
   Object.keys(data).forEach(g => {
     const o = document.createElement("option");
     o.value = g;
-    o.textContent = `${g} (${data[g].lang})`;
+    o.textContent = g;
     groupSelect.appendChild(o);
   });
   renderWords();
@@ -101,7 +102,9 @@ function shuffle(arr) {
   return arr.slice().sort(() => Math.random() - 0.5);
 }
 
+/* ====== TTS (iOS-BIZTOS) ====== */
 async function speak(text, lang) {
+  statusEl.textContent = "Állapot: hang generálása...";
   const res = await fetch("https://api.openai.com/v1/audio/speech", {
     method: "POST",
     headers: {
@@ -116,24 +119,28 @@ async function speak(text, lang) {
     })
   });
 
-  const blob = await res.blob();
-  const url = URL.createObjectURL(blob);
-  const audio = new Audio(url);
+  if (!res.ok) {
+    throw new Error("TTS hiba");
+  }
 
-  return new Promise(r => {
-    audio.onended = r;
-    audio.play();
+  const blob = await res.blob();
+  const audio = new Audio(URL.createObjectURL(blob));
+
+  return new Promise(resolve => {
+    audio.onended = resolve;
+    audio.play().catch(err => {
+      statusEl.textContent = "Hang lejátszás hiba";
+      console.error(err);
+      resolve();
+    });
   });
 }
 
 function wait(sec) {
-  return new Promise(async r => {
-    while (paused) await new Promise(x => setTimeout(x,200));
-    setTimeout(r, sec*1000);
-  });
+  return new Promise(r => setTimeout(r, sec * 1000));
 }
 
-/* ===================== ESEMÉNYEK ===================== */
+/* ====== GOMBOK ====== */
 document.getElementById("createGroupBtn").onclick = () => {
   const name = groupInput.value.trim();
   if (!name || data[name]) return alert("Hibás vagy létező név");
@@ -156,8 +163,9 @@ document.getElementById("addWordBtn").onclick = () => {
 document.getElementById("startBtn").onclick = async () => {
   const g = groupSelect.value;
   if (!g) return;
+
   playing = true;
-  paused = false;
+  statusEl.textContent = "Állapot: lejátszás";
 
   const delay = Number(delayInput.value);
   const repeat = Number(repeatInput.value);
@@ -166,18 +174,21 @@ document.getElementById("startBtn").onclick = async () => {
 
   for (const w of words) {
     if (!playing) break;
-    for (let i=0;i<repeat;i++) {
+    for (let i = 0; i < repeat; i++) {
       await speak(w.f, lang);
       await wait(delay);
       await speak(w.h, "hu");
       await wait(delay);
     }
   }
+
+  statusEl.textContent = "Állapot: kész";
 };
 
-document.getElementById("pauseBtn").onclick = () => paused = true;
-document.getElementById("resumeBtn").onclick = () => paused = false;
-document.getElementById("stopBtn").onclick = () => { playing=false; paused=false; };
+document.getElementById("stopBtn").onclick = () => {
+  playing = false;
+  statusEl.textContent = "Állapot: leállítva";
+};
 
 groupSelect.onchange = renderWords;
 
