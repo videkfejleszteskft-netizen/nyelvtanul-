@@ -3,113 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nyelvtanuló</title>
-
+<title>Szócsoport teszt</title>
 <style>
-body { font-family: -apple-system, sans-serif; padding: 20px; }
-input, textarea, select, button {
-  width: 100%; padding: 12px; margin-top: 8px; font-size: 16px;
-}
-textarea { height: 100px; }
+body { font-family: -apple-system, sans-serif; padding:20px; }
+input, button, select { width:100%; padding:12px; margin-top:8px; font-size:16px; }
 button { background:#007AFF; color:white; border:none; border-radius:8px; }
-button.secondary { background:#999; }
-.section { margin-top:24px; padding-top:10px; border-top:1px solid #ccc; }
+.list { margin-top:12px; font-size:14px; }
 </style>
 </head>
-
 <body>
 
-<h2>📁 Szócsoport</h2>
-<input id="groupNameInput" placeholder="Új szócsoport neve">
-<button id="createGroupBtn">Szócsoport létrehozása</button>
-<select id="groupSelect"></select>
+<h2>Szócsoport</h2>
+<input id="groupName" placeholder="pl. Próba 1">
+<button id="addGroup">Szócsoport létrehozása</button>
 
-<div class="section">
-<h3>➕ Egy szó</h3>
-<input id="foreignInput" placeholder="Idegen szó">
-<input id="huInput" placeholder="Magyar jelentés">
-<button id="addSingleBtn">Hozzáadás</button>
-</div>
+<select id="groups"></select>
 
-<div class="section">
-<h3>📋 Tömeges bevitel</h3>
-<textarea id="bulkInput" placeholder="andare - menni"></textarea>
-<button id="addBulkBtn">Szavak hozzáadása</button>
-</div>
+<h3>Új szó</h3>
+<input id="foreign" placeholder="idegen szó">
+<input id="hu" placeholder="magyar jelentés">
+<button id="addWord">Szó hozzáadása</button>
 
-<div class="section">
-<h3>▶️ Lejátszás</h3>
-<input id="delayInput" type="number" value="3">
-<input id="repeatInput" type="number" value="3">
-<button id="startBtn">START</button>
-<button class="secondary" id="pauseBtn">PAUSE</button>
-<button class="secondary" id="resumeBtn">RESUME</button>
-<button class="secondary" id="stopBtn">STOP</button>
-</div>
+<div class="list" id="list"></div>
 
 <script>
-/* ===== DOM ===== */
-const groupNameInput = document.getElementById("groupNameInput");
-const groupSelect = document.getElementById("groupSelect");
-const foreignInput = document.getElementById("foreignInput");
-const huInput = document.getElementById("huInput");
-const bulkInput = document.getElementById("bulkInput");
-const delayInput = document.getElementById("delayInput");
-const repeatInput = document.getElementById("repeatInput");
+const groupName = document.getElementById("groupName");
+const groups = document.getElementById("groups");
+const foreign = document.getElementById("foreign");
+const hu = document.getElementById("hu");
+const list = document.getElementById("list");
 
-/* ===== DATA ===== */
-let store = JSON.parse(localStorage.getItem("groups") || "{}");
+let data = JSON.parse(localStorage.getItem("data") || "{}");
 
-/* ===== HELPERS ===== */
 function save() {
-  localStorage.setItem("groups", JSON.stringify(store));
+  localStorage.setItem("data", JSON.stringify(data));
 }
+
 function refreshGroups() {
-  groupSelect.innerHTML = "";
-  Object.keys(store).forEach(g => {
+  groups.innerHTML = "";
+  Object.keys(data).forEach(g => {
     const o = document.createElement("option");
-    o.value = g; o.textContent = g;
-    groupSelect.appendChild(o);
+    o.value = g;
+    o.textContent = g;
+    groups.appendChild(o);
+  });
+  renderList();
+}
+
+function renderList() {
+  list.innerHTML = "";
+  const g = groups.value;
+  if (!g) return;
+  data[g].forEach(w => {
+    const d = document.createElement("div");
+    d.textContent = `${w.f} – ${w.h}`;
+    list.appendChild(d);
   });
 }
-refreshGroups();
 
-function currentGroup() {
-  return groupSelect.value;
-}
-
-/* ===== ACTIONS ===== */
-document.getElementById("createGroupBtn").onclick = () => {
-  const name = groupNameInput.value.trim();
-  if (!name || store[name]) return alert("Érvénytelen vagy létező név");
-  store[name] = [];
+document.getElementById("addGroup").onclick = () => {
+  const n = groupName.value.trim();
+  if (!n || data[n]) return alert("Érvénytelen vagy létező név");
+  data[n] = [];
   save();
   refreshGroups();
-  groupSelect.value = name;
-  groupNameInput.value = "";
+  groups.value = n;
+  groupName.value = "";
 };
 
-document.getElementById("addSingleBtn").onclick = () => {
-  const g = currentGroup();
+document.getElementById("addWord").onclick = () => {
+  const g = groups.value;
   if (!g) return alert("Nincs szócsoport");
-  if (!foreignInput.value || !huInput.value) return;
-  store[g].push({ f: foreignInput.value, h: huInput.value });
+  if (!foreign.value || !hu.value) return;
+  data[g].push({ f: foreign.value, h: hu.value });
   save();
-  foreignInput.value = huInput.value = "";
+  foreign.value = hu.value = "";
+  renderList();
 };
 
-document.getElementById("addBulkBtn").onclick = () => {
-  const g = currentGroup();
-  if (!g) return alert("Nincs szócsoport");
-  bulkInput.value.split("\n").forEach(l => {
-    const p = l.split(/[-=–\t]/);
-    if (p.length >= 2) {
-      store[g].push({ f: p[0].trim(), h: p.slice(1).join("-").trim() });
-    }
-  });
-  bulkInput.value = "";
-  save();
-};
+groups.onchange = renderList;
+
+refreshGroups();
 </script>
 
 </body>
