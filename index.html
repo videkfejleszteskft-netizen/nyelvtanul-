@@ -3,86 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Szócsoport teszt</title>
+<title>Szócsoport – stabil alap</title>
+
 <style>
-body { font-family: -apple-system, sans-serif; padding:20px; }
-input, button, select { width:100%; padding:12px; margin-top:8px; font-size:16px; }
-button { background:#007AFF; color:white; border:none; border-radius:8px; }
-.list { margin-top:12px; font-size:14px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  padding: 20px;
+}
+h2, h3 {
+  margin-top: 20px;
+}
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 16px;
+}
+button {
+  background: #007AFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+.list {
+  margin-top: 10px;
+  font-size: 15px;
+}
+.list div {
+  padding: 4px 0;
+}
+hr {
+  margin-top: 25px;
+}
 </style>
 </head>
+
 <body>
 
-<h2>Szócsoport</h2>
-<input id="groupName" placeholder="pl. Próba 1">
-<button id="addGroup">Szócsoport létrehozása</button>
+<h2>📁 Szócsoportok</h2>
 
-<select id="groups"></select>
+<input id="groupInput" placeholder="Új szócsoport neve">
+<button id="createGroupBtn">Szócsoport létrehozása</button>
 
-<h3>Új szó</h3>
-<input id="foreign" placeholder="idegen szó">
-<input id="hu" placeholder="magyar jelentés">
-<button id="addWord">Szó hozzáadása</button>
+<select id="groupSelect"></select>
 
-<div class="list" id="list"></div>
+<hr>
+
+<h3>➕ Új szó hozzáadása</h3>
+
+<input id="foreignInput" placeholder="Idegen szó">
+<input id="huInput" placeholder="Magyar jelentés">
+<button id="addWordBtn">Szó hozzáadása</button>
+
+<div class="list" id="wordList"></div>
 
 <script>
-const groupName = document.getElementById("groupName");
-const groups = document.getElementById("groups");
-const foreign = document.getElementById("foreign");
-const hu = document.getElementById("hu");
-const list = document.getElementById("list");
+/* ===== DOM ===== */
+const groupInput = document.getElementById("groupInput");
+const groupSelect = document.getElementById("groupSelect");
+const foreignInput = document.getElementById("foreignInput");
+const huInput = document.getElementById("huInput");
+const wordList = document.getElementById("wordList");
 
-let data = JSON.parse(localStorage.getItem("data") || "{}");
+/* ===== ADAT ===== */
+let data = JSON.parse(localStorage.getItem("wordData") || "{}");
 
+/* ===== SEGÉD ===== */
 function save() {
-  localStorage.setItem("data", JSON.stringify(data));
+  localStorage.setItem("wordData", JSON.stringify(data));
 }
 
 function refreshGroups() {
-  groups.innerHTML = "";
-  Object.keys(data).forEach(g => {
-    const o = document.createElement("option");
-    o.value = g;
-    o.textContent = g;
-    groups.appendChild(o);
+  groupSelect.innerHTML = "";
+  Object.keys(data).forEach(name => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    groupSelect.appendChild(opt);
   });
-  renderList();
+  renderWords();
 }
 
-function renderList() {
-  list.innerHTML = "";
-  const g = groups.value;
-  if (!g) return;
-  data[g].forEach(w => {
+function renderWords() {
+  wordList.innerHTML = "";
+  const g = groupSelect.value;
+  if (!g || !data[g]) return;
+  data[g].forEach(pair => {
     const d = document.createElement("div");
-    d.textContent = `${w.f} – ${w.h}`;
-    list.appendChild(d);
+    d.textContent = `${pair.foreign} – ${pair.hu}`;
+    wordList.appendChild(d);
   });
 }
 
-document.getElementById("addGroup").onclick = () => {
-  const n = groupName.value.trim();
-  if (!n || data[n]) return alert("Érvénytelen vagy létező név");
-  data[n] = [];
+/* ===== ESEMÉNYEK ===== */
+document.getElementById("createGroupBtn").onclick = () => {
+  const name = groupInput.value.trim();
+  if (!name) {
+    alert("Adj meg egy nevet!");
+    return;
+  }
+  if (data[name]) {
+    alert("Ilyen szócsoport már létezik!");
+    return;
+  }
+  data[name] = [];
   save();
   refreshGroups();
-  groups.value = n;
-  groupName.value = "";
+  groupSelect.value = name;
+  groupInput.value = "";
 };
 
-document.getElementById("addWord").onclick = () => {
-  const g = groups.value;
-  if (!g) return alert("Nincs szócsoport");
-  if (!foreign.value || !hu.value) return;
-  data[g].push({ f: foreign.value, h: hu.value });
+document.getElementById("addWordBtn").onclick = () => {
+  const g = groupSelect.value;
+  if (!g) {
+    alert("Nincs kiválasztott szócsoport!");
+    return;
+  }
+  const f = foreignInput.value.trim();
+  const h = huInput.value.trim();
+  if (!f || !h) {
+    alert("Mindkét mezőt töltsd ki!");
+    return;
+  }
+  data[g].push({ foreign: f, hu: h });
   save();
-  foreign.value = hu.value = "";
-  renderList();
+  foreignInput.value = "";
+  huInput.value = "";
+  renderWords();
 };
 
-groups.onchange = renderList;
+groupSelect.onchange = renderWords;
 
+/* ===== INDULÁS ===== */
 refreshGroups();
 </script>
 
