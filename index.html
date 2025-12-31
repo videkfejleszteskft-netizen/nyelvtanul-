@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Szócsoport – stabil alap</title>
+<title>Nyelvtanuló – hangos</title>
 
 <style>
 body {
@@ -25,12 +25,18 @@ button {
   border: none;
   border-radius: 8px;
 }
+button.secondary {
+  background: #888;
+}
+.controls button {
+  margin-top: 10px;
+}
 .list {
   margin-top: 10px;
   font-size: 15px;
 }
 .list div {
-  padding: 4px 0;
+  padding: 3px 0;
 }
 hr {
   margin-top: 25px;
@@ -49,13 +55,27 @@ hr {
 
 <hr>
 
-<h3>➕ Új szó hozzáadása</h3>
+<h3>➕ Új szó</h3>
 
 <input id="foreignInput" placeholder="Idegen szó">
 <input id="huInput" placeholder="Magyar jelentés">
 <button id="addWordBtn">Szó hozzáadása</button>
 
 <div class="list" id="wordList"></div>
+
+<hr>
+
+<h3>▶️ Lejátszás</h3>
+
+<input id="delayInput" type="number" value="3" placeholder="Szünet (mp)">
+<input id="repeatInput" type="number" value="3" placeholder="Ismétlések száma">
+
+<div class="controls">
+  <button id="startBtn">START</button>
+  <button class="secondary" id="pauseBtn">PAUSE</button>
+  <button class="secondary" id="resumeBtn">RESUME</button>
+  <button class="secondary" id="stopBtn">STOP</button>
+</div>
 
 <script>
 /* ===== DOM ===== */
@@ -64,9 +84,13 @@ const groupSelect = document.getElementById("groupSelect");
 const foreignInput = document.getElementById("foreignInput");
 const huInput = document.getElementById("huInput");
 const wordList = document.getElementById("wordList");
+const delayInput = document.getElementById("delayInput");
+const repeatInput = document.getElementById("repeatInput");
 
 /* ===== ADAT ===== */
-let data = JSON.parse(localStorage.getItem("wordData") || "{}");
+let data = JSON.parse(localStorage.getItem("wordData") || {});
+let playing = false;
+let paused = false;
 
 /* ===== SEGÉD ===== */
 function save() {
@@ -95,17 +119,75 @@ function renderWords() {
   });
 }
 
-/* ===== ESEMÉNYEK ===== */
+/* ===== RANDOM ===== */
+function shuffle(array) {
+  const a = array.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ===== BESZÉD ===== */
+function speak(text, lang) {
+  return new Promise(resolve => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    u.rate = 0.9;
+    u.onend = resolve;
+    speechSynthesis.speak(u);
+  });
+}
+
+function wait(sec) {
+  return new Promise(async resolve => {
+    while (paused) await new Promise(r => setTimeout(r, 200));
+    setTimeout(resolve, sec * 1000);
+  });
+}
+
+/* ===== LEJÁTSZÁS ===== */
+async function startPlayback() {
+  const g = groupSelect.value;
+  if (!g || !data[g] || data[g].length === 0) {
+    alert("Nincs lejátszható szó!");
+    return;
+  }
+
+  playing = true;
+  paused = false;
+  speechSynthesis.cancel();
+
+  const delay = Number(delayInput.value);
+  const repeat = Number(repeatInput.value);
+
+  const words = shuffle(data[g]);
+
+  for (const w of words) {
+    if (!playing) break;
+
+    for (let i = 0; i < repeat; i++) {
+      await speak(w.foreign, "it-IT");
+      await wait(delay);
+      await speak(w.hu, "hu-HU");
+      await wait(delay);
+    }
+
+    for (let i = 0; i < repeat; i++) {
+      await speak(w.foreign, "it-IT");
+      await wait(delay);
+      await speak(w.hu, "hu-HU");
+      await wait(delay);
+    }
+  }
+}
+
+/* ===== GOMBOK ===== */
 document.getElementById("createGroupBtn").onclick = () => {
   const name = groupInput.value.trim();
-  if (!name) {
-    alert("Adj meg egy nevet!");
-    return;
-  }
-  if (data[name]) {
-    alert("Ilyen szócsoport már létezik!");
-    return;
-  }
+  if (!name) return alert("Adj meg nevet!");
+  if (data[name]) return alert("Ilyen szócsoport már létezik!");
   data[name] = [];
   save();
   refreshGroups();
@@ -115,21 +197,30 @@ document.getElementById("createGroupBtn").onclick = () => {
 
 document.getElementById("addWordBtn").onclick = () => {
   const g = groupSelect.value;
-  if (!g) {
-    alert("Nincs kiválasztott szócsoport!");
-    return;
-  }
+  if (!g) return alert("Nincs kiválasztott szócsoport!");
   const f = foreignInput.value.trim();
   const h = huInput.value.trim();
-  if (!f || !h) {
-    alert("Mindkét mezőt töltsd ki!");
-    return;
-  }
+  if (!f || !h) return;
   data[g].push({ foreign: f, hu: h });
   save();
   foreignInput.value = "";
   huInput.value = "";
   renderWords();
+};
+
+document.getElementById("startBtn").onclick = startPlayback;
+document.getElementById("pauseBtn").onclick = () => {
+  paused = true;
+  speechSynthesis.pause();
+};
+document.getElementById("resumeBtn").onclick = () => {
+  paused = false;
+  speechSynthesis.resume();
+};
+document.getElementById("stopBtn").onclick = () => {
+  playing = false;
+  paused = false;
+  speechSynthesis.cancel();
 };
 
 groupSelect.onchange = renderWords;
@@ -140,3 +231,4 @@ refreshGroups();
 
 </body>
 </html>
+
