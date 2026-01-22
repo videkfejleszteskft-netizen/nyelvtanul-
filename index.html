@@ -76,6 +76,51 @@
       looping = !looping;
       console.log('LOOP:', looping);
     }
-  </script>
+  
+
+    // --- AUDIO HELPERS ---
+    async function loadBuffer(url) {
+      const res = await fetch(url);
+      const arrayBuffer = await res.arrayBuffer();
+      return await ctx.decodeAudioData(arrayBuffer);
+    }
+
+    let itBuffer = null;
+    let huBuffer = null;
+
+    async function playOnePhrase() {
+      if (!itBuffer || !huBuffer) {
+        itBuffer = await loadBuffer('olasz1.mp3');
+        huBuffer = await loadBuffer('magyar1.mp3');
+      }
+
+      // Olasz bal oldalon
+      const itSource = ctx.createBufferSource();
+      const itPan = ctx.createStereoPanner();
+      itPan.pan.value = -1;
+      itSource.buffer = itBuffer;
+      itSource.connect(itPan).connect(ctx.destination);
+      itSource.start();
+
+      // gondolkodási szünet = olasz hossza
+      const itDuration = itBuffer.duration * 1000;
+
+      setTimeout(() => {
+        // Magyar jobb oldalon
+        const huSource = ctx.createBufferSource();
+        const huPan = ctx.createStereoPanner();
+        huPan.pan.value = 1;
+        huSource.buffer = huBuffer;
+        huSource.connect(huPan).connect(ctx.destination);
+        huSource.start();
+      }, itDuration * 2);
+    }
+
+    // ideiglenesen a Play gomb ehhez kötve
+    function play() {
+      ctx.resume();
+      playOnePhrase();
+    }
+
 </body>
 </html>
