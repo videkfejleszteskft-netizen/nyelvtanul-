@@ -1,199 +1,81 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nyelvtanuló – OpenAI TTS (iOS fix)</title>
-
-<style>
-body { font-family:-apple-system,sans-serif; padding:20px; }
-input, select, button { width:100%; padding:12px; margin-top:8px; font-size:16px; }
-button { background:#007AFF; color:white; border:none; border-radius:8px; }
-button.secondary { background:#888; }
-.list div { padding:3px 0; }
-hr { margin:24px 0; }
-.status { margin-top:10px; font-size:14px; color:#555; }
-</style>
-</head>
-
-<body>
-
-<h2>🌍 Idegen nyelv</h2>
-<select id="langSelect">
-  <option value="it">🇮🇹 Olasz</option>
-  <option value="en">🇬🇧 Angol</option>
-  <option value="fr">🇫🇷 Francia</option>
-  <option value="de">🇩🇪 Német</option>
-  <option value="es">🇪🇸 Spanyol</option>
-</select>
-
-<h2>📁 Szócsoport</h2>
-<input id="groupInput" placeholder="Szócsoport neve">
-<button id="createGroupBtn">Szócsoport létrehozása</button>
-<select id="groupSelect"></select>
-
-<hr>
-
-<h3>➕ Új szó</h3>
-<input id="foreignInput" placeholder="Idegen szó / kifejezés">
-<input id="huInput" placeholder="Magyar jelentés">
-<button id="addWordBtn">Szó hozzáadása</button>
-
-<div class="list" id="wordList"></div>
-
-<hr>
-
-<h3>▶️ Lejátszás</h3>
-<input id="delayInput" type="number" value="3">
-<input id="repeatInput" type="number" value="2">
-
-<button id="startBtn">START</button>
-<button class="secondary" id="stopBtn">STOP</button>
-
-<div class="status" id="status">Állapot: várakozás</div>
-
-<script>
-/* ====== IDE ÍRD A SAJÁT KULCSOD ====== */
-const OPENAI_API_KEY = "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";
-
-/* ====== ÁLLAPOT ====== */
-let data = JSON.parse(localStorage.getItem("wordDataOpenAI_v5") || "{}");
-let playing = false;
-
-/* ====== DOM ====== */
-const statusEl = document.getElementById("status");
-const groupInput = document.getElementById("groupInput");
-const groupSelect = document.getElementById("groupSelect");
-const foreignInput = document.getElementById("foreignInput");
-const huInput = document.getElementById("huInput");
-const wordList = document.getElementById("wordList");
-const langSelect = document.getElementById("langSelect");
-const delayInput = document.getElementById("delayInput");
-const repeatInput = document.getElementById("repeatInput");
-
-/* ====== SEGÉD ====== */
-function save() {
-  localStorage.setItem("wordDataOpenAI_v5", JSON.stringify(data));
-}
-
-function refreshGroups() {
-  groupSelect.innerHTML = "";
-  Object.keys(data).forEach(g => {
-    const o = document.createElement("option");
-    o.value = g;
-    o.textContent = g;
-    groupSelect.appendChild(o);
-  });
-  renderWords();
-}
-
-function renderWords() {
-  wordList.innerHTML = "";
-  const g = groupSelect.value;
-  if (!g) return;
-  data[g].words.forEach(w => {
-    const d = document.createElement("div");
-    d.textContent = `${w.f} – ${w.h}`;
-    wordList.appendChild(d);
-  });
-}
-
-function shuffle(arr) {
-  return arr.slice().sort(() => Math.random() - 0.5);
-}
-
-/* ====== TTS (iOS-BIZTOS) ====== */
-async function speak(text, lang) {
-  statusEl.textContent = "Állapot: hang generálása...";
-  const res = await fetch("https://api.openai.com/v1/audio/speech", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer " + OPENAI_API_KEY,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini-tts",
-      voice: "alloy",
-      input: text,
-      language: lang
-    })
-  });
-
-  if (!res.ok) {
-    throw new Error("TTS hiba");
-  }
-
-  const blob = await res.blob();
-  const audio = new Audio(URL.createObjectURL(blob));
-
-  return new Promise(resolve => {
-    audio.onended = resolve;
-    audio.play().catch(err => {
-      statusEl.textContent = "Hang lejátszás hiba";
-      console.error(err);
-      resolve();
-    });
-  });
-}
-
-function wait(sec) {
-  return new Promise(r => setTimeout(r, sec * 1000));
-}
-
-/* ====== GOMBOK ====== */
-document.getElementById("createGroupBtn").onclick = () => {
-  const name = groupInput.value.trim();
-  if (!name || data[name]) return alert("Hibás vagy létező név");
-  data[name] = { lang: langSelect.value, words: [] };
-  save();
-  refreshGroups();
-  groupSelect.value = name;
-  groupInput.value = "";
-};
-
-document.getElementById("addWordBtn").onclick = () => {
-  const g = groupSelect.value;
-  if (!g) return;
-  data[g].words.push({ f: foreignInput.value.trim(), h: huInput.value.trim() });
-  save();
-  foreignInput.value = huInput.value = "";
-  renderWords();
-};
-
-document.getElementById("startBtn").onclick = async () => {
-  const g = groupSelect.value;
-  if (!g) return;
-
-  playing = true;
-  statusEl.textContent = "Állapot: lejátszás";
-
-  const delay = Number(delayInput.value);
-  const repeat = Number(repeatInput.value);
-  const lang = data[g].lang;
-  const words = shuffle(data[g].words);
-
-  for (const w of words) {
-    if (!playing) break;
-    for (let i = 0; i < repeat; i++) {
-      await speak(w.f, lang);
-      await wait(delay);
-      await speak(w.h, "hu");
-      await wait(delay);
+  <meta charset="UTF-8" />
+  <title>Olasz–Magyar Tanuló Lejátszó</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #111;
+      color: #eee;
+      padding: 20px;
     }
-  }
+    button {
+      margin: 4px;
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎧 Olasz–Magyar tanuló lejátszó (v1)</h1>
 
-  statusEl.textContent = "Állapot: kész";
-};
+  <p>Ez az első működő webes alapverzió. A logika már a végleges irányba mutat.</p>
 
-document.getElementById("stopBtn").onclick = () => {
-  playing = false;
-  statusEl.textContent = "Állapot: leállítva";
-};
+  <div>
+    <button onclick="play()">▶️ Play</button>
+    <button onclick="pause()">⏸️ Pause</button>
+    <button onclick="stop()">⏹️ Stop</button>
+    <button onclick="prev()">⏮️ Prev</button>
+    <button onclick="next()">⏭️ Next</button>
+    <button onclick="toggleLoop()">🔁 Loop</button>
+  </div>
 
-groupSelect.onchange = renderWords;
+  <script>
+    // --- AUDIO CONTEXT ---
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-refreshGroups();
-</script>
+    // --- PLACEHOLDER DATA ---
+    const phrases = [
+      { it: 'olasz1.mp3', hu: 'magyar1.mp3' },
+      { it: 'olasz2.mp3', hu: 'magyar2.mp3' }
+    ];
 
+    let index = 0;
+    let looping = false;
+    let playing = false;
+
+    function play() {
+      ctx.resume();
+      playing = true;
+      console.log('PLAY – kifejezés', index + 1);
+    }
+
+    function pause() {
+      playing = false;
+      console.log('PAUSE');
+    }
+
+    function stop() {
+      playing = false;
+      index = 0;
+      console.log('STOP');
+    }
+
+    function next() {
+      index = (index + 1) % phrases.length;
+      console.log('NEXT →', index + 1);
+    }
+
+    function prev() {
+      index = Math.max(0, index - 1);
+      console.log('PREV →', index + 1);
+    }
+
+    function toggleLoop() {
+      looping = !looping;
+      console.log('LOOP:', looping);
+    }
+  </script>
 </body>
 </html>
