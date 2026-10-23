@@ -1,126 +1,47 @@
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-  <meta charset="UTF-8" />
-  <title>Olasz–Magyar Tanuló Lejátszó</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #111;
-      color: #eee;
-      padding: 20px;
-    }
-    button {
-      margin: 4px;
-      padding: 10px 14px;
-      font-size: 14px;
-    }
-  </style>
-</head>
-<body>
-  <h1>🎧 Olasz–Magyar tanuló lejátszó (v1)</h1>
-
-  <p>Ez az első működő webes alapverzió. A logika már a végleges irányba mutat.</p>
-
-  <div>
-    <button onclick="play()">▶️ Play</button>
-    <button onclick="pause()">⏸️ Pause</button>
-    <button onclick="stop()">⏹️ Stop</button>
-    <button onclick="prev()">⏮️ Prev</button>
-    <button onclick="next()">⏭️ Next</button>
-    <button onclick="toggleLoop()">🔁 Loop</button>
-  </div>
-
-  <script>
-    // --- AUDIO CONTEXT ---
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-    // --- PLACEHOLDER DATA ---
-    const phrases = [
-      { it: 'olasz1.mp3', hu: 'magyar1.mp3' },
-      { it: 'olasz2.mp3', hu: 'magyar2.mp3' }
-    ];
-
-    let index = 0;
-    let looping = false;
-    let playing = false;
-
-    function play() {
-      ctx.resume();
-      playing = true;
-      console.log('PLAY – kifejezés', index + 1);
-    }
-
-    function pause() {
-      playing = false;
-      console.log('PAUSE');
-    }
-
-    function stop() {
-      playing = false;
-      index = 0;
-      console.log('STOP');
-    }
-
-    function next() {
-      index = (index + 1) % phrases.length;
-      console.log('NEXT →', index + 1);
-    }
-
-    function prev() {
-      index = Math.max(0, index - 1);
-      console.log('PREV →', index + 1);
-    }
-
-    function toggleLoop() {
-      looping = !looping;
-      console.log('LOOP:', looping);
-    }
-  
-
-    // --- AUDIO HELPERS ---
-    async function loadBuffer(url) {
-      const res = await fetch(url);
-      const arrayBuffer = await res.arrayBuffer();
-      return await ctx.decodeAudioData(arrayBuffer);
-    }
-
-    let itBuffer = null;
-    let huBuffer = null;
-
-    async function playOnePhrase() {
-      if (!itBuffer || !huBuffer) {
-        itBuffer = await loadBuffer('olasz1.mp3');
-        huBuffer = await loadBuffer('magyar1.mp3');
-      }
-
-      // Olasz bal oldalon
-      const itSource = ctx.createBufferSource();
-      const itPan = ctx.createStereoPanner();
-      itPan.pan.value = -1;
-      itSource.buffer = itBuffer;
-      itSource.connect(itPan).connect(ctx.destination);
-      itSource.start();
-
-      // gondolkodási szünet = olasz hossza
-      const itDuration = itBuffer.duration * 1000;
-
-      setTimeout(() => {
-        // Magyar jobb oldalon
-        const huSource = ctx.createBufferSource();
-        const huPan = ctx.createStereoPanner();
-        huPan.pan.value = 1;
-        huSource.buffer = huBuffer;
-        huSource.connect(huPan).connect(ctx.destination);
-        huSource.start();
-      }, itDuration * 2);
-    }
-
-    // ideiglenesen a Play gomb ehhez kötve
-    function play() {
-      ctx.resume();
-      playOnePhrase();
-    }
-
-</body>
-</html>
+<!doctype html>
+<html lang="hu"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14532d"><title>Magyar–olasz mondatgyakorló</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17211b;background:#f4f7f4}
+*{box-sizing:border-box}body{margin:0;padding:12px;min-height:100vh;display:flex;justify-content:center}main{width:min(760px,100%);margin:auto}
+h1{font-size:clamp(1.35rem,5vw,2rem);margin:.2rem 0}.sub{color:#526258}.panel{background:#fff;border:1px solid #dbe5dc;border-radius:18px;padding:clamp(15px,4vw,25px);box-shadow:0 5px 20px #15351b0b}
+button,.filebtn{border:0;border-radius:12px;padding:12px 15px;font:inherit;font-weight:650;cursor:pointer}.primary{background:#166534;color:#fff}.secondary,.filebtn{background:#e8f2e9;color:#14532d}.ghost{background:#f1f4f1;color:#34443a}
+.row{display:flex;gap:9px;flex-wrap:wrap;margin:13px 0;align-items:center}.filebtn{display:inline-flex;align-items:center;position:relative;overflow:hidden}.filebtn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+details{margin:12px 0;padding:12px;background:#f6f8f6;border-radius:12px}summary{font-weight:650;cursor:pointer}textarea{width:100%;min-height:115px;margin-top:10px;padding:10px;border:1px solid #cbd5cc;border-radius:9px;font:inherit;font-size:16px}
+.progress{display:flex;justify-content:space-between;color:#607166;font-size:.92rem}.track{height:7px;background:#e7eee8;border-radius:99px;overflow:hidden;margin:10px 0 18px}.track div{height:100%;background:#16a34a;width:0}
+#sentence{font-size:clamp(1.25rem,5vw,2rem);line-height:1.45;font-weight:650;margin:24px 0;overflow-wrap:anywhere}#answer{font-size:clamp(1.1rem,4.4vw,1.65rem);line-height:1.5;color:#14532d;margin:16px 0;overflow-wrap:anywhere}.hidden{display:none}.nav{display:flex;gap:9px;margin-top:16px}.nav button{flex:1}#status{margin-top:10px;color:#526258;font-size:.94rem}footer{margin:14px 2px;color:#647267;font-size:.85rem}
+</style></head><body><main>
+<h1>Magyar–olasz mondatgyakorló</h1><div class="sub">Magyar mondat → aktív felidézés → olasz megoldás</div>
+<section class="panel">
+<div class="row">
+<label class="filebtn">TXT kiválasztása<input id="file" type="file" accept=".txt,text/plain"></label>
+<button class="secondary" id="pasteLoad">Beillesztett TXT betöltése</button>
+<button class="ghost" id="shuffle">Keverés</button><button class="ghost" id="restart">Újrakezdés</button>
+</div>
+<details><summary>Ha iPhone-on nem nyílik meg a fájlválasztó: TXT bemásolása</summary>
+<p class="sub">Nyisd meg a mondatpáros TXT-t a Fájlokban, jelöld ki és másold ki a szövegét, majd illeszd be ide:</p>
+<textarea id="paste" placeholder="Magyar mondat - Olasz mondat&#10;Következő magyar mondat - Olasz mondat"></textarea>
+</details>
+<div class="progress"><span id="count">Nincs betöltött mondat</span><span id="pct"></span></div><div class="track"><div id="bar"></div></div>
+<div id="sentence">Válassz ki egy TXT-fájlt, vagy illeszd be a tartalmát.</div><div id="answer" class="hidden" aria-live="polite"></div>
+<div class="row"><button class="primary" id="reveal" disabled>Olasz megoldás felfedése</button><button class="secondary" id="hide" disabled>Elrejtés</button></div>
+<div class="nav"><button class="ghost" id="prev" disabled>← Előző</button><button class="primary" id="next" disabled>Következő →</button></div><div id="status" aria-live="polite"></div>
+</section><footer>Elvárt formátum: soronként egy pár, magyar és olasz mondat között szóköz-kötőjel-szóköz: <code>Jó napot! - Buongiorno!</code></footer>
+</main>
+<script>
+let cards=[],order=[],index=0,shown=false;const $=id=>document.getElementById(id);
+function parse(txt){let out=[];for(let raw of txt.replace(/^\uFEFF/,"").split(/\r?\n/)){let s=raw.trim();if(!s||s.startsWith("#"))continue;let m=s.match(/^(.+?)\s+-\s+(.+)$/);if(m&&m[1].trim()&&m[2].trim())out.push({hu:m[1].trim(),it:m[2].trim()});}return out}
+function load(txt,label){let p=parse(txt);if(!p.length){$("status").textContent="Nem találtam mondatpárokat. A sorok így legyenek: magyar mondat - olasz mondat.";return}cards=p;order=p.map((_,i)=>i);index=0;shown=false;$("status").textContent=`Betöltve: ${label} (${p.length} mondatpár).`;render()}
+function render(){if(!cards.length){$("count").textContent="Nincs betöltött mondat";$("reveal").disabled=$("hide").disabled=$("prev").disabled=$("next").disabled=true;return}
+let c=cards[order[index]];$("count").textContent=`${index+1} / ${cards.length}`;$("pct").textContent=Math.round((index+1)/cards.length*100)+"%";$("bar").style.width=(index+1)/cards.length*100+"%";$("sentence").textContent=c.hu;$("answer").textContent=c.it;$("answer").classList.toggle("hidden",!shown);$("reveal").disabled=shown;$("hide").disabled=!shown;$("prev").disabled=index===0;$("next").disabled=index===cards.length-1;if(!shown)$("status").textContent="Mondd ki olaszul, mielőtt felfednéd a megoldást.";else $("status").textContent="Ellenőrizd, és mondd ki hangosan is."}
+$("file").addEventListener("change",async e=>{let f=e.target.files&&e.target.files[0];if(f){try{
+  const reader=new FileReader();
+  reader.onload=()=>load(String(reader.result||""),f.name);
+  reader.onerror=()=>{$("status").textContent="Az iPhone nem tudta beolvasni ezt a fájlt. Próbáld a TXT bemásolását."};
+  reader.readAsText(f,"UTF-8");
+}catch(err){$("status").textContent="A fájl olvasása nem sikerült. Próbáld a TXT bemásolását."}}});
+$("pasteLoad").onclick=()=>load($("paste").value,"beillesztett szöveg");
+$("reveal").onclick=()=>{shown=true;render()};$("hide").onclick=()=>{shown=false;render()};$("prev").onclick=()=>{if(index){index--;shown=false;render()}};$("next").onclick=()=>{if(index<cards.length-1){index++;shown=false;render()}};$("restart").onclick=()=>{index=0;shown=false;render()};$("shuffle").onclick=()=>{for(let i=order.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}index=0;shown=false;render()};
+render();
+</script></body></html>
