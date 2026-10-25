@@ -1,47 +1,41 @@
 <!doctype html>
-<html lang="hu"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#14532d"><title>Magyar–olasz mondatgyakorló</title>
+<html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nyelvi sziget – Olasz gyakorló V4</title>
 <style>
-:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17211b;background:#f4f7f4}
-*{box-sizing:border-box}body{margin:0;padding:12px;min-height:100vh;display:flex;justify-content:center}main{width:min(760px,100%);margin:auto}
-h1{font-size:clamp(1.35rem,5vw,2rem);margin:.2rem 0}.sub{color:#526258}.panel{background:#fff;border:1px solid #dbe5dc;border-radius:18px;padding:clamp(15px,4vw,25px);box-shadow:0 5px 20px #15351b0b}
-button,.filebtn{border:0;border-radius:12px;padding:12px 15px;font:inherit;font-weight:650;cursor:pointer}.primary{background:#166534;color:#fff}.secondary,.filebtn{background:#e8f2e9;color:#14532d}.ghost{background:#f1f4f1;color:#34443a}
-.row{display:flex;gap:9px;flex-wrap:wrap;margin:13px 0;align-items:center}.filebtn{display:inline-flex;align-items:center;position:relative;overflow:hidden}.filebtn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
-details{margin:12px 0;padding:12px;background:#f6f8f6;border-radius:12px}summary{font-weight:650;cursor:pointer}textarea{width:100%;min-height:115px;margin-top:10px;padding:10px;border:1px solid #cbd5cc;border-radius:9px;font:inherit;font-size:16px}
-.progress{display:flex;justify-content:space-between;color:#607166;font-size:.92rem}.track{height:7px;background:#e7eee8;border-radius:99px;overflow:hidden;margin:10px 0 18px}.track div{height:100%;background:#16a34a;width:0}
-#sentence{font-size:clamp(1.25rem,5vw,2rem);line-height:1.45;font-weight:650;margin:24px 0;overflow-wrap:anywhere}#answer{font-size:clamp(1.1rem,4.4vw,1.65rem);line-height:1.5;color:#14532d;margin:16px 0;overflow-wrap:anywhere}.hidden{display:none}.nav{display:flex;gap:9px;margin-top:16px}.nav button{flex:1}#status{margin-top:10px;color:#526258;font-size:.94rem}footer{margin:14px 2px;color:#647267;font-size:.85rem}
-</style></head><body><main>
-<h1>Magyar–olasz mondatgyakorló</h1><div class="sub">Magyar mondat → aktív felidézés → olasz megoldás</div>
-<section class="panel">
-<div class="row">
-<label class="filebtn">TXT kiválasztása<input id="file" type="file" accept=".txt,text/plain"></label>
-<button class="secondary" id="pasteLoad">Beillesztett TXT betöltése</button>
-<button class="ghost" id="shuffle">Keverés</button><button class="ghost" id="restart">Újrakezdés</button>
-</div>
-<details><summary>Ha iPhone-on nem nyílik meg a fájlválasztó: TXT bemásolása</summary>
-<p class="sub">Nyisd meg a mondatpáros TXT-t a Fájlokban, jelöld ki és másold ki a szövegét, majd illeszd be ide:</p>
-<textarea id="paste" placeholder="Magyar mondat - Olasz mondat&#10;Következő magyar mondat - Olasz mondat"></textarea>
-</details>
-<div class="progress"><span id="count">Nincs betöltött mondat</span><span id="pct"></span></div><div class="track"><div id="bar"></div></div>
-<div id="sentence">Válassz ki egy TXT-fájlt, vagy illeszd be a tartalmát.</div><div id="answer" class="hidden" aria-live="polite"></div>
-<div class="row"><button class="primary" id="reveal" disabled>Olasz megoldás felfedése</button><button class="secondary" id="hide" disabled>Elrejtés</button></div>
-<div class="nav"><button class="ghost" id="prev" disabled>← Előző</button><button class="primary" id="next" disabled>Következő →</button></div><div id="status" aria-live="polite"></div>
-</section><footer>Elvárt formátum: soronként egy pár, magyar és olasz mondat között szóköz-kötőjel-szóköz: <code>Jó napot! - Buongiorno!</code></footer>
+body{font:16px/1.5 system-ui;margin:0;background:#f2f5f7;color:#1b2733}header{background:#243b53;color:white;padding:18px}main{max-width:850px;margin:20px auto;padding:0 14px}.box{background:white;border:1px solid #d8e1e8;border-radius:14px;padding:18px;margin:12px 0}.row{display:flex;gap:12px;flex-wrap:wrap}.row label{flex:1;min-width:190px}input,select,button{font:inherit}input{max-width:100%}button{border:0;border-radius:9px;background:#176b87;color:white;padding:10px 14px;cursor:pointer;margin:4px}button.alt{background:#e8edf1;color:#243b53}.prompt{text-align:center;font-size:clamp(1.3rem,4vw,2rem);font-weight:700;margin:28px 0}.answer{text-align:center;font-size:1.2rem;border-top:1px solid #ddd;padding:16px}.muted{color:#647482;font-size:.9rem}.hidden{display:none}.center{text-align:center}
+</style></head><body>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés magyarul és olaszul, saját TXT-vel és MP3-akkal</div></header>
+<main>
+<section class="box"><h3>Tananyag betöltése</h3><p class="muted">TXT: soronként „magyar mondat - olasz mondat”. A hangfájlok neve 01.mp3, 02.mp3…; külön válaszd ki az L1 (magyar) és L2 (olasz) fájlokat.</p>
+<div class="row"><label>TXT<br><input id="txt" type="file" accept=".txt"></label><label>L1 magyar MP3-ak<br><input id="l1" type="file" accept="audio/*" multiple></label><label>L2 olasz MP3-ak<br><input id="l2" type="file" accept="audio/*" multiple></label></div>
+<div class="row"><label>Magyar hang sebessége: <strong id="l1Val">100%</strong><br><input id="l1Speed" type="range" min="0.6" max="1.25" step="0.05" value="1"></label><label>Olasz hang sebessége: <strong id="l2Val">80%</strong><br><input id="l2Speed" type="range" min="0.6" max="1.25" step="0.05" value="0.8"></label></div><p class="muted">A sebesség csak a lejátszást módosítja, az MP3-fájlokat nem írja át.</p>
+<div class="row"><label>Irány<br><select id="dir"><option value="hu-it">Magyar → olasz</option><option value="it-hu">Olasz → magyar</option><option value="mix">Vegyes</option></select></label><label>Tananyag mód<br><select id="mode"><option value="all">Összes mondat</option><option value="due">Esedékes ismétlés</option></select></label></div>
+<button id="load">Betöltés</button><button class="alt" id="clear">Haladás törlése</button><p id="status" class="muted">Válassz tananyagot.</p></section>
+<section id="study" class="box hidden"><div class="muted"><span id="island"></span> · <span id="count"></span></div><div class="prompt" id="question"></div><div class="center"><button class="alt" id="qAudio">🔊 Kérdés hangja</button><button id="show">Válasz felfedése</button></div><div id="answrap" class="hidden"><div id="answer" class="answer"></div><div class="center"><button class="alt" id="aAudio">🔊 Válasz hangja</button><p class="muted">Mennyire sikerült felidézni?</p><button style="background:#a74343" data-rate="again">Nem ment</button><button class="alt" data-rate="hard">Nehéz</button><button style="background:#237a52" data-rate="good">Jól ment</button><button style="background:#237a52" data-rate="easy">Könnyű</button></div></div><div class="center"><button class="alt" id="prev">← Előző</button><button class="alt" id="next">Következő →</button><button class="alt" id="shuffle">Keverés</button></div></section>
+<section class="box"><h3>Mentés</h3><p class="muted">Haladás ebben a böngészőben tárolódik. Más eszközre jelenleg JSON-fájllal vihető át; a felhős szinkron a következő fejlesztési lépés.</p><button class="alt" id="export">Haladás exportálása</button><label class="muted">JSON visszatöltése <input id="import" type="file" accept=".json"></label></section>
 </main>
 <script>
-let cards=[],order=[],index=0,shown=false;const $=id=>document.getElementById(id);
-function parse(txt){let out=[];for(let raw of txt.replace(/^\uFEFF/,"").split(/\r?\n/)){let s=raw.trim();if(!s||s.startsWith("#"))continue;let m=s.match(/^(.+?)\s+-\s+(.+)$/);if(m&&m[1].trim()&&m[2].trim())out.push({hu:m[1].trim(),it:m[2].trim()});}return out}
-function load(txt,label){let p=parse(txt);if(!p.length){$("status").textContent="Nem találtam mondatpárokat. A sorok így legyenek: magyar mondat - olasz mondat.";return}cards=p;order=p.map((_,i)=>i);index=0;shown=false;$("status").textContent=`Betöltve: ${label} (${p.length} mondatpár).`;render()}
-function render(){if(!cards.length){$("count").textContent="Nincs betöltött mondat";$("reveal").disabled=$("hide").disabled=$("prev").disabled=$("next").disabled=true;return}
-let c=cards[order[index]];$("count").textContent=`${index+1} / ${cards.length}`;$("pct").textContent=Math.round((index+1)/cards.length*100)+"%";$("bar").style.width=(index+1)/cards.length*100+"%";$("sentence").textContent=c.hu;$("answer").textContent=c.it;$("answer").classList.toggle("hidden",!shown);$("reveal").disabled=shown;$("hide").disabled=!shown;$("prev").disabled=index===0;$("next").disabled=index===cards.length-1;if(!shown)$("status").textContent="Mondd ki olaszul, mielőtt felfednéd a megoldást.";else $("status").textContent="Ellenőrizd, és mondd ki hangosan is."}
-$("file").addEventListener("change",async e=>{let f=e.target.files&&e.target.files[0];if(f){try{
-  const reader=new FileReader();
-  reader.onload=()=>load(String(reader.result||""),f.name);
-  reader.onerror=()=>{$("status").textContent="Az iPhone nem tudta beolvasni ezt a fájlt. Próbáld a TXT bemásolását."};
-  reader.readAsText(f,"UTF-8");
-}catch(err){$("status").textContent="A fájl olvasása nem sikerült. Próbáld a TXT bemásolását."}}});
-$("pasteLoad").onclick=()=>load($("paste").value,"beillesztett szöveg");
-$("reveal").onclick=()=>{shown=true;render()};$("hide").onclick=()=>{shown=false;render()};$("prev").onclick=()=>{if(index){index--;shown=false;render()}};$("next").onclick=()=>{if(index<cards.length-1){index++;shown=false;render()}};$("restart").onclick=()=>{index=0;shown=false;render()};$("shuffle").onclick=()=>{for(let i=order.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}index=0;shown=false;render()};
-render();
+(()=>{const $=id=>document.getElementById(id);let pairs=[],l1=new Map(),l2=new Map(),order=[],pos=0,key='',data={},dir='hu-it';
+const idx=f=>{let m=f.name.match(/^(\d+)\.(mp3|m4a|wav|ogg|aac)$/i);return m?+m[1]:null};
+function parse(t){return t.split(/\r?\n/).map(s=>s.trim()).filter(s=>s&&!s.startsWith('#')&&!s.startsWith('//')).map((s,i)=>{let m=s.match(/^(.+?)\s+-\s+(.+)$/);if(!m)throw Error('Hibás TXT-sor '+(i+1)+': '+s);return{hu:m[1].trim(),it:m[2].trim()}})}
+function save(){if(!key)return;localStorage.setItem('nyelvisziget:'+key,JSON.stringify(data));localStorage.setItem('nyelvisziget-position:'+key,String(pos))}
+function savePosition(){if(key)localStorage.setItem('nyelvisziget-position:'+key,String(pos))}
+function saveSettings(){localStorage.setItem('nyelvisziget-settings',JSON.stringify({direction:$('dir').value,mode:$('mode').value,l1Speed:$('l1Speed').value,l2Speed:$('l2Speed').value}))}
+function loadSettings(){try{const s=JSON.parse(localStorage.getItem('nyelvisziget-settings')||'{}');if(s.direction)$('dir').value=s.direction;if(s.mode)$('mode').value=s.mode;if(s.l1Speed)$('l1Speed').value=s.l1Speed;if(s.l2Speed)$('l2Speed').value=s.l2Speed}catch{}}
+
+function item(i){return data[i]||{due:0,interval:0}}
+function makeOrder(){order=pairs.map((_,i)=>i);if($('mode').value==='due')order=order.filter(i=>item(i).due<=Date.now());pos=0;if($('mode').value==='due'&&!order.length)$('status').textContent='Most nincs esedékes ismétlés. Válaszd az „Összes mondat” módot, ha tovább szeretnél gyakorolni.'}
+function audio(i,lang){let f=(lang==='hu'?l1:l2).get(i+1);if(!f){$('status').textContent='Ehhez a mondathoz nincs meg a kiválasztott hangfájl.';return}let a=new Audio(URL.createObjectURL(f));a.playbackRate=Number($(lang==='hu'?'l1Speed':'l2Speed').value);a.addEventListener('ended',()=>URL.revokeObjectURL(a.src),{once:true});a.play().catch(()=>{$('status').textContent='Nem sikerült lejátszani a hangot.'})}
+function render(){if(!order.length){$('study').classList.add('hidden');return}$('study').classList.remove('hidden');let i=order[pos],p=pairs[i];dir=$('dir').value==='mix'?(Math.random()<.5?'hu-it':'it-hu'):$('dir').value;$('question').textContent=dir==='hu-it'?p.hu:p.it;$('answer').textContent=dir==='hu-it'?p.it:p.hu;$('answrap').classList.add('hidden');$('show').classList.remove('hidden');$('count').textContent=(pos+1)+' / '+order.length+' · '+(i+1)+'. mondat';$('island').textContent=key;savePosition()}
+function advance(){if(pos<order.length-1){pos++;render()}else $('status').textContent='A gyakorlási kör végére értél.'}
+function updateSpeedLabels(){$('l1Val').textContent=Math.round(Number($('l1Speed').value)*100)+'%';$('l2Val').textContent=Math.round(Number($('l2Speed').value)*100)+'%'}$('l1Speed').addEventListener('input',updateSpeedLabels);$('l2Speed').addEventListener('input',updateSpeedLabels);updateSpeedLabels();
+$('load').onclick=async()=>{let f=$('txt').files[0];if(!f){$('status').textContent='Válaszd ki a TXT-t!';return}try{pairs=parse(await f.text());l1.clear();l2.clear();for(let x of $('l1').files){let n=idx(x);if(n)l1.set(n,x)}for(let x of $('l2').files){let n=idx(x);if(n)l2.set(n,x)}key=f.name.replace(/\.[^.]+$/,'');data=JSON.parse(localStorage.getItem('nyelvisziget:'+key)||'{}');makeOrder();const savedPos=Number(localStorage.getItem('nyelvisziget-position:'+key)||'0');pos=Math.min(Math.max(0,savedPos),Math.max(0,order.length-1));let miss=(map)=>pairs.map((_,i)=>i+1).filter(n=>!map.has(n));$('status').textContent=`Betöltve ${pairs.length} pár. L1: ${l1.size}/${pairs.length}; L2: ${l2.size}/${pairs.length}. Hiányzó L1: ${miss(l1).join(', ')||'nincs'}; L2: ${miss(l2).join(', ')||'nincs'}.`;render()}catch(e){$('status').textContent=e.message}};
+$('show').onclick=()=>{$('answrap').classList.remove('hidden');$('show').classList.add('hidden')};
+$('qAudio').onclick=()=>audio(order[pos],dir==='hu-it'?'hu':'it');$('aAudio').onclick=()=>audio(order[pos],dir==='hu-it'?'it':'hu');
+$('next').onclick=()=>{advance();savePosition()};$('prev').onclick=()=>{if(pos){pos--;render();savePosition()}};$('shuffle').onclick=()=>{order.sort(()=>Math.random()-.5);pos=0;render();savePosition()};
+$('mode').onchange=()=>{saveSettings();if(pairs.length){makeOrder();render()}};$('dir').onchange=()=>{saveSettings();if(pairs.length)render()};$('l1Speed').oninput=()=>{saveSettings();updateSpeedLabels()};$('l2Speed').oninput=()=>{saveSettings();updateSpeedLabels()};loadSettings();updateSpeedLabels();
+document.querySelectorAll('[data-rate]').forEach(b=>b.onclick=()=>{let i=order[pos],v=b.dataset.rate,x=item(i),days={hard:1,good:x.interval?Math.max(2,Math.round(x.interval*2)):1,easy:x.interval?Math.max(4,Math.round(x.interval*2.5)):4}[v];x.interval=days;x.due=Date.now()+(v==='again'?10*60000:days*86400000);x.reps=(x.reps||0)+1;x.last=v;x.lastReviewed=Date.now();data[i]=x;save();advance();savePosition()});
+$('clear').onclick=()=>{if(key&&confirm('Törlöd ennek a szigetnek a mentett haladását?')){data={};save();makeOrder();render();$('status').textContent='Haladás törölve.'}};
+$('export').onclick=()=>{if(!key)return alert('Előbb tölts be egy szigetet.');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({island:key,progress:data},null,2)],{type:'application/json'}));a.download=key+'-haladas.json';a.click()};
+$('import').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(d.progress&&key){data=d.progress;save();makeOrder();render();$('status').textContent='Haladás visszatöltve.'}}catch{$('status').textContent='Nem sikerült a JSON-t beolvasni.'}};
+})();
 </script></body></html>
