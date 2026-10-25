@@ -21,7 +21,7 @@ body{font:16px/1.5 system-ui;margin:0;background:#f2f5f7;color:#1b2733}header{ba
 // A két értéket a Supabase Connect ablakából másold ide. Csak a Publishable key használható, secret/service_role kulcs soha.
 const SUPABASE_URL='https://iorhkdolryppkxoacuqa.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_a8FqrmHCXMgJRTqsDJpNaw_Kyj63iZa';
-let client=null,session=null,pairs=[],l1=new Map(),l2=new Map(),order=[],pos=0,key='',data={},dir='hu-it',cloudBusy=false;
+let client=null,session=null,pairs=[],l1=new Map(),l2=new Map(),order=[],pos=0,key='',data={},dir='hu-it',cloudBusy=false,cloudSaveQueued=false;
 const BUCKET='island-library';
 const configured=SUPABASE_URL.startsWith('https://')&&SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
 if(configured&&window.supabase){client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);$('authStatus').textContent='Supabase-kapcsolat beállítva. Jelentkezz be vagy hozz létre fiókot.';}else $('authStatus').textContent='A kapcsolat még nincs beállítva: az index.html-ben a két Supabase-adatot ki kell tölteni.';
@@ -39,8 +39,57 @@ function render(){if(!order.length){$('study').classList.add('hidden');return}$(
 function advance(){if(pos<order.length-1){pos++;render()}else $('status').textContent='A gyakorlási kör végére értél.'}
 function mergeProgress(local,cloud){const out={...(cloud||{})};for(const [k,v] of Object.entries(local||{})){const cv=out[k];if(!cv||Number(v.lastReviewed||0)>=Number(cv.lastReviewed||0))out[k]=v}return out}
 function setAuthUI(){const signed=!!session;$('signout').classList.toggle('hidden',!signed);$('signin').classList.toggle('hidden',signed);$('signup').classList.toggle('hidden',signed);$('email').disabled=signed;$('password').disabled=signed;if(signed){$('authStatus').textContent='Bejelentkezve: '+session.user.email+'. A felhőszinkronizálás aktív.';listLibrary();if(key)syncFromCloud()}else if(client)$('authStatus').textContent='Nincs bejelentkezve. A helyi mentés továbbra is működik.'}
-async function syncToCloud(){if(!client||!session||!key||cloudBusy)return;cloudBusy=true;try{const {error}=await client.from('learning_progress').upsert({user_id:session.user.id,island_id:key,progress:{...data,__position:pos},updated_at:new Date().toISOString()},{onConflict:'user_id,island_id'});if(error)throw error;$('authStatus').textContent='Bejelentkezve: '+session.user.email+'. A haladás elmentve a felhőbe.'}catch(e){$('authStatus').textContent='Felhőmentési hiba: '+e.message+'. A helyi mentés megmaradt.'}finally{cloudBusy=false}}
-async function syncFromCloud(){if(!client||!session||!key||cloudBusy)return;cloudBusy=true;try{const {data:row,error}=await client.from('learning_progress').select('progress').eq('user_id',session.user.id).eq('island_id',key).maybeSingle();if(error)throw error;if(row&&row.progress){const cloudPos=Number.isFinite(Number(row.progress.__position))?Number(row.progress.__position):Number(localStorage.getItem('nyelvisziget-position:'+key)||'0');const cloudData={...row.progress};delete cloudData.__position;data=mergeProgress(data,cloudData);localStorage.setItem('nyelvisziget:'+key,JSON.stringify(data));$('status').textContent='A felhőből származó tanulási állapot és mondatpozíció betöltve.';makeOrder();pos=Math.min(Math.max(0,cloudPos),Math.max(0,order.length-1));render()}else{const {error:upErr}=await client.from('learning_progress').upsert({user_id:session.user.id,island_id:key,progress:{...data,__position:pos},updated_at:new Date().toISOString()},{onConflict:'user_id,island_id'});if(upErr)throw upErr;$('status').textContent='A helyi haladás elmentve a felhőbe.'}$('authStatus').textContent='Bejelentkezve: '+session.user.email+'. A szinkronizálás aktív.'}catch(e){$('authStatus').textContent='Felhőszinkronizálási hiba: '+e.message+'. A helyi mentés megmaradt.'}finally{cloudBusy=false}}
+async function syncToCloud(){
+ if(!client||!session||!key)return;
+ if(cloudBusy){cloudSaveQueued=true;return}
+ cloudBusy=true;
+ try{
+  do{
+   cloudSaveQueued=false;
+   const snapshot={...data,__position:pos};
+   const {error}=await client.from('learning_progress').upsert(
+    {user_id:session.user.id,island_id:key,progress:snapshot,updated_at:new Date().toISOString()},
+    {onConflict:'user_id,island_id'}
+   );
+   if(error)throw error;
+  }while(cloudSaveQueued);
+  $('authStatus').textContent='Bejelentkezve: '+session.user.email+'. A haladás elmentve a felhőbe.';
+ }catch(e){
+  $('authStatus').textContent='Felhőmentési hiba: '+e.message+'. A helyi mentés megmaradt.';
+ }finally{
+  cloudBusy=false;
+  if(cloudSaveQueued){cloudSaveQueued=false;syncToCloud()}
+ }
+}
+async function syncFromCloud(){
+ if(!client||!session||!key||cloudBusy)return;
+ cloudBusy=true;
+ try{
+  const {data:row,error}=await client.from('learning_progress').select('progress').eq('user_id',session.user.id).eq('island_id',key).maybeSingle();
+  if(error)throw error;
+  if(row&&row.progress){
+   const cloudPos=Number.isFinite(Number(row.progress.__position))?Number(row.progress.__position):Number(localStorage.getItem('nyelvisziget-position:'+key)||'0');
+   const cloudData={...row.progress};delete cloudData.__position;
+   const localData=JSON.parse(localStorage.getItem('nyelvisziget:'+key)||'{}');
+   data=mergeProgress(localData,cloudData);
+   localStorage.setItem('nyelvisziget:'+key,JSON.stringify(data));
+   pos=Math.min(Math.max(0,cloudPos),Math.max(0,order.length-1));
+   localStorage.setItem('nyelvisziget-position:'+key,String(pos));
+   $('status').textContent='A felhőből származó tanulási állapot és mondatpozíció betöltve.';
+   render();
+  }else{
+   const {error:upErr}=await client.from('learning_progress').upsert(
+    {user_id:session.user.id,island_id:key,progress:{...data,__position:pos},updated_at:new Date().toISOString()},
+    {onConflict:'user_id,island_id'}
+   );
+   if(upErr)throw upErr;
+   $('status').textContent='A helyi haladás elmentve a felhőbe.';
+  }
+  $('authStatus').textContent='Bejelentkezve: '+session.user.email+'. A szinkronizálás aktív.';
+ }catch(e){
+  $('authStatus').textContent='Felhőszinkronizálási hiba: '+e.message+'. A helyi mentés megmaradt.';
+ }finally{cloudBusy=false}
+}
 function slugify(s){return s.trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
 function safeName(s){return s.replace(/[^a-zA-Z0-9._-]/g,'_')}
 async function listLibrary(){if(!client||!session){$('libStatus').textContent='A könyvtárhoz előbb jelentkezz be.';return}try{$('libStatus').textContent='Könyvtár betöltése…';const {data,error}=await client.storage.from(BUCKET).list('',{limit:100,sortBy:{column:'name',order:'asc'}});if(error)throw error;const folders=(data||[]).filter(x=>x.id===null||x.metadata===null).filter(x=>x.name&&!x.name.startsWith('.'));const host=$('islandList');host.innerHTML='';if(!folders.length){$('libStatus').textContent='Még nincs feltöltött sziget. Add hozzá az elsőt fent.';return}folders.forEach(f=>{const row=document.createElement('div');row.className='cloud';row.style.display='flex';row.style.alignItems='center';row.style.justifyContent='space-between';row.style.gap='8px';const label=document.createElement('strong');label.textContent=f.name.replace(/-/g,' ');const b=document.createElement('button');b.textContent='Megnyitás';b.onclick=()=>loadCloudIsland(f.name);row.append(label,b);host.append(row)});$('libStatus').textContent='Elérhető nyelvi szigetek: '+folders.length+'.';}catch(e){$('libStatus').textContent='Könyvtárhiba: '+e.message+'. Ellenőrizd a Storage-bucketet és a hozzáférési szabályokat.'}}
