@@ -120,7 +120,23 @@ async function loadDailyReview(){
   for(const r of results){
    const row=document.createElement('div');row.className='cloud';row.style.display='flex';row.style.alignItems='center';row.style.justifyContent='space-between';row.style.gap='8px';row.style.flexWrap='wrap';
    const info=document.createElement('div');const title=document.createElement('strong');title.textContent=r.slug.replace(/-/g,' ');const sub=document.createElement('div');sub.className='muted';sub.textContent=r.due+' esedékes mondat';info.append(title,sub);
-   const btn=document.createElement('button');btn.textContent='Ismétlés indítása';btn.onclick=async()=>{await loadCloudIsland(r.slug);$('mode').value='due';makeOrder();pos=0;render();if(order.length)$('status').textContent='Ismétlés: '+r.slug.replace(/-/g,' ')+'. '+order.length+' esedékes mondat.';else $('status').textContent='Ebben a szigetben most nincs esedékes mondat.';};row.append(info,btn);host.append(row);
+   const btn=document.createElement('button');btn.textContent='Ismétlés indítása';btn.onclick=async()=>{
+   btn.disabled=true;btn.textContent='Betöltés…';
+   try{
+    await loadCloudIsland(r.slug);
+    if(!pairs.length||key!==r.slug)throw new Error('A sziget tananyaga nem töltődött be. '+$('libStatus').textContent);
+    $('mode').value='due';
+    // Reload progress from cloud after the island key and sentence list are set.
+    await syncFromCloud();
+    makeOrder();
+    // Build due order explicitly from the latest loaded progress.
+    order=pairs.map((_,i)=>i).filter(i=>Number(item(i).due||0)<=Date.now()&&Number(item(i).lastReviewed||0)>0);
+    pos=0;
+    if(order.length){render();$('status').textContent='Ismétlés: '+r.slug.replace(/-/g,' ')+'. '+order.length+' esedékes mondat.';$('study').scrollIntoView({behavior:'smooth',block:'start'});}
+    else {$('status').textContent='A lista szerint volt esedékes mondat, de a sziget betöltése után nem található esedékes értékelés. Frissítsd a Mai ismétlések listát.'; $('dailyStatus').textContent='A sziget haladása betöltődött, de nem találtunk esedékes mondatot. Kattints a frissítésre.';}
+   }catch(e){$('dailyStatus').textContent='Nem sikerült elindítani az ismétlést: '+e.message;}
+   finally{btn.disabled=false;btn.textContent='Ismétlés indítása';}
+  };row.append(info,btn);host.append(row);
   }
   $('dailyStatus').textContent='Esedékes ismétlést tartalmazó szigetek: '+results.length+'. A lista a felhőben elmentett értékelések alapján készült.';
  }catch(e){$('dailyStatus').textContent='Az ismétlési lista nem tölthető be: '+e.message}
