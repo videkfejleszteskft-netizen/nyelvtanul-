@@ -116,7 +116,7 @@ async function loadDailyReview(){
    if(due>0)results.push({slug,due,total});
   }
   results.sort((a,b)=>a.slug.localeCompare(b.slug));
-  if(!results.length){$('dailyStatus').textContent='Most nincs esedékes, korábban értékelt mondat. Gyakorolj egy szigetet, és értékeld a mondatokat; ezután itt megjelennek.';return}
+  if(!results.length){const reviewed=(rows||[]).reduce((n,row)=>n+Object.entries(row.progress||{}).filter(([k,v])=>k!=='__position'&&/^\\d+$/.test(k)&&v&&typeof v==='object'&&v.lastReviewed).length,0);$('dailyStatus').textContent='Most nincs esedékes mondat a felhőben. Felhőben tárolt, már értékelt mondatok: '+reviewed+'. A „Nem ment” értékelés azonnal esedékessé teszi a mondatot.';return}
   for(const r of results){
    const row=document.createElement('div');row.className='cloud';row.style.display='flex';row.style.alignItems='center';row.style.justifyContent='space-between';row.style.gap='8px';row.style.flexWrap='wrap';
    const info=document.createElement('div');const title=document.createElement('strong');title.textContent=r.slug.replace(/-/g,' ');const sub=document.createElement('div');sub.className='muted';sub.textContent=r.due+' esedékes mondat';info.append(title,sub);
@@ -137,7 +137,19 @@ $('show').onclick=()=>{$('answrap').classList.remove('hidden');$('show').classLi
 $('qAudio').onclick=()=>audio(order[pos],dir==='hu-it'?'hu':'it');$('aAudio').onclick=()=>audio(order[pos],dir==='hu-it'?'it':'hu');
 $('next').onclick=()=>{advance();savePosition()};$('prev').onclick=()=>{if(pos){pos--;render();savePosition()}};$('shuffle').onclick=()=>{order.sort(()=>Math.random()-.5);pos=0;render();savePosition()};
 $('mode').onchange=()=>{saveSettings();if(pairs.length){makeOrder();render()}};$('dir').onchange=()=>{saveSettings();if(pairs.length)render()};$('l1Speed').oninput=()=>{saveSettings();updateSpeedLabels()};$('l2Speed').oninput=()=>{saveSettings();updateSpeedLabels()};loadSettings();updateSpeedLabels();
-document.querySelectorAll('[data-rate]').forEach(b=>b.onclick=()=>{let i=order[pos],v=b.dataset.rate,x=item(i),days={hard:1,good:x.interval?Math.max(2,Math.round(x.interval*2)):1,easy:x.interval?Math.max(4,Math.round(x.interval*2.5)):4}[v];x.interval=days;x.due=Date.now()+(v==='again'?10*60000:days*86400000);x.reps=(x.reps||0)+1;x.last=v;x.lastReviewed=Date.now();data[i]=x;advance();save();savePosition()});
+document.querySelectorAll('[data-rate]').forEach(b=>b.onclick=async()=>{
+ let i=order[pos],v=b.dataset.rate,x=item(i),now=Date.now();
+ const days={hard:1,good:x.interval?Math.max(2,Math.round(x.interval*2)):1,easy:x.interval?Math.max(4,Math.round(x.interval*2.5)):4};
+ x.interval=days[v]||0;
+ // "Nem ment": legyen azonnal újra esedékes, hogy az aktív gyakorlásban visszatérhessen.
+ x.due=v==='again'?now:now+(x.interval*86400000);
+ x.reps=(x.reps||0)+1;x.last=v;x.lastReviewed=now;data[i]=x;
+ localStorage.setItem('nyelvisziget:'+key,JSON.stringify(data));
+ advance();localStorage.setItem('nyelvisziget-position:'+key,String(pos));
+ await syncToCloud();
+ $('status').textContent=v==='again'?'Elmentve. Ez a mondat azonnal ismétlésre esedékes.':'Értékelés elmentve. Következő ismétlés: '+new Date(x.due).toLocaleString();
+ await loadDailyReview();
+});
 $('clear').onclick=()=>{if(key&&confirm('Törlöd ennek a szigetnek a mentett haladását?')){data={};save();makeOrder();render();$('status').textContent='Haladás törölve.'}};
 $('export').onclick=()=>{if(!key)return alert('Előbb tölts be egy szigetet.');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({island:key,progress:data},null,2)],{type:'application/json'}));a.download=key+'-haladas.json';a.click()};
 $('import').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(d.progress&&key){data=d.progress;save();makeOrder();render();$('status').textContent='Haladás visszatöltve.'}}catch{$('status').textContent='Nem sikerült a JSON-t beolvasni.'}};
