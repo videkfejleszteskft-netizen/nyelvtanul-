@@ -37,7 +37,7 @@ function item(i){return data[i]||{due:0,interval:0}}
 function makeOrder(){order=pairs.map((_,i)=>i);if($('mode').value==='due')order=order.filter(i=>item(i).due<=Date.now());pos=0;if($('mode').value==='due'&&!order.length)$('status').textContent='Most nincs esedékes ismétlés. Válaszd az „Összes mondat” módot, ha tovább szeretnél gyakorolni.'}
 function audio(i,lang){let f=(lang==='hu'?l1:l2).get(i+1);if(!f){$('status').textContent='Ehhez a mondathoz nincs meg a kiválasztott hangfájl.';return}let a=new Audio(URL.createObjectURL(f));a.playbackRate=Number($(lang==='hu'?'l1Speed':'l2Speed').value);a.addEventListener('ended',()=>URL.revokeObjectURL(a.src),{once:true});a.play().catch(()=>{$('status').textContent='Nem sikerült lejátszani a hangot.'})}
 function render(){if(!order.length){$('study').classList.add('hidden');return}$('study').classList.remove('hidden');let i=order[pos],p=pairs[i];dir=$('dir').value==='mix'?(Math.random()<.5?'hu-it':'it-hu'):$('dir').value;$('question').textContent=dir==='hu-it'?p.hu:p.it;$('answer').textContent=dir==='hu-it'?p.it:p.hu;$('answrap').classList.add('hidden');$('show').classList.remove('hidden');$('count').textContent=(pos+1)+' / '+order.length+' · '+(i+1)+'. mondat';$('island').textContent=key}
-function advance(){if(pos<order.length-1){pos++;render()}else $('status').textContent='A gyakorlási kör végére értél.'}
+function advance(){if(pos<order.length-1){pos++;render();return false} $('study').classList.add('hidden');$('status').textContent='A gyakorlási kör végére értél.';return true}
 function mergeProgress(local,cloud){const out={...(cloud||{})};for(const [k,v] of Object.entries(local||{})){const cv=out[k];if(!cv||Number(v.lastReviewed||0)>=Number(cv.lastReviewed||0))out[k]=v}return out}
 function setAuthUI(){const signed=!!session;$('signout').classList.toggle('hidden',!signed);$('signin').classList.toggle('hidden',signed);$('signup').classList.toggle('hidden',signed);$('email').disabled=signed;$('password').disabled=signed;if(signed){$('authStatus').textContent='Bejelentkezve: '+session.user.email+'. A felhőszinkronizálás aktív.';listLibrary();if(key)syncFromCloud();loadDailyReview()}else if(client)$('authStatus').textContent='Nincs bejelentkezve. A helyi mentés továbbra is működik.'}
 async function syncToCloud(){
@@ -206,10 +206,11 @@ document.querySelectorAll('[data-rate]').forEach(b=>b.onclick=async()=>{
  x.lastReviewed=now;
  data[i]=x;
  localStorage.setItem('nyelvisziget:'+key,JSON.stringify(data));
- advance();
+ const finished=advance();
  localStorage.setItem('nyelvisziget-position:'+key,String(pos));
  await syncToCloud();
- $('status').textContent= v==='again' ? 'Nem ment: a mondat azonnal újrapróbálható.' :
+ $('status').textContent=finished ? 'Az ismétlési kör véget ért. Az utolsó mondat értékelése is elmentve.' :
+   v==='again' ? 'Nem ment: a mondat azonnal újrapróbálható.' :
    v==='hard' ? 'Nehéz: a mondat 10 perc múlva ismét esedékes.' :
    'Értékelés elmentve. Következő ismétlés: '+new Date(x.due).toLocaleString();
  await loadDailyReview();
