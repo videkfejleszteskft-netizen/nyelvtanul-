@@ -1,222 +1,926 @@
 <!doctype html>
-<html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nyelvi sziget – V8.1 tanuló móddal</title>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Nyelvi sziget – V9</title>
+<meta name="theme-color" content="#243b53">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nyelvi sziget">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
 <style>
-body{font:16px/1.5 system-ui;margin:0;background:#f2f5f7;color:#1b2733}header{background:#243b53;color:white;padding:18px}main{max-width:850px;margin:20px auto;padding:0 14px}.box{background:white;border:1px solid #d8e1e8;border-radius:14px;padding:18px;margin:12px 0}.row{display:flex;gap:12px;flex-wrap:wrap}.row label{flex:1;min-width:190px}input,select,button{font:inherit}input{max-width:100%}button{border:0;border-radius:9px;background:#176b87;color:white;padding:10px 14px;cursor:pointer;margin:4px}button.alt{background:#e8edf1;color:#243b53}.prompt{text-align:center;font-size:clamp(1.3rem,4vw,2rem);font-weight:700;margin:28px 0}.answer{text-align:center;font-size:1.2rem;border-top:1px solid #ddd;padding:16px}.muted{color:#647482;font-size:.9rem}.hidden{display:none}.center{text-align:center}
-.authrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.authrow input{flex:1;min-width:190px;padding:9px;border:1px solid #cbd5df;border-radius:8px}.cloud{background:#eef8f4;border:1px solid #cce8dc;padding:10px;border-radius:9px;margin:10px 0}
-</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés magyarul és olaszul, saját TXT-vel és MP3-akkal</div></header>
+body{font:16px/1.5 system-ui,-apple-system,sans-serif;margin:0;background:#f2f5f7;color:#1b2733}
+header{background:#243b53;color:#fff;padding:18px;padding-top:max(18px,env(safe-area-inset-top))}
+header h2{margin:0 0 4px}
+main{max-width:850px;margin:20px auto;padding:0 14px 40px}
+.box{background:#fff;border:1px solid #d8e1e8;border-radius:14px;padding:18px;margin:12px 0}
+.box h3{margin-top:0}
+.row{display:flex;gap:12px;flex-wrap:wrap}.row label{flex:1;min-width:190px}
+input,select,button{font:inherit}input{max-width:100%}
+button{border:0;border-radius:9px;background:#176b87;color:#fff;padding:10px 14px;cursor:pointer;margin:4px}
+button.alt{background:#e8edf1;color:#243b53}button:disabled{opacity:.55;cursor:default}
+.prompt{text-align:center;font-size:clamp(1.3rem,4vw,2rem);font-weight:700;margin:28px 0}
+.answer{text-align:center;font-size:1.2rem;border-top:1px solid #ddd;padding:16px}
+.muted{color:#647482;font-size:.9rem}.hidden{display:none!important}.center{text-align:center}
+.authrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.authrow input{flex:1;min-width:190px;padding:9px;border:1px solid #cbd5df;border-radius:8px}
+.cloud{background:#eef8f4;border:1px solid #cce8dc;padding:10px;border-radius:9px;margin:10px 0}
+.item{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.badge{display:inline-block;font-size:.75rem;padding:1px 7px;border-radius:999px;background:#d7efe4;color:#1d5c40;margin-left:6px;vertical-align:middle}
+.badge.off{background:#eceff2;color:#647482}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{flex:1;min-width:120px;background:#f5f8fa;border:1px solid #e1e8ee;border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.6rem;line-height:1.2}
+.hard{border-bottom:1px solid #edf1f4;padding:7px 0}.hard:last-child{border-bottom:0}
+.rate small{display:block;font-size:.75rem;opacity:.85}
+details summary{cursor:pointer;font-weight:600}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+</head>
+<body>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V9</div></header>
 <main>
-<section class="box"><h3>Felhőszinkronizálás</h3><p class="muted">Jelentkezz be ugyanazzal az e-mail-címmel a számítógépen és az iPhone-on, hogy a tanulási haladásod szinkronizálható legyen.</p><div class="authrow"><input id="email" type="email" autocomplete="email" placeholder="E-mail-cím"><input id="password" type="password" autocomplete="current-password" placeholder="Jelszó"></div><div class="authrow"><button id="signup">Fiók létrehozása</button><button id="signin">Bejelentkezés</button><button id="signout" class="alt hidden">Kijelentkezés</button></div><p id="authStatus" class="muted">A felhőkapcsolat beállításra vár.</p><div class="cloud muted">A TXT- és MP3-fájlokat minden eszközön külön kell kiválasztani. A felhő a mondatok tanulási állapotát menti.</div></section>
-<section class="box"><h3>Nyelvi sziget-könyvtár (felhő)</h3><p class="muted">A nyelvi szigeteket egyszer töltsd fel ide. Ezután a bejelentkezett számítógépen és telefonon is kiválaszthatók. Előbb egyszer be kell állítani a Supabase Storage-t (útmutató a fájl mellett).</p><div class="row"><label>Sziget neve<br><input id="libName" placeholder="pl. Az étteremben"></label><label>TXT tananyag<br><input id="libTxt" type="file" accept=".txt"></label></div><div class="row"><label>L1 magyar hangfájlok<br><input id="libL1" type="file" accept="audio/*" multiple></label><label>L2 olasz hangfájlok<br><input id="libL2" type="file" accept="audio/*" multiple></label></div><button id="uploadIsland">Sziget feltöltése a felhőbe</button><button class="alt" id="refreshLibrary">Könyvtár frissítése</button><p id="libStatus" class="muted">Jelentkezz be a könyvtár használatához.</p><div id="islandList"></div></section>
-<section class="box"><h3>Mai ismétlések</h3><p class="muted">Összegyűjti a felhőben tárolt, mára esedékes mondatokat az összes nyelvi szigetből.</p><button id="loadDailyReview">Mai ismétlések frissítése</button><p id="dailyStatus" class="muted">Jelentkezz be, majd frissítsd az ismétlési listát.</p><div id="dailyList"></div></section>
-<section class="box"><h3>Tananyag betöltése</h3><p class="muted">TXT: soronként „magyar mondat - olasz mondat”. A hangfájlok neve 01.mp3, 02.mp3…; külön válaszd ki az L1 (magyar) és L2 (olasz) fájlokat.</p>
-<div class="row"><label>TXT<br><input id="txt" type="file" accept=".txt"></label><label>L1 magyar MP3-ak<br><input id="l1" type="file" accept="audio/*" multiple></label><label>L2 olasz MP3-ak<br><input id="l2" type="file" accept="audio/*" multiple></label></div>
-<div class="row"><label>Magyar hang sebessége: <strong id="l1Val">100%</strong><br><input id="l1Speed" type="range" min="0.6" max="1.25" step="0.05" value="1"></label><label>Olasz hang sebessége: <strong id="l2Val">80%</strong><br><input id="l2Speed" type="range" min="0.6" max="1.25" step="0.05" value="0.8"></label></div><p class="muted">A sebesség csak a lejátszást módosítja, az MP3-fájlokat nem írja át.</p>
-<div class="row"><label>Irány<br><select id="dir"><option value="hu-it">Magyar → olasz</option><option value="it-hu">Olasz → magyar</option><option value="mix">Vegyes</option></select></label><label>Tananyag mód<br><select id="mode"><option value="learn">Tanulás – szabad gyakorlás</option><option value="all">Összes mondat (értékeléssel)</option><option value="due">Esedékes ismétlés</option></select></label></div>
-<button id="load">Betöltés</button><button id="learnModeBtn" class="alt" type="button">Tanuló mód bekapcsolása</button><button class="alt" id="clear">Haladás törlése</button><p id="modeStatus" class="muted">Tanuló mód: válaszd a „Tanulás – szabad gyakorlás” módot, vagy kapcsold be a gombbal.</p><p id="status" class="muted">Válassz tananyagot.</p></section>
-<section id="study" class="box hidden"><div class="muted"><span id="island"></span> · <span id="count"></span></div><div class="prompt" id="question"></div><div class="center"><button class="alt" id="qAudio">🔊 Kérdés hangja</button><button id="show">Válasz felfedése</button></div><div id="answrap" class="hidden"><div id="answer" class="answer"></div><div class="center"><button class="alt" id="aAudio">🔊 Válasz hangja</button><button class="alt hidden" id="hideAnswer">Válasz elrejtése</button><div id="ratingArea"><p class="muted">Mennyire sikerült felidézni?</p><button style="background:#a74343" data-rate="again">Nem ment</button><button class="alt" data-rate="hard">Nehéz</button><button style="background:#237a52" data-rate="good">Jól ment</button><button style="background:#237a52" data-rate="easy">Könnyű</button></div></div></div><div class="center"><button class="alt" id="prev">← Előző</button><button class="alt" id="next">Következő →</button><button class="alt" id="shuffle">Keverés</button></div></section>
-<section class="box"><h3>Mentés</h3><p class="muted">A haladás helyben is mentődik. Bejelentkezéskor a tanulási állapot a felhővel is szinkronizálódik. A JSON export/import tartalék megoldásként továbbra is használható.</p><button class="alt" id="export">Haladás exportálása</button><label class="muted">JSON visszatöltése <input id="import" type="file" accept=".json"></label></section>
-</main>
-<script>
-(()=>{const $=id=>document.getElementById(id);
-// A két értéket a Supabase Connect ablakából másold ide. Csak a Publishable key használható, secret/service_role kulcs soha.
-const SUPABASE_URL='https://iorhkdolryppkxoacuqa.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY='sb_publishable_a8FqrmHCXMgJRTqsDJpNaw_Kyj63iZa';
-let client=null,session=null,pairs=[],l1=new Map(),l2=new Map(),order=[],pos=0,key='',data={},dir='hu-it',cloudBusy=false,cloudSaveQueued=false;
-const BUCKET='island-library';
-const configured=SUPABASE_URL.startsWith('https://')&&SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
-if(configured&&window.supabase){client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);$('authStatus').textContent='Supabase-kapcsolat beállítva. Jelentkezz be vagy hozz létre fiókot.';}else $('authStatus').textContent='A kapcsolat még nincs beállítva: az index.html-ben a két Supabase-adatot ki kell tölteni.';
-const idx=f=>{let m=f.name.match(/^(\d+)\.(mp3|m4a|wav|ogg|aac)$/i);return m?+m[1]:null};
-function parse(t){return t.split(/\r?\n/).map(s=>s.trim()).filter(s=>s&&!s.startsWith('#')&&!s.startsWith('//')).map((s,i)=>{let m=s.match(/^(.+?)\s+-\s+(.+)$/);if(!m)throw Error('Hibás TXT-sor '+(i+1)+': '+s);return{hu:m[1].trim(),it:m[2].trim()}})}
-function save(){if(!key)return;localStorage.setItem('nyelvisziget:'+key,JSON.stringify(data));localStorage.setItem('nyelvisziget-position:'+key,String(pos));syncToCloud()}
-function savePosition(){if(key){localStorage.setItem('nyelvisziget-position:'+key,String(pos));syncToCloud()}}
-function saveSettings(){localStorage.setItem('nyelvisziget-settings',JSON.stringify({direction:$('dir').value,mode:$('mode').value,l1Speed:$('l1Speed').value,l2Speed:$('l2Speed').value}))}
-function loadSettings(){try{const s=JSON.parse(localStorage.getItem('nyelvisziget-settings')||'{}');if(s.direction)$('dir').value=s.direction;if(s.mode)$('mode').value=s.mode;if(s.l1Speed)$('l1Speed').value=s.l1Speed;if(s.l2Speed)$('l2Speed').value=s.l2Speed}catch{}}
 
-function item(i){return data[i]||{due:0,interval:0}}
-function makeOrder(){order=pairs.map((_,i)=>i);if($('mode').value==='due')order=order.filter(i=>item(i).due<=Date.now());pos=0;if($('mode').value==='due'&&!order.length)$('status').textContent='Most nincs esedékes ismétlés. Válaszd a tanulás vagy az összes mondat módot, ha tovább szeretnél gyakorolni.'}
-function audio(i,lang){let f=(lang==='hu'?l1:l2).get(i+1);if(!f){$('status').textContent='Ehhez a mondathoz nincs meg a kiválasztott hangfájl.';return}let a=new Audio(URL.createObjectURL(f));a.playbackRate=Number($(lang==='hu'?'l1Speed':'l2Speed').value);a.addEventListener('ended',()=>URL.revokeObjectURL(a.src),{once:true});a.play().catch(()=>{$('status').textContent='Nem sikerült lejátszani a hangot.'})}
-function render(){if(!order.length){$('study').classList.add('hidden');return}$('study').classList.remove('hidden');let i=order[pos],p=pairs[i];dir=$('dir').value==='mix'?(Math.random()<.5?'hu-it':'it-hu'):$('dir').value;$('question').textContent=dir==='hu-it'?p.hu:p.it;$('answer').textContent=dir==='hu-it'?p.it:p.hu;$('answrap').classList.add('hidden');$('show').classList.remove('hidden');$('show').textContent='Válasz felfedése';$('hideAnswer').classList.add('hidden');const learnMode=$('mode').value==='learn';$('ratingArea').classList.toggle('hidden',learnMode);$('hideAnswer').classList.toggle('hidden',!learnMode);$('learnModeBtn').textContent=learnMode?'Tanuló mód aktív ✓':'Tanuló mód bekapcsolása';$('modeStatus').textContent=learnMode?'TANULÓ MÓD AKTÍV – a válasz tetszőlegesen felfedhető és elrejthető; nincs értékelés, nem módosul az ismétlési ütemezés.':'Ismétlési mód aktív – az értékelő gombok a válasz felfedése után jelennek meg.';$('count').textContent=(pos+1)+' / '+order.length+' · '+(i+1)+'. mondat';$('island').textContent=key}
-function advance(){if(pos<order.length-1){pos++;render();return false} $('study').classList.add('hidden');$('status').textContent='A gyakorlási kör végére értél.';return true}
-function mergeProgress(local,cloud){const out={...(cloud||{})};for(const [k,v] of Object.entries(local||{})){const cv=out[k];if(!cv||Number(v.lastReviewed||0)>=Number(cv.lastReviewed||0))out[k]=v}return out}
-function setAuthUI(){const signed=!!session;$('signout').classList.toggle('hidden',!signed);$('signin').classList.toggle('hidden',signed);$('signup').classList.toggle('hidden',signed);$('email').disabled=signed;$('password').disabled=signed;if(signed){$('authStatus').textContent='Bejelentkezve: '+session.user.email+'. A felhőszinkronizálás aktív.';listLibrary();if(key)syncFromCloud();loadDailyReview()}else if(client)$('authStatus').textContent='Nincs bejelentkezve. A helyi mentés továbbra is működik.'}
-async function syncToCloud(){
- if(!client||!session||!key)return;
- if(cloudBusy){cloudSaveQueued=true;return}
- cloudBusy=true;
- try{
-  do{
-   cloudSaveQueued=false;
-   const snapshot={...data,__position:pos};
-   const {error}=await client.from('learning_progress').upsert(
-    {user_id:session.user.id,island_id:key,progress:snapshot,updated_at:new Date().toISOString()},
-    {onConflict:'user_id,island_id'}
-   );
-   if(error)throw error;
-  }while(cloudSaveQueued);
-  $('authStatus').textContent='Bejelentkezve: '+session.user.email+'. A haladás elmentve a felhőbe.';
- }catch(e){
-  $('authStatus').textContent='Felhőmentési hiba: '+e.message+'. A helyi mentés megmaradt.';
- }finally{
-  cloudBusy=false;
-  if(cloudSaveQueued){cloudSaveQueued=false;syncToCloud()}
- }
+<section class="box"><h3>Statisztika</h3>
+ <div class="stats">
+  <div class="stat"><b id="stStreak">0</b>napos sorozat</div>
+  <div class="stat"><b id="stToday">0</b>ismétlés ma</div>
+  <div class="stat"><b id="stGood">0</b>ment jól ma</div>
+  <div class="stat"><b id="stNew">0</b>új mondat ma</div>
+ </div>
+ <p id="stInfo" class="muted"></p>
+</section>
+
+<section class="box"><h3>Felhőszinkronizálás</h3>
+ <p class="muted">Jelentkezz be ugyanazzal az e-mail-címmel a számítógépen és az iPhone-on.</p>
+ <div class="authrow"><input id="email" type="email" autocomplete="email" placeholder="E-mail-cím"><input id="password" type="password" autocomplete="current-password" placeholder="Jelszó"></div>
+ <div class="authrow"><button id="signup">Fiók létrehozása</button><button id="signin">Bejelentkezés</button><button id="signout" class="alt hidden">Kijelentkezés</button></div>
+ <p id="authStatus" class="muted">A felhőkapcsolat beállításra vár.</p>
+ <p id="netStatus" class="muted"></p>
+</section>
+
+<section class="box"><h3>Mai ismétlések</h3>
+ <p class="muted">Esedékes ismétlések és a napi limitig új mondatok az összes szigetből. A nap hajnali 4-kor fordul.</p>
+ <button id="loadDailyReview">Lista frissítése</button><button id="dailyAll" class="alt">Minden esedékes egyben</button>
+ <p id="dailyStatus" class="muted"></p><div id="dailyList"></div>
+</section>
+
+<section class="box"><h3>Nehéz mondataim</h3>
+ <p class="muted">Amiket a legutóbbi ismétléseknél többször „Nem ment” vagy „Nehéz” értékeléssel jelöltél, az összes szigetből.</p>
+ <button id="hardRefresh" class="alt">Lista frissítése</button><button id="hardPractice">Nehéz mondatok gyakorlása</button>
+ <p id="hardStatus" class="muted"></p><div id="hardList"></div>
+</section>
+
+<section class="box"><h3>Nyelvi sziget-könyvtár (felhő)</h3>
+ <p class="muted">Az egyszer megnyitott sziget a készüléken marad, és internet nélkül is használható.</p>
+ <button id="refreshLibrary">Könyvtár frissítése</button><button id="downloadAll" class="alt">Összes letöltése offline használatra</button>
+ <p id="libStatus" class="muted">Jelentkezz be a könyvtár használatához.</p><div id="islandList"></div>
+ <details style="margin-top:10px"><summary>Új sziget feltöltése</summary>
+  <div class="row" style="margin-top:8px"><label>Sziget neve<br><input id="libName" placeholder="pl. Az étteremben"></label><label>TXT tananyag<br><input id="libTxt" type="file" accept=".txt"></label></div>
+  <div class="row"><label>L1 magyar hangfájlok (01.mp3…)<br><input id="libL1" type="file" accept="audio/*" multiple></label><label>L2 olasz hangfájlok (01.mp3…)<br><input id="libL2" type="file" accept="audio/*" multiple></label></div>
+  <button id="uploadIsland">Sziget feltöltése a felhőbe</button>
+ </details>
+</section>
+
+<section class="box"><h3>Tananyag és beállítások</h3>
+ <p class="muted">Saját fájlokból: TXT soronként „magyar mondat - olasz mondat”, hangfájlok 01.mp3, 02.mp3… (a hanganyag-program output/gyakorlo mappájából).</p>
+ <div class="row"><label>TXT<br><input id="txt" type="file" accept=".txt"></label><label>L1 magyar MP3-ak<br><input id="l1" type="file" accept="audio/*" multiple></label><label>L2 olasz MP3-ak<br><input id="l2" type="file" accept="audio/*" multiple></label></div>
+ <div class="row"><label>Magyar hang sebessége: <strong id="l1Val">100%</strong><br><input id="l1Speed" type="range" min="0.6" max="1.25" step="0.05" value="1"></label><label>Olasz hang sebessége: <strong id="l2Val">80%</strong><br><input id="l2Speed" type="range" min="0.6" max="1.25" step="0.05" value="0.8"></label></div>
+ <div class="row">
+  <label>Irány<br><select id="dir"><option value="hu-it">Magyar → olasz</option><option value="it-hu">Olasz → magyar</option><option value="mix">Vegyes</option></select></label>
+  <label>Mód<br><select id="mode"><option value="learn">Tanulás – szabad gyakorlás</option><option value="all">Összes mondat (értékeléssel)</option><option value="due">Esedékes ismétlés + új mondatok</option></select></label>
+  <label>Új mondat naponta<br><input id="newLimit" type="number" min="0" max="100" value="10" style="width:90px;padding:8px"></label>
+ </div>
+ <label class="muted"><input type="checkbox" id="autoAnswer" checked> A válasz felfedésekor szólaljon meg a válasz hangja</label><br>
+ <button id="load">Betöltés fájlból</button><button class="alt" id="clear">Haladás törlése (ez a sziget)</button>
+ <p id="status" class="muted">Válassz tananyagot.</p>
+</section>
+
+<section id="study" class="box hidden">
+ <div class="muted"><span id="island"></span> · <span id="count"></span></div>
+ <div class="prompt" id="question"></div>
+ <div class="center"><button class="alt" id="qAudio">🔊 Kérdés hangja</button><button id="show">Válasz felfedése</button></div>
+ <div id="answrap" class="hidden">
+  <div id="answer" class="answer"></div>
+  <div class="center"><button class="alt" id="aAudio">🔊 Válasz hangja</button><button class="alt hidden" id="hideAnswer">Válasz elrejtése</button>
+   <div id="ratingArea"><p class="muted">Mennyire sikerült felidézni?</p>
+    <button class="rate" style="background:#a74343" data-rate="again">Nem ment<small></small></button>
+    <button class="rate alt" data-rate="hard">Nehéz<small></small></button>
+    <button class="rate" style="background:#237a52" data-rate="good">Jól ment<small></small></button>
+    <button class="rate" style="background:#1d6346" data-rate="easy">Könnyű<small></small></button>
+   </div>
+  </div>
+ </div>
+ <div class="center"><button class="alt" id="prev">← Előző</button><button class="alt" id="next">Következő →</button><button class="alt" id="shuffle">Keverés</button></div>
+</section>
+
+<section class="box"><h3>Mentés</h3>
+ <p class="muted">A haladás a készüléken azonnal mentődik, a felhőbe néhány másodpercenként (internet nélkül később pótolja). A JSON export/import tartaléknak használható.</p>
+ <button class="alt" id="export">Haladás exportálása</button><label class="muted">JSON visszatöltése <input id="import" type="file" accept=".json"></label>
+</section>
+</main>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+
+// ============================================================
+// BEÁLLÍTÁSOK
+// A két értéket a Supabase Connect ablakából másold ide.
+// Csak a Publishable key használható, secret/service_role kulcs soha.
+// ============================================================
+const SUPABASE_URL = 'https://iorhkdolryppkxoacuqa.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_a8FqrmHCXMgJRTqsDJpNaw_Kyj63iZa';
+const BUCKET = 'island-library';
+const PAGE = 100;               // tárhely-listázás lapmérete
+const FLUSH_DELAY = 4000;       // felhőmentés késleltetése (ms)
+const ROLLOVER_HOUR = 4;        // a tanulási nap hajnali 4-kor fordul
+const DOWNLOAD_PARALLEL = 6;
+const LS = 'nyelvisziget:';     // haladás kulcs-előtag (szigetenként)
+const STATS_ID = '__stats__';
+
+// ============================================================
+// ÁLLAPOT
+// ============================================================
+let client = null, auth = null;
+let current = null;             // {slug, pairs} – a megnyitott sziget
+let sess = null;                // {title, items, pos, rated, single}
+let preparedAudio = {};         // {key: HTMLAudioElement}
+const progress = {};            // slug -> haladás
+const memAudio = new Map();     // tartalék, ha nincs IndexedDB
+let stats = loadJSON('nyelvisziget-stats', { v: 1, days: {} });
+const dirty = new Set(loadJSON('nyelvisziget-dirty', []));
+let flushTimer = null, flushing = false;
+
+// ============================================================
+// SEGÉDFÜGGVÉNYEK
+// ============================================================
+function loadJSON(k, fallback) { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? fallback; } catch { return fallback; } }
+function saveJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { console.warn(e); } }
+const pad = n => String(n).padStart(2, '0');
+function hash(str) { // cyrb53
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (let i = 0; i < str.length; i++) { const ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (h2 >>> 0).toString(16).padStart(8, '0') + (h1 >>> 0).toString(16).padStart(8, '0');
 }
-async function syncFromCloud(){
- if(!client||!session||!key||cloudBusy)return;
- cloudBusy=true;
- try{
-  const {data:row,error}=await client.from('learning_progress').select('progress').eq('user_id',session.user.id).eq('island_id',key).maybeSingle();
-  if(error)throw error;
-  if(row&&row.progress){
-   const cloudPos=Number.isFinite(Number(row.progress.__position))?Number(row.progress.__position):Number(localStorage.getItem('nyelvisziget-position:'+key)||'0');
-   const cloudData={...row.progress};delete cloudData.__position;
-   const localData=JSON.parse(localStorage.getItem('nyelvisziget:'+key)||'{}');
-   data=mergeProgress(localData,cloudData);
-   localStorage.setItem('nyelvisziget:'+key,JSON.stringify(data));
-   pos=Math.min(Math.max(0,cloudPos),Math.max(0,order.length-1));
-   localStorage.setItem('nyelvisziget-position:'+key,String(pos));
-   $('status').textContent='A felhőből származó tanulási állapot és mondatpozíció betöltve.';
-   render();
-  }else{
-   const {error:upErr}=await client.from('learning_progress').upsert(
-    {user_id:session.user.id,island_id:key,progress:{...data,__position:pos},updated_at:new Date().toISOString()},
-    {onConflict:'user_id,island_id'}
-   );
-   if(upErr)throw upErr;
-   $('status').textContent='A helyi haladás elmentve a felhőbe.';
+const cardKey = (hu, it) => 'c' + hash(hu + '\u0001' + it);
+function slugify(s) { return s.trim().normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+const niceName = slug => slug.replace(/-/g, ' ');
+const idxName = name => { const m = String(name).match(/^(\d+)\.(mp3|m4a|wav|ogg|aac)$/i); return m ? +m[1] : null; };
+const isFolder = x => x.id === null || x.metadata === null;
+const online = () => navigator.onLine !== false;
+const signedIn = () => !!(client && auth);
+
+// Tanulási nap: hajnali 4-kor kezdődik
+function studyDay(ts = Date.now()) { const d = new Date(ts - ROLLOVER_HOUR * 3600e3); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function dayStart(ts = Date.now()) { const d = new Date(ts - ROLLOVER_HOUR * 3600e3); d.setHours(ROLLOVER_HOUR, 0, 0, 0); return d.getTime(); }
+function dueAfterDays(days, now) { const d = new Date(dayStart(now)); d.setDate(d.getDate() + days); return d.getTime(); }
+
+async function pool(jobs, limit, onTick) {
+  let next = 0, done = 0;
+  const worker = async () => { while (next < jobs.length) { const j = jobs[next++]; await j(); done++; onTick && onTick(done, jobs.length); } };
+  await Promise.all(Array.from({ length: Math.min(limit, jobs.length) }, worker));
+}
+
+// ============================================================
+// TXT FELDOLGOZÁS – ugyanúgy számoz, mint a hanganyag-program
+// ============================================================
+function parse(text) {
+  const pairs = [], skipped = [];
+  text.replace(/^﻿/, '').split(/\r?\n/).forEach((raw, i) => {
+    const s = raw.replace(/\s+/g, ' ').trim();
+    if (!s || s.startsWith('#') || s.startsWith('//')) return;
+    const at = s.indexOf(' - ');
+    if (at < 0) { skipped.push(i + 1); return; }
+    const hu = s.slice(0, at).trim(), it = s.slice(at + 3).trim();
+    if (!hu || !it) { skipped.push(i + 1); return; }
+    pairs.push({ hu, it, n: pairs.length + 1, k: cardKey(hu, it) });
+  });
+  if (!pairs.length) throw new Error('A TXT nem tartalmaz mondatpárt.');
+  return { pairs, skipped };
+}
+
+// ============================================================
+// INDEXEDDB – letöltött szigetek és hangok (offline használat)
+// ============================================================
+const idb = {
+  db: null, failed: false,
+  open() {
+    if (this.db || this.failed) return Promise.resolve(this.db);
+    return new Promise(res => {
+      try {
+        const r = indexedDB.open('nyelvisziget', 1);
+        r.onupgradeneeded = () => { r.result.createObjectStore('islands'); r.result.createObjectStore('audio'); };
+        r.onsuccess = () => { this.db = r.result; res(this.db); };
+        r.onerror = () => { this.failed = true; res(null); };
+      } catch { this.failed = true; res(null); }
+    });
+  },
+  async tx(store, mode, fn) {
+    const db = await this.open(); if (!db) return undefined;
+    return new Promise((res, rej) => {
+      const t = db.transaction(store, mode), s = t.objectStore(store); const r = fn(s);
+      t.oncomplete = () => res(r && 'result' in r ? r.result : undefined);
+      t.onerror = () => rej(t.error); t.onabort = () => rej(t.error);
+    });
+  },
+  get(store, key) { return this.tx(store, 'readonly', s => s.get(key)); },
+  put(store, key, val) { return this.tx(store, 'readwrite', s => s.put(val, key)); },
+  del(store, key) { return this.tx(store, 'readwrite', s => s.delete(key)); },
+  keys(store) { return this.tx(store, 'readonly', s => s.getAllKeys()).then(k => k || []); },
+  async has(store, key) { return (await this.tx(store, 'readonly', s => s.count(key))) > 0; }
+};
+async function putAudio(slug, folder, n, blob) {
+  const key = `${slug}|${folder}|${n}`;
+  memAudio.set(key, blob);
+  try { await idb.put('audio', key, { buf: await blob.arrayBuffer(), type: blob.type || 'audio/mpeg' }); memAudio.delete(key); } catch (e) { console.warn(e); }
+}
+async function getAudioBlob(slug, folder, n) {
+  const key = `${slug}|${folder}|${n}`;
+  if (memAudio.has(key)) return memAudio.get(key);
+  try { const r = await idb.get('audio', key); if (r) return new Blob([r.buf], { type: r.type }); } catch {}
+  return null;
+}
+async function deleteIslandCache(slug) {
+  const rec = await idb.get('islands', slug).catch(() => null);
+  for (const k of (await idb.keys('audio').catch(() => []))) if (String(k).startsWith(slug + '|')) await idb.del('audio', k);
+  if (rec) await idb.del('islands', slug);
+}
+async function cachedSlugs() { return (await idb.keys('islands').catch(() => [])).map(String); }
+
+// ============================================================
+// HALADÁS – a mondat szövegéhez kötve
+// ============================================================
+const emptyProg = () => ({ v: 2, cards: {}, pos: 0, posAt: 0, total: 0 });
+function getProg(slug) {
+  if (!progress[slug]) {
+    const p = loadJSON(LS + slug, null);
+    progress[slug] = p && p.v === 2 ? p : (p ? { ...emptyProg(), legacy: p } : emptyProg());
   }
-  $('authStatus').textContent='Bejelentkezve: '+session.user.email+'. A szinkronizálás aktív.';
- }catch(e){
-  $('authStatus').textContent='Felhőszinkronizálási hiba: '+e.message+'. A helyi mentés megmaradt.';
- }finally{cloudBusy=false}
+  return progress[slug];
 }
-function slugify(s){return s.trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
-function safeName(s){return s.replace(/[^a-zA-Z0-9._-]/g,'_')}
-async function listLibrary(){if(!client||!session){$('libStatus').textContent='A könyvtárhoz előbb jelentkezz be.';return}try{$('libStatus').textContent='Könyvtár betöltése…';const {data,error}=await client.storage.from(BUCKET).list('',{limit:100,sortBy:{column:'name',order:'asc'}});if(error)throw error;const folders=(data||[]).filter(x=>x.id===null||x.metadata===null).filter(x=>x.name&&!x.name.startsWith('.'));const host=$('islandList');host.innerHTML='';if(!folders.length){$('libStatus').textContent='Még nincs feltöltött sziget. Add hozzá az elsőt fent.';return}folders.forEach(f=>{const row=document.createElement('div');row.className='cloud';row.style.display='flex';row.style.alignItems='center';row.style.justifyContent='space-between';row.style.gap='8px';const label=document.createElement('strong');label.textContent=f.name.replace(/-/g,' ');const actions=document.createElement('div');actions.style.display='flex';actions.style.gap='8px';actions.style.flexWrap='wrap';
- const b=document.createElement('button');b.textContent='Megnyitás';b.onclick=()=>loadCloudIsland(f.name);
- const del=document.createElement('button');del.textContent='Sziget törlése';del.className='alt';del.onclick=async()=>{
-  if(!confirm('Biztosan törlöd a „'+f.name.replace(/-/g,' ')+'” sziget összes TXT- és MP3-fájlját? Ez nem vonható vissza.'))return;
-  del.disabled=true;
-  try{
-   const paths=[];
-   const collect=async(prefix)=>{
-    const {data:items,error}=await client.storage.from(BUCKET).list(prefix,{limit:1000});
-    if(error)throw error;
-    for(const it of (items||[])){
-     if(it.id===null||it.metadata===null) await collect(prefix+'/'+it.name);
-     else paths.push(prefix+'/'+it.name);
+function saveProg(slug, cloud = true) { saveJSON(LS + slug, getProg(slug)); if (cloud) markDirty(slug); }
+
+// Régi (V8) haladás átalakítása: sorszám → mondatszöveg
+function migrateLegacy(slug, pairs, extraLegacy) {
+  const prog = getProg(slug);
+  const sources = [prog.legacy, extraLegacy].filter(Boolean);
+  if (!sources.length) return false;
+  for (const old of sources) {
+    for (const [k, v] of Object.entries(old)) {
+      if (!/^\d+$/.test(k) || !v || typeof v !== 'object') continue;
+      const p = pairs[+k]; if (!p) continue;
+      const exist = prog.cards[p.k];
+      if (exist && (exist.lastReviewed || 0) >= (v.lastReviewed || 0)) continue;
+      prog.cards[p.k] = { hu: p.hu, it: p.it, n: p.n, ease: 2.5, interval: Number(v.interval) || 0, due: Number(v.due) || 0,
+        reps: Number(v.reps) || 0, lapses: 0, last: v.last || '', lastReviewed: Number(v.lastReviewed) || 0, hist: v.last ? v.last[0] : '' };
     }
-   };
-   await collect(f.name);
-   if(paths.length){const {error}=await client.storage.from(BUCKET).remove(paths);if(error)throw error;}
-   // Remove the progress record for this island for the signed-in user.
-   const {error:progressError}=await client.from('learning_progress').delete().eq('user_id',session.user.id).eq('island_id',f.name);
-   if(progressError)throw progressError;
-   $('libStatus').textContent='A sziget és a hozzá tartozó saját tanulási állapot törölve.';
-   await listLibrary();await loadDailyReview();
-  }catch(e){$('libStatus').textContent='Törlési hiba: '+e.message;}
-  finally{del.disabled=false}
- };
- actions.append(b,del);row.append(label,actions);host.append(row)});$('libStatus').textContent='Elérhető nyelvi szigetek: '+folders.length+'.';}catch(e){$('libStatus').textContent='Könyvtárhiba: '+e.message+'. Ellenőrizd a Storage-bucketet és a hozzáférési szabályokat.'}}
-async function loadDailyReview(){
- const host=$('dailyList');host.innerHTML='';
- if(!client||!session){$('dailyStatus').textContent='A közös ismétlési listához jelentkezz be.';return}
- try{
-  $('dailyStatus').textContent='Az esedékes mondatok keresése…';
-  const [{data:rows,error:rowErr},{data:folders,error:folderErr}]=await Promise.all([
-   client.from('learning_progress').select('island_id,progress,updated_at').eq('user_id',session.user.id),
-   client.storage.from(BUCKET).list('',{limit:100,sortBy:{column:'name',order:'asc'}})
-  ]);
-  if(rowErr)throw rowErr;if(folderErr)throw folderErr;
-  const folderSet=new Set((folders||[]).filter(x=>x.name&&!x.name.startsWith('.')&&(x.id===null||x.metadata===null)).map(x=>x.name));
-  const now=Date.now(),results=[];
-  for(const row of (rows||[])){
-   const slug=row.island_id;if(!folderSet.has(slug))continue;
-   const prog=row.progress||{};let due=0,total=0;
-   for(const [k,v] of Object.entries(prog)){
-    if(k==='__position'||!/^\d+$/.test(k)||!v||typeof v!=='object')continue;
-    if(v.lastReviewed){total++;if(Number(v.due||0)<=now)due++;}
-   }
-   if(due>0)results.push({slug,due,total});
+    if (Number.isFinite(Number(old.__position)) && !prog.posAt) prog.pos = Number(old.__position);
   }
-  results.sort((a,b)=>a.slug.localeCompare(b.slug));
-  if(!results.length){const reviewed=(rows||[]).reduce((n,row)=>n+Object.entries(row.progress||{}).filter(([k,v])=>k!=='__position'&&/^\\d+$/.test(k)&&v&&typeof v==='object'&&v.lastReviewed).length,0);$('dailyStatus').textContent='Most nincs esedékes mondat a felhőben. Felhőben tárolt, már értékelt mondatok: '+reviewed+'. A „Nem ment” értékelés azonnal esedékessé teszi a mondatot.';return}
-  for(const r of results){
-   const row=document.createElement('div');row.className='cloud';row.style.display='flex';row.style.alignItems='center';row.style.justifyContent='space-between';row.style.gap='8px';row.style.flexWrap='wrap';
-   const info=document.createElement('div');const title=document.createElement('strong');title.textContent=r.slug.replace(/-/g,' ');const sub=document.createElement('div');sub.className='muted';sub.textContent=r.due+' esedékes mondat';info.append(title,sub);
-   const btn=document.createElement('button');btn.textContent='Ismétlés indítása';btn.onclick=async()=>{
-   btn.disabled=true;btn.textContent='Betöltés…';
-   try{
-    await loadCloudIsland(r.slug);
-    if(!pairs.length||key!==r.slug)throw new Error('A sziget tananyaga nem töltődött be. '+$('libStatus').textContent);
-    $('mode').value='due';
-    // Reload progress from cloud after the island key and sentence list are set.
-    await syncFromCloud();
-    makeOrder();
-    // Build due order explicitly from the latest loaded progress.
-    order=pairs.map((_,i)=>i).filter(i=>Number(item(i).due||0)<=Date.now()&&Number(item(i).lastReviewed||0)>0);
-    pos=0;
-    if(order.length){render();$('status').textContent='Ismétlés: '+r.slug.replace(/-/g,' ')+'. '+order.length+' esedékes mondat.';$('study').scrollIntoView({behavior:'smooth',block:'start'});}
-    else {$('status').textContent='A lista szerint volt esedékes mondat, de a sziget betöltése után nem található esedékes értékelés. Frissítsd a Mai ismétlések listát.'; $('dailyStatus').textContent='A sziget haladása betöltődött, de nem találtunk esedékes mondatot. Kattints a frissítésre.';}
-   }catch(e){$('dailyStatus').textContent='Nem sikerült elindítani az ismétlést: '+e.message;}
-   finally{btn.disabled=false;btn.textContent='Ismétlés indítása';}
-  };row.append(info,btn);host.append(row);
-  }
-  $('dailyStatus').textContent='Esedékes ismétlést tartalmazó szigetek: '+results.length+'. A lista a felhőben elmentett értékelések alapján készült.';
- }catch(e){$('dailyStatus').textContent='Az ismétlési lista nem tölthető be: '+e.message}
+  delete prog.legacy;
+  return true;
 }
-async function uploadIsland(){if(!client||!session){$('libStatus').textContent='Előbb jelentkezz be.';return}const name=$('libName').value.trim(),txt=$('libTxt').files[0],a=[...$('libL1').files],b=[...$('libL2').files];if(!name||!txt){$('libStatus').textContent='Add meg a sziget nevét és válaszd ki a TXT-t.';return}const slug=slugify(name);if(!slug){$('libStatus').textContent='Adj meg érvényes szigetnevet.';return}
- if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)){ $('libStatus').textContent='A sziget neve nem alakítható biztonságos azonosítóvá. Próbálj másik nevet.'; return; }
- const {data:existing,error:checkError}=await client.storage.from(BUCKET).list('',{limit:100});
- if(checkError){$('libStatus').textContent='Nem sikerült ellenőrizni a könyvtárat: '+checkError.message;return}
- const already=(existing||[]).some(x=>x.name===slug&&(x.id===null||x.metadata===null));
- if(already&&!confirm('Már létezik ilyen nevű sziget ('+name+'). A feltöltött azonos nevű fájlok felülíródhatnak. Biztosan folytatod?'))return;
- if(!a.length||!b.length){if(!confirm('Nem választottál ki minden MP3-csoportot. Csak a TXT és a megadott hangfájlok kerülnek fel. Folytatod?'))return}
- try{$('uploadIsland').disabled=true;$('libStatus').textContent='Feltöltés folyamatban…';let {error}=await client.storage.from(BUCKET).upload(slug+'/tananyag.txt',txt,{upsert:true,contentType:'text/plain'});if(error)throw error;for(const [folder,files] of [['L1',a],['L2',b]]){for(const file of files){let n=idx(file);if(!n)continue;const ext=(file.name.match(/\.[^.]+$/)||['.mp3'])[0].toLowerCase();({error}=await client.storage.from(BUCKET).upload(slug+'/'+folder+'/'+String(n).padStart(2,'0')+ext,file,{upsert:true,contentType:file.type||'audio/mpeg'}));if(error)throw error}}$('libStatus').textContent='A sziget feltöltése kész. TXT: igen; L1 hangok: '+a.length+'; L2 hangok: '+b.length+'.';$('libName').value='';$('libTxt').value='';$('libL1').value='';$('libL2').value='';await listLibrary()}catch(e){$('libStatus').textContent='Feltöltési hiba: '+e.message+'. A már feltöltött fájlok a tárhelyen maradhattak.'}finally{$('uploadIsland').disabled=false}}
-async function loadCloudIsland(slug){if(!client||!session)return;try{$('libStatus').textContent='Sziget letöltése…';const get=async path=>{const {data,error}=await client.storage.from(BUCKET).download(path);if(error)throw error;return data};const txtBlob=await get(slug+'/tananyag.txt');const txtFile=new File([txtBlob],'tananyag.txt',{type:'text/plain'});pairs=parse(await txtFile.text());l1.clear();l2.clear();const {data:items,error}=await client.storage.from(BUCKET).list(slug,{limit:100});if(error)throw error;for(const folder of ['L1','L2']){const {data:files,error:err}=await client.storage.from(BUCKET).list(slug+'/'+folder,{limit:500});if(err)throw err;for(const f of (files||[])){const n=idx({name:f.name});if(!n)continue;const blob=await get(slug+'/'+folder+'/'+f.name);const file=new File([blob],f.name,{type:blob.type||'audio/mpeg'});(folder==='L1'?l1:l2).set(n,file)}}key=slug;data=JSON.parse(localStorage.getItem('nyelvisziget:'+key)||'{}');makeOrder();let saved=Number(localStorage.getItem('nyelvisziget-position:'+key)||'0');pos=Math.min(Math.max(0,saved),Math.max(0,order.length-1));$('status').textContent=`Felhőből betöltve: ${pairs.length} pár. L1: ${l1.size}/${pairs.length}; L2: ${l2.size}/${pairs.length}.`;render();await syncFromCloud();$('libStatus').textContent='Betöltve: '+slug.replace(/-/g,' ')+'.'}catch(e){$('libStatus').textContent='Betöltési hiba: '+e.message}}
-async function authAction(type){if(!client){$('authStatus').textContent='Előbb állítsd be a Supabase URL-t és Publishable key-t az index.html-ben.';return}const email=$('email').value.trim(),password=$('password').value;if(!email||!password){$('authStatus').textContent='Add meg az e-mail-címedet és a jelszavadat.';return}try{$('authStatus').textContent='Folyamatban…';let result=type==='signup'?await client.auth.signUp({email,password}):await client.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(type==='signup'&&!result.data.session){$('authStatus').textContent='A fiók létrejött. Ellenőrizd az e-mailjeidet, erősítsd meg a címedet, majd jelentkezz be.';return}session=result.data.session;setAuthUI()}catch(e){$('authStatus').textContent='Bejelentkezési hiba: '+e.message}}
-$('uploadIsland').onclick=uploadIsland;$('refreshLibrary').onclick=listLibrary;$('loadDailyReview').onclick=loadDailyReview;
-$('signup').onclick=()=>authAction('signup');$('signin').onclick=()=>authAction('signin');$('signout').onclick=async()=>{if(client)await client.auth.signOut();session=null;setAuthUI()};
-if(client){client.auth.getSession().then(({data})=>{session=data.session;setAuthUI()});client.auth.onAuthStateChange((_event,s)=>{session=s;setAuthUI()})}
-function updateSpeedLabels(){$('l1Val').textContent=Math.round(Number($('l1Speed').value)*100)+'%';$('l2Val').textContent=Math.round(Number($('l2Speed').value)*100)+'%'}$('l1Speed').addEventListener('input',updateSpeedLabels);$('l2Speed').addEventListener('input',updateSpeedLabels);updateSpeedLabels();
-$('load').onclick=async()=>{let f=$('txt').files[0];if(!f){$('status').textContent='Válaszd ki a TXT-t!';return}try{pairs=parse(await f.text());l1.clear();l2.clear();for(let x of $('l1').files){let n=idx(x);if(n)l1.set(n,x)}for(let x of $('l2').files){let n=idx(x);if(n)l2.set(n,x)}key=f.name.replace(/\.[^.]+$/,'');data=JSON.parse(localStorage.getItem('nyelvisziget:'+key)||'{}');makeOrder();const savedPos=Number(localStorage.getItem('nyelvisziget-position:'+key)||'0');pos=Math.min(Math.max(0,savedPos),Math.max(0,order.length-1));let miss=(map)=>pairs.map((_,i)=>i+1).filter(n=>!map.has(n));$('status').textContent=`Betöltve ${pairs.length} pár. L1: ${l1.size}/${pairs.length}; L2: ${l2.size}/${pairs.length}. Hiányzó L1: ${miss(l1).join(', ')||'nincs'}; L2: ${miss(l2).join(', ')||'nincs'}.`;render();if(session)await syncFromCloud()}catch(e){$('status').textContent=e.message}};
-$('show').onclick=()=>{$('answrap').classList.remove('hidden');$('show').classList.add('hidden');if($('mode').value==='learn')$('status').textContent='Tanuló mód: a válasz látható. A „Válasz elrejtése” gombbal újra elrejtheted.'};$('hideAnswer').onclick=()=>{$('answrap').classList.add('hidden');$('show').classList.remove('hidden');$('show').textContent='Válasz felfedése';if($('mode').value==='learn')$('status').textContent='Tanuló mód: a válasz elrejtve. Próbáld meg újra felidézni, majd fedd fel ismét.'};
-$('qAudio').onclick=()=>audio(order[pos],dir==='hu-it'?'hu':'it');$('aAudio').onclick=()=>audio(order[pos],dir==='hu-it'?'it':'hu');
-$('next').onclick=()=>{advance();savePosition()};$('prev').onclick=()=>{if(pos){pos--;render();savePosition()}};$('shuffle').onclick=()=>{order.sort(()=>Math.random()-.5);pos=0;render();savePosition()};
-$('learnModeBtn').onclick=()=>{$('mode').value='learn';saveSettings();if(pairs.length){makeOrder();render();$('status').textContent='Tanuló mód bekapcsolva. A válasz felfedhető és elrejthető korlátlanul, értékelés nélkül.'}else{$('modeStatus').textContent='Tanuló mód kiválasztva. Először tölts be egy tananyagot.';$('learnModeBtn').textContent='Tanuló mód kiválasztva ✓'}};$('mode').onchange=()=>{saveSettings();if(pairs.length){makeOrder();render();if($('mode').value==='learn')$('status').textContent='Tanuló mód: szabadon felfedheted és elrejtheted a választ. Az értékelés és az ismétlési időzítés nem módosul.'}else{$('modeStatus').textContent=$('mode').value==='learn'?'Tanuló mód kiválasztva. Először tölts be egy tananyagot.':'Ismétlési mód kiválasztva.'}};$('dir').onchange=()=>{saveSettings();if(pairs.length)render()};$('l1Speed').oninput=()=>{saveSettings();updateSpeedLabels()};$('l2Speed').oninput=()=>{saveSettings();updateSpeedLabels()};loadSettings();updateSpeedLabels();
-document.querySelectorAll('[data-rate]').forEach(b=>b.onclick=async()=>{
- const i=order[pos], v=b.dataset.rate, x=item(i), now=Date.now();
- // Anki-like learning intervals: Again now, Hard 10 min, Good 1 day, Easy 4 days on first review.
- const first=(x.reps||0)===0;
- let intervalMs=0, intervalDays=Number(x.interval||0);
- if(v==='again'){ intervalMs=0; intervalDays=0; }
- else if(v==='hard'){ intervalMs=10*60*1000; intervalDays=0; }
- else if(v==='good'){
-   intervalDays=first?1:Math.max(1,Math.round((Number(x.interval)||1)*2));
-   intervalMs=intervalDays*86400000;
- } else if(v==='easy'){
-   intervalDays=first?4:Math.max(4,Math.round((Number(x.interval)||1)*2.5));
-   intervalMs=intervalDays*86400000;
- }
- x.interval=intervalDays;
- x.due=now+intervalMs;
- x.reps=(x.reps||0)+1;
- x.last=v;
- x.lastReviewed=now;
- data[i]=x;
- localStorage.setItem('nyelvisziget:'+key,JSON.stringify(data));
- const finished=advance();
- localStorage.setItem('nyelvisziget-position:'+key,String(pos));
- await syncToCloud();
- $('status').textContent=finished ? 'Az ismétlési kör véget ért. Az utolsó mondat értékelése is elmentve.' :
-   v==='again' ? 'Nem ment: a mondat azonnal újrapróbálható.' :
-   v==='hard' ? 'Nehéz: a mondat 10 perc múlva ismét esedékes.' :
-   'Értékelés elmentve. Következő ismétlés: '+new Date(x.due).toLocaleString();
- await loadDailyReview();
-});
-$('clear').onclick=()=>{if(key&&confirm('Törlöd ennek a szigetnek a mentett haladását?')){data={};save();makeOrder();render();$('status').textContent='Haladás törölve.'}};
-$('export').onclick=()=>{if(!key)return alert('Előbb tölts be egy szigetet.');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({island:key,progress:data},null,2)],{type:'application/json'}));a.download=key+'-haladas.json';a.click()};
-$('import').onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(d.progress&&key){data=d.progress;save();makeOrder();render();$('status').textContent='Haladás visszatöltve.'}}catch{$('status').textContent='Nem sikerült a JSON-t beolvasni.'}};
+function normalizeRemote(obj) { return obj && obj.v === 2 ? obj : { ...emptyProg(), legacy: obj || {} }; }
+function mergeProg(local, remote) {
+  const merged = { ...emptyProg(), ...remote, cards: { ...(remote.cards || {}) } };
+  let remoteStale = false;
+  for (const [k, c] of Object.entries(local.cards || {})) {
+    const r = merged.cards[k];
+    if (!r || (c.lastReviewed || 0) > (r.lastReviewed || 0)) { merged.cards[k] = c; remoteStale = true; }
+  }
+  if ((local.posAt || 0) > (remote.posAt || 0)) { merged.pos = local.pos; merged.posAt = local.posAt; remoteStale = true; }
+  merged.total = local.total || remote.total || 0;
+  if (local.total && local.total !== remote.total) remoteStale = true;
+  const legacy = local.legacy || remote.legacy;
+  if (legacy && Object.keys(legacy).length) merged.legacy = legacy; else delete merged.legacy;
+  return { merged, remoteStale };
+}
+function isHard(c) {
+  if (!c || !c.reps) return false;
+  if (c.last === 'again') return true;
+  const h = (c.hist || '').slice(-4);
+  return (h.match(/[ah]/g) || []).length >= 2;
+}
+
+// ============================================================
+// ÜTEMEZÉS – SM-2 jellegű, mondatonkénti nehézségi értékkel (ease)
+// ============================================================
+function schedule(old, v, now) {
+  const c = { ease: 2.5, interval: 0, reps: 0, lapses: 0, hist: '', ...(old || {}) };
+  const learning = (Number(c.interval) || 0) < 1;
+  let requeue = 0;
+  if (v === 'again') {
+    if (c.reps > 0 && !learning) c.lapses = (c.lapses || 0) + 1;
+    c.ease = Math.max(1.3, c.ease - 0.2); c.interval = 0; c.due = now + 60e3; requeue = 3;
+  } else if (v === 'hard') {
+    c.ease = Math.max(1.3, c.ease - 0.15);
+    if (learning) { c.interval = 0; c.due = now + 10 * 60e3; requeue = 5; }
+    else { c.interval = Math.max(c.interval + 1, Math.round(c.interval * 1.2)); c.due = dueAfterDays(c.interval, now); }
+  } else if (v === 'good') {
+    c.interval = goodInterval(c, learning);
+    c.due = dueAfterDays(c.interval, now);
+  } else if (v === 'easy') {
+    const g = goodInterval(c, learning);
+    c.ease = c.ease + 0.15;
+    c.interval = learning ? 4 : Math.max(g + 2, Math.round(c.interval * c.ease * 1.3));
+    c.due = dueAfterDays(c.interval, now);
+  }
+  c.reps = (c.reps || 0) + 1; c.last = v; c.lastReviewed = now;
+  c.hist = ((c.hist || '') + v[0]).slice(-5);
+  c.ease = Math.round(c.ease * 100) / 100;
+  return { card: c, requeue };
+}
+function goodInterval(c, learning) {
+  if (learning) return 1;
+  if (c.interval < 3) return 3;
+  return Math.max(c.interval + 1, Math.round(c.interval * c.ease));
+}
+function describeDue(card, now) {
+  const ms = card.due - now;
+  if (card.interval < 1) return ms < 3600e3 ? Math.max(1, Math.round(ms / 60e3)) + ' perc' : 'ma';
+  const d = card.interval;
+  if (d === 1) return 'holnap'; if (d < 31) return d + ' nap'; if (d < 365) return Math.round(d / 30) + ' hónap';
+  return (d / 365).toFixed(1).replace('.', ',') + ' év';
+}
+
+// ============================================================
+// STATISZTIKA
+// ============================================================
+function todayStats() { const d = studyDay(); return stats.days[d] || (stats.days[d] = { reviews: 0, good: 0, hard: 0, again: 0, easy: 0, new: 0 }); }
+function newLimit() { return Math.max(0, Number($('newLimit').value) || 0); }
+function newLeftToday() { return Math.max(0, newLimit() - todayStats().new); }
+function recordRating(v, wasNew) {
+  const t = todayStats(); t.reviews++; t[v] = (t[v] || 0) + 1; if (wasNew) t.new++;
+  saveJSON('nyelvisziget-stats', stats); markDirty(STATS_ID); renderStats();
+}
+function mergeStats(a, b) {
+  const out = { v: 1, days: {} };
+  for (const src of [a, b]) for (const [d, row] of Object.entries((src && src.days) || {})) {
+    const o = out.days[d] || (out.days[d] = {});
+    for (const [k, v] of Object.entries(row)) o[k] = Math.max(o[k] || 0, Number(v) || 0);
+  }
+  return out;
+}
+function streak() {
+  let n = 0; const d = new Date(dayStart());
+  if (!(stats.days[studyDay()] || {}).reviews) d.setDate(d.getDate() - 1);
+  for (;;) {
+    const key = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    if ((stats.days[key] || {}).reviews > 0) { n++; d.setDate(d.getDate() - 1); } else break;
+  }
+  return n;
+}
+function renderStats() {
+  const t = todayStats();
+  $('stStreak').textContent = streak(); $('stToday').textContent = t.reviews;
+  $('stGood').textContent = (t.good || 0) + (t.easy || 0); $('stNew').textContent = t.new;
+  let learned = 0, cards = 0;
+  for (const slug of allProgSlugs()) for (const c of Object.values(getProg(slug).cards)) { cards++; if (c.interval >= 21) learned++; }
+  $('stInfo').textContent = `Ma még ${newLeftToday()} új mondat vehető fel (napi limit: ${newLimit()}). Eddig gyakorolt mondatok: ${cards}, ebből jól rögzült (3+ hét): ${learned}.`;
+}
+function allProgSlugs() {
+  const out = new Set(Object.keys(progress));
+  for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(LS)) out.add(k.slice(LS.length)); }
+  return [...out];
+}
+
+// ============================================================
+// FELHŐMENTÉS – késleltetve, összevonva, offline sorban állva
+// ============================================================
+function markDirty(id) { dirty.add(id); saveJSON('nyelvisziget-dirty', [...dirty]); scheduleFlush(); }
+function scheduleFlush(delay = FLUSH_DELAY) { if (flushTimer) return; flushTimer = setTimeout(() => { flushTimer = null; flush(); }, delay); }
+async function flush() {
+  if (!signedIn() || !online() || flushing || !dirty.size) return;
+  flushing = true;
+  const ids = [...dirty]; dirty.clear(); saveJSON('nyelvisziget-dirty', []);
+  try {
+    const now = new Date().toISOString();
+    const rows = ids.map(id => ({ user_id: auth.user.id, island_id: id, progress: id === STATS_ID ? stats : getProg(id), updated_at: now }));
+    const { error } = await client.from('learning_progress').upsert(rows, { onConflict: 'user_id,island_id' });
+    if (error) throw error;
+    $('authStatus').textContent = 'Bejelentkezve: ' + auth.user.email + '. Felhőbe mentve: ' + new Date().toLocaleTimeString();
+  } catch (e) {
+    ids.forEach(i => dirty.add(i)); saveJSON('nyelvisziget-dirty', [...dirty]);
+    $('authStatus').textContent = 'Felhőmentés most nem sikerült (' + e.message + '). A készüléken minden megmaradt, később újrapróbálom.';
+    flushing = false; scheduleFlush(30000); return;
+  }
+  flushing = false;
+  if (dirty.size) scheduleFlush();
+}
+async function pullAll() {
+  if (!signedIn() || !online()) return;
+  const { data: rows, error } = await client.from('learning_progress').select('island_id,progress').eq('user_id', auth.user.id);
+  if (error) throw error;
+  const remoteIds = new Set();
+  for (const r of rows || []) {
+    remoteIds.add(r.island_id);
+    if (r.island_id === STATS_ID) { stats = mergeStats(stats, r.progress); saveJSON('nyelvisziget-stats', stats); if (JSON.stringify(stats) !== JSON.stringify(r.progress)) markDirty(STATS_ID); continue; }
+    const { merged, remoteStale } = mergeProg(getProg(r.island_id), normalizeRemote(r.progress));
+    progress[r.island_id] = merged;
+    if (current && current.slug === r.island_id && merged.legacy) migrateLegacy(r.island_id, current.pairs);
+    saveProg(r.island_id, false); if (remoteStale) markDirty(r.island_id);
+  }
+  for (const slug of allProgSlugs()) if (!remoteIds.has(slug) && Object.keys(getProg(slug).cards).length) markDirty(slug);
+  if (Object.values(stats.days).length && !remoteIds.has(STATS_ID)) markDirty(STATS_ID);
+  renderStats();
+}
+
+// ============================================================
+// FELHŐS KÖNYVTÁR – lapozva, korlát nélkül
+// ============================================================
+async function listFolder(prefix) {
+  const out = [];
+  for (let offset = 0; ; offset += PAGE) {
+    const { data, error } = await client.storage.from(BUCKET).list(prefix, { limit: PAGE, offset, sortBy: { column: 'name', order: 'asc' } });
+    if (error) throw error;
+    out.push(...(data || []));
+    if (!data || data.length < PAGE) break;
+  }
+  return out;
+}
+async function download(path) { const { data, error } = await client.storage.from(BUCKET).download(path); if (error) throw error; return data; }
+const librarySlugs = () => loadJSON('nyelvisziget-library', []);
+
+async function ensureIslandCached(slug, onTick) {
+  const top = await listFolder(slug);
+  const txtEntry = top.find(x => x.name === 'tananyag.txt');
+  if (!txtEntry) throw new Error('A felhőben nincs tananyag.txt ehhez a szigethez.');
+  const rec = (await idb.get('islands', slug).catch(() => null)) || { slug, files: {} };
+  const stamp = txtEntry.updated_at || txtEntry.created_at || '';
+  if (!rec.txt || rec.txtUpdated !== stamp) { rec.txt = await (await download(slug + '/tananyag.txt')).text(); rec.txtUpdated = stamp; }
+  const jobs = [], seen = new Set();
+  for (const folder of ['L1', 'L2']) {
+    let files = [];
+    if (top.some(x => x.name === folder && isFolder(x))) files = await listFolder(slug + '/' + folder);
+    for (const f of files) {
+      if (isFolder(f)) continue; const n = idxName(f.name); if (!n) continue;
+      const akey = `${slug}|${folder}|${n}`, fstamp = f.updated_at || f.created_at || ''; seen.add(akey);
+      if (rec.files[akey] === fstamp && await idb.has('audio', akey).catch(() => false)) continue;
+      jobs.push(async () => { const blob = await download(`${slug}/${folder}/${f.name}`); await putAudio(slug, folder, n, blob); rec.files[akey] = fstamp; });
+    }
+  }
+  for (const k of Object.keys(rec.files)) if (!seen.has(k)) { await idb.del('audio', k).catch(() => {}); delete rec.files[k]; }
+  await pool(jobs, DOWNLOAD_PARALLEL, onTick);
+  rec.source = 'cloud'; rec.cachedAt = Date.now();
+  await idb.put('islands', slug, rec).catch(() => {});
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+  return rec;
+}
+
+async function listLibrary() {
+  const host = $('islandList'); host.innerHTML = '';
+  let slugs = librarySlugs();
+  if (signedIn() && online()) {
+    try {
+      $('libStatus').textContent = 'Könyvtár betöltése…';
+      slugs = (await listFolder('')).filter(x => isFolder(x) && x.name && !x.name.startsWith('.')).map(x => x.name);
+      saveJSON('nyelvisziget-library', slugs);
+    } catch (e) { $('libStatus').textContent = 'Könyvtárhiba: ' + e.message + '. A letöltött szigetek továbbra is elérhetők.'; }
+  }
+  const cached = new Set(await cachedSlugs());
+  const all = [...new Set([...slugs, ...cached])].sort();
+  if (!all.length) { $('libStatus').textContent = signedIn() ? 'Még nincs feltöltött sziget.' : 'Jelentkezz be a felhős könyvtárhoz.'; return; }
+  for (const slug of all) {
+    const row = document.createElement('div'); row.className = 'cloud item';
+    const label = document.createElement('div');
+    label.innerHTML = '<strong></strong>'; label.firstChild.textContent = niceName(slug);
+    const b = document.createElement('span'); b.className = 'badge' + (cached.has(slug) ? '' : ' off'); b.textContent = cached.has(slug) ? 'offline ✓' : 'csak felhő'; label.append(b);
+    const actions = document.createElement('div');
+    const open = document.createElement('button'); open.textContent = 'Megnyitás'; open.onclick = () => openIsland(slug).then(() => startSession($('mode').value));
+    actions.append(open);
+    if (slugs.includes(slug)) {
+      const del = document.createElement('button'); del.className = 'alt'; del.textContent = 'Törlés';
+      del.onclick = () => deleteIsland(slug, del); actions.append(del);
+    } else {
+      const del = document.createElement('button'); del.className = 'alt'; del.textContent = 'Eltávolítás a készülékről';
+      del.onclick = async () => { await deleteIslandCache(slug); listLibrary(); }; actions.append(del);
+    }
+    row.append(label, actions); host.append(row);
+  }
+  $('libStatus').textContent = `Szigetek: ${all.length}, ebből a készüléken (offline): ${[...cached].length}.`;
+}
+async function deleteIsland(slug, btn) {
+  if (!confirm('Biztosan törlöd a „' + niceName(slug) + '” sziget összes fájlját a felhőből és a haladását? Ez nem vonható vissza.')) return;
+  btn.disabled = true;
+  try {
+    const paths = [];
+    const collect = async prefix => { for (const it of await listFolder(prefix)) { if (isFolder(it)) await collect(prefix + '/' + it.name); else paths.push(prefix + '/' + it.name); } };
+    await collect(slug);
+    for (let i = 0; i < paths.length; i += 100) { const { error } = await client.storage.from(BUCKET).remove(paths.slice(i, i + 100)); if (error) throw error; }
+    const { error } = await client.from('learning_progress').delete().eq('user_id', auth.user.id).eq('island_id', slug); if (error) throw error;
+    localStorage.removeItem(LS + slug); delete progress[slug]; dirty.delete(slug);
+    await deleteIslandCache(slug);
+    $('libStatus').textContent = 'A sziget és a haladása törölve.';
+    await listLibrary(); await loadDailyReview();
+  } catch (e) { $('libStatus').textContent = 'Törlési hiba: ' + e.message; }
+  finally { btn.disabled = false; }
+}
+async function downloadAll() {
+  if (!signedIn() || !online()) { $('libStatus').textContent = 'A letöltéshez internet és bejelentkezés kell.'; return; }
+  const slugs = librarySlugs(); $('downloadAll').disabled = true;
+  try {
+    for (let i = 0; i < slugs.length; i++) {
+      await ensureIslandCached(slugs[i], (d, t) => { $('libStatus').textContent = `Letöltés ${i + 1}/${slugs.length}: ${niceName(slugs[i])} – ${d}/${t} hangfájl`; });
+    }
+    $('libStatus').textContent = 'Minden sziget letöltve, internet nélkül is használható.';
+  } catch (e) { $('libStatus').textContent = 'Letöltési hiba: ' + e.message; }
+  finally { $('downloadAll').disabled = false; listLibrary(); }
+}
+async function uploadIsland() {
+  if (!signedIn()) { $('libStatus').textContent = 'Előbb jelentkezz be.'; return; }
+  const name = $('libName').value.trim(), txt = $('libTxt').files[0], a = [...$('libL1').files], b = [...$('libL2').files];
+  if (!name || !txt) { $('libStatus').textContent = 'Add meg a sziget nevét és válaszd ki a TXT-t.'; return; }
+  const slug = slugify(name);
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) { $('libStatus').textContent = 'Adj meg érvényes szigetnevet.'; return; }
+  try {
+    const { pairs, skipped } = parse(await txt.text());
+    const existing = (await listFolder('')).some(x => x.name === slug && isFolder(x));
+    if (existing && !confirm('Már létezik ilyen nevű sziget (' + name + '). Az azonos nevű fájlok felülíródnak. Folytatod?')) return;
+    if (!a.length || !b.length) { if (!confirm('Nem választottál ki minden hangfájlcsoportot. Folytatod?')) return; }
+    $('uploadIsland').disabled = true;
+    let { error } = await client.storage.from(BUCKET).upload(slug + '/tananyag.txt', txt, { upsert: true, contentType: 'text/plain' }); if (error) throw error;
+    const jobs = [];
+    for (const [folder, files] of [['L1', a], ['L2', b]]) for (const file of files) {
+      const n = idxName(file.name); if (!n) continue;
+      const ext = (file.name.match(/\.[^.]+$/) || ['.mp3'])[0].toLowerCase();
+      jobs.push(async () => { const r = await client.storage.from(BUCKET).upload(`${slug}/${folder}/${pad(n)}${ext}`, file, { upsert: true, contentType: file.type || 'audio/mpeg' }); if (r.error) throw r.error; });
+    }
+    await pool(jobs, 4, (d, t) => { $('libStatus').textContent = `Feltöltés: ${d}/${t} hangfájl…`; });
+    $('libStatus').textContent = `Feltöltve: ${pairs.length} mondatpár, ${a.length} magyar és ${b.length} olasz hangfájl.` + (skipped.length ? ` Kihagyott sorok (nincs „ - ”): ${skipped.join(', ')}.` : '');
+    $('libName').value = ''; $('libTxt').value = ''; $('libL1').value = ''; $('libL2').value = '';
+    await listLibrary();
+  } catch (e) { $('libStatus').textContent = 'Feltöltési hiba: ' + e.message; }
+  finally { $('uploadIsland').disabled = false; }
+}
+
+// ============================================================
+// SZIGET MEGNYITÁSA
+// ============================================================
+async function openIsland(slug) {
+  $('status').textContent = 'Sziget betöltése…';
+  let rec = await idb.get('islands', slug).catch(() => null);
+  if (signedIn() && online() && librarySlugs().includes(slug)) {
+    try { rec = await ensureIslandCached(slug, (d, t) => { $('status').textContent = `Hangfájlok letöltése: ${d}/${t}`; }); }
+    catch (e) { if (!rec) throw e; $('status').textContent = 'Frissítés nem sikerült, a készüléken lévő változatot használom.'; }
+  }
+  if (!rec || !rec.txt) throw new Error('Ez a sziget nincs letöltve erre a készülékre, és most nem érhető el a felhő.');
+  const { pairs, skipped } = parse(rec.txt);
+  setCurrent(slug, pairs);
+  const nAudio = Object.keys(rec.files || {}).length;
+  $('status').textContent = `Betöltve: ${niceName(slug)} – ${pairs.length} mondatpár, ${nAudio} hangfájl.` + (skipped.length ? ` Kihagyott sorok: ${skipped.join(', ')}.` : '');
+}
+function setCurrent(slug, pairs, extraLegacy) {
+  current = { slug, pairs };
+  const prog = getProg(slug);
+  migrateLegacy(slug, pairs, extraLegacy);
+  prog.total = pairs.length;
+  for (const p of pairs) { const c = prog.cards[p.k]; if (c) { c.hu = p.hu; c.it = p.it; c.n = p.n; } }
+  saveProg(slug);
+}
+async function loadFromFiles() {
+  const f = $('txt').files[0];
+  if (!f) { $('status').textContent = 'Válaszd ki a TXT-t!'; return; }
+  const stem = f.name.replace(/\.[^.]+$/, ''), slug = slugify(stem);
+  const { pairs, skipped } = parse(await f.text());
+  const rec = { slug, txt: await f.text(), txtUpdated: 'local-' + f.lastModified, files: {}, source: 'local', cachedAt: Date.now() };
+  let n1 = 0, n2 = 0;
+  for (const [folder, files] of [['L1', $('l1').files], ['L2', $('l2').files]]) for (const file of files) {
+    const n = idxName(file.name); if (!n) continue;
+    await putAudio(slug, folder, n, file); rec.files[`${slug}|${folder}|${n}`] = 'local-' + file.lastModified;
+    folder === 'L1' ? n1++ : n2++;
+  }
+  // Ha korábban már volt ilyen sziget a készüléken, a régi hangok megmaradnak, ha most nem adtál meg újat
+  const old = await idb.get('islands', slug).catch(() => null);
+  if (old && !n1 && !n2) rec.files = old.files || {};
+  await idb.put('islands', slug, rec).catch(() => {});
+  // V8-as helyi haladás (a fájlnév volt a kulcs)
+  const extraLegacy = stem !== slug ? loadJSON(LS + stem, null) : null;
+  setCurrent(slug, pairs, extraLegacy && extraLegacy.v !== 2 ? extraLegacy : null);
+  if (extraLegacy && extraLegacy.v !== 2) { localStorage.removeItem(LS + stem); localStorage.removeItem('nyelvisziget-position:' + stem); delete progress[stem]; }
+  const have = folder => new Set(Object.keys(rec.files).filter(k => k.includes('|' + folder + '|')).map(k => +k.split('|')[2]));
+  const miss = set => pairs.filter(p => !set.has(p.n)).map(p => p.n);
+  const m1 = miss(have('L1')), m2 = miss(have('L2'));
+  $('status').textContent = `Betöltve ${pairs.length} pár (${niceName(slug)}). Hiányzó magyar hang: ${m1.length ? m1.join(', ') : 'nincs'}; olasz: ${m2.length ? m2.join(', ') : 'nincs'}.` + (skipped.length ? ` Kihagyott sorok: ${skipped.join(', ')}.` : '');
+  startSession($('mode').value);
+  listLibrary();
+}
+
+// ============================================================
+// GYAKORLÓ KÖR
+// ============================================================
+function pickDir() { const d = $('dir').value; return d === 'mix' ? (Math.random() < 0.5 ? 'hu-it' : 'it-hu') : d; }
+const toItem = (slug, p) => ({ slug, k: p.k, hu: p.hu, it: p.it, n: p.n, dir: pickDir() });
+
+function dueItemsFor(slug, pairs, newBudget) {
+  const prog = getProg(slug), now = Date.now(), reviews = [], fresh = [];
+  for (const [k, c] of Object.entries(prog.cards)) if (c.reps > 0 && c.due <= now) reviews.push({ slug, k, hu: c.hu, it: c.it, n: c.n, due: c.due });
+  if (pairs) for (const p of pairs) { if (fresh.length >= newBudget) break; const c = prog.cards[p.k]; if (!c || !c.reps) fresh.push(toItem(slug, p)); }
+  reviews.sort((a, b) => a.due - b.due);
+  return { reviews: reviews.map(r => ({ ...r, dir: pickDir() })), fresh };
+}
+function interleave(reviews, fresh) { // minden 3. ismétlés után egy új mondat
+  const out = []; let f = 0;
+  reviews.forEach((r, i) => { out.push(r); if ((i + 1) % 3 === 0 && f < fresh.length) out.push(fresh[f++]); });
+  while (f < fresh.length) out.push(fresh[f++]);
+  return out;
+}
+
+function startSession(mode) {
+  if (!current) return;
+  const { slug, pairs } = current;
+  if (mode === 'due') {
+    const { reviews, fresh } = dueItemsFor(slug, pairs, newLeftToday());
+    const items = interleave(reviews, fresh);
+    if (!items.length) { $('study').classList.add('hidden'); $('status').textContent = 'Ebben a szigetben most nincs esedékes ismétlés, és a mai új mondatok limitje elfogyott (vagy nincs több új mondat). Válaszd a „Tanulás” vagy az „Összes mondat” módot.'; return; }
+    sess = { title: niceName(slug), items, pos: 0, rated: true, single: null };
+    $('status').textContent = `${reviews.length} esedékes ismétlés és ${fresh.length} új mondat.`;
+  } else {
+    const prog = getProg(slug);
+    sess = { title: niceName(slug), items: pairs.map(p => toItem(slug, p)), pos: Math.min(Math.max(0, prog.pos || 0), pairs.length - 1), rated: mode === 'all', single: slug };
+  }
+  render(); $('study').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function startMulti(title, builder) {
+  const items = await builder();
+  if (!items.length) return false;
+  sess = { title, items, pos: 0, rated: true, single: null };
+  render(); $('study').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  return true;
+}
+
+function render() {
+  if (!sess || !sess.items.length) { $('study').classList.add('hidden'); return; }
+  $('study').classList.remove('hidden');
+  const it = sess.items[sess.pos];
+  $('question').textContent = it.dir === 'hu-it' ? it.hu : it.it;
+  $('answer').textContent = it.dir === 'hu-it' ? it.it : it.hu;
+  $('answrap').classList.add('hidden'); $('show').classList.remove('hidden');
+  $('ratingArea').classList.toggle('hidden', !sess.rated);
+  $('hideAnswer').classList.toggle('hidden', sess.rated);
+  $('shuffle').classList.toggle('hidden', !sess.single);
+  $('count').textContent = `${sess.pos + 1} / ${sess.items.length} · ${it.n}. mondat` + (sess.single ? '' : ' · ' + niceName(it.slug));
+  $('island').textContent = sess.title;
+  if (sess.rated) {
+    const now = Date.now(), old = getProg(it.slug).cards[it.k];
+    document.querySelectorAll('[data-rate]').forEach(b => { b.querySelector('small').textContent = describeDue(schedule(old, b.dataset.rate, now).card, now); });
+  }
+  prepareAudio(it);
+}
+const ensuredOnce = new Set();
+async function prepareAudio(it) {
+  for (const a of Object.values(preparedAudio)) { try { a.pause(); URL.revokeObjectURL(a.src); } catch {} }
+  preparedAudio = {};
+  const token = it;
+  for (const [lang, folder] of [['hu', 'L1'], ['it', 'L2']]) {
+    let blob = await getAudioBlob(it.slug, folder, it.n);
+    if (!blob && signedIn() && online() && librarySlugs().includes(it.slug) && !ensuredOnce.has(it.slug)) {
+      ensuredOnce.add(it.slug);
+      try { await ensureIslandCached(it.slug); blob = await getAudioBlob(it.slug, folder, it.n); } catch {}
+    }
+    if (sess && sess.items[sess.pos] !== token) return; // közben továbbléptünk
+    if (blob) { const a = new Audio(URL.createObjectURL(blob)); a.preload = 'auto'; preparedAudio[lang] = a; }
+  }
+}
+function play(lang) {
+  const a = preparedAudio[lang];
+  if (!a) { $('status').textContent = 'Ehhez a mondathoz nincs hangfájl (vagy még töltődik).'; return; }
+  try { a.pause(); a.currentTime = 0; } catch {}
+  a.playbackRate = Number($(lang === 'hu' ? 'l1Speed' : 'l2Speed').value);
+  a.play().catch(() => { $('status').textContent = 'Nem sikerült lejátszani a hangot.'; });
+}
+const qLang = () => sess.items[sess.pos].dir === 'hu-it' ? 'hu' : 'it';
+const aLang = () => sess.items[sess.pos].dir === 'hu-it' ? 'it' : 'hu';
+
+function savePos() {
+  if (!sess || !sess.single) return;
+  const prog = getProg(sess.single); prog.pos = sess.pos; prog.posAt = Date.now(); saveProg(sess.single);
+}
+function advance() {
+  if (sess.pos < sess.items.length - 1) { sess.pos++; render(); savePos(); return; }
+  $('study').classList.add('hidden');
+  $('status').textContent = 'A kör végére értél. Szép munka!';
+  renderStats(); loadDailyReview(); renderHard();
+}
+function rate(v) {
+  const it = sess.items[sess.pos], prog = getProg(it.slug), now = Date.now();
+  const old = prog.cards[it.k], wasNew = !old || !old.reps;
+  const { card, requeue } = schedule(old, v, now);
+  Object.assign(card, { hu: it.hu, it: it.it, n: it.n });
+  prog.cards[it.k] = card; saveProg(it.slug);
+  recordRating(v, wasNew);
+  if (requeue) sess.items.splice(Math.min(sess.items.length, sess.pos + 1 + requeue), 0, { ...it });
+  const msg = v === 'again' ? 'Nem ment: néhány mondat múlva újra előjön.' : v === 'hard' && card.interval < 1 ? 'Nehéz: hamarosan újra előjön.' : 'Következő ismétlés: ' + describeDue(card, now) + '.';
+  advance();
+  if (sess && !$('study').classList.contains('hidden')) $('status').textContent = msg;
+}
+
+// ============================================================
+// MAI ISMÉTLÉSEK (minden szigetből)
+// ============================================================
+async function knownIslands() {
+  const set = new Set([...librarySlugs(), ...(await cachedSlugs())]);
+  for (const s of allProgSlugs()) if (Object.keys(getProg(s).cards).length || getProg(s).legacy) set.add(s);
+  return [...set].sort();
+}
+function countDue(slug) {
+  const prog = getProg(slug), now = Date.now(); let due = 0, seen = 0;
+  for (const c of Object.values(prog.cards)) if (c.reps > 0) { seen++; if (c.due <= now) due++; }
+  if (prog.legacy) for (const [k, v] of Object.entries(prog.legacy)) if (/^\d+$/.test(k) && v && v.lastReviewed) { seen++; if (Number(v.due || 0) <= now) due++; }
+  return { due, seen, fresh: Math.max(0, (prog.total || 0) - seen), total: prog.total || 0 };
+}
+async function loadDailyReview() {
+  const host = $('dailyList'); host.innerHTML = '';
+  try { if (signedIn() && online()) await pullAll(); } catch (e) { $('dailyStatus').textContent = 'Felhő most nem érhető el, a készüléken lévő adatokból számolok.'; }
+  const cached = new Set(await cachedSlugs());
+  const left = newLeftToday(); let totalDue = 0, shown = 0;
+  for (const slug of await knownIslands()) {
+    const c = countDue(slug);
+    // új mondatot csak már elkezdett szigetből ajánlunk (különben 90+ sziget lenne a listán)
+    const freshNow = c.seen > 0 ? Math.min(c.fresh, left) : 0;
+    if (!c.due && !freshNow) continue;
+    totalDue += c.due; shown++;
+    const row = document.createElement('div'); row.className = 'cloud item';
+    const info = document.createElement('div'); const t = document.createElement('strong'); t.textContent = niceName(slug);
+    if (!cached.has(slug)) { const b = document.createElement('span'); b.className = 'badge off'; b.textContent = 'nincs letöltve'; t.append(b); }
+    const sub = document.createElement('div'); sub.className = 'muted'; sub.textContent = `${c.due} esedékes ismétlés` + (freshNow ? ` · ${c.fresh} még nem tanult mondat` : '');
+    info.append(t, sub);
+    const btn = document.createElement('button'); btn.textContent = 'Indítás';
+    btn.onclick = async () => {
+      btn.disabled = true; btn.textContent = 'Betöltés…';
+      try { await openIsland(slug); $('mode').value = 'due'; saveSettings(); startSession('due'); }
+      catch (e) { $('dailyStatus').textContent = 'Nem sikerült elindítani: ' + e.message; }
+      finally { btn.disabled = false; btn.textContent = 'Indítás'; }
+    };
+    row.append(info, btn); host.append(row);
+  }
+  $('dailyStatus').textContent = shown ? `Összesen ${totalDue} esedékes ismétlés ${shown} szigetben. Ma még ${left} új mondat vehető fel.` : `Most nincs esedékes ismétlés. Ma még ${left} új mondat vehető fel – nyiss meg egy szigetet „Esedékes” módban.`;
+  renderStats();
+}
+async function startDailyAll() {
+  try { if (signedIn() && online()) await pullAll(); } catch {}
+  let budget = newLeftToday();
+  const ok = await startMulti('Minden esedékes', async () => {
+    const reviews = [], fresh = [];
+    for (const slug of await knownIslands()) {
+      let pairs = null;
+      if (budget > 0 && countDue(slug).total && Object.keys(getProg(slug).cards).length) {
+        const rec = await idb.get('islands', slug).catch(() => null);
+        if (rec && rec.txt) { try { pairs = parse(rec.txt).pairs; migrateLegacy(slug, pairs); } catch {} }
+      }
+      const r = dueItemsFor(slug, pairs, budget); reviews.push(...r.reviews); fresh.push(...r.fresh); budget -= r.fresh.length;
+    }
+    reviews.sort(() => Math.random() - 0.5);
+    return interleave(reviews, fresh);
+  });
+  $('dailyStatus').textContent = ok ? 'Közös ismétlés elindítva az összes szigetből.' : 'Most nincs esedékes mondat.';
+}
+
+// ============================================================
+// NEHÉZ MONDATAIM
+// ============================================================
+function hardItems() {
+  const out = [];
+  for (const slug of allProgSlugs()) for (const [k, c] of Object.entries(getProg(slug).cards)) if (isHard(c)) out.push({ slug, k, hu: c.hu, it: c.it, n: c.n, ease: c.ease, lapses: c.lapses || 0 });
+  out.sort((a, b) => (a.ease - b.ease) || (b.lapses - a.lapses));
+  return out;
+}
+function renderHard() {
+  const list = hardItems(), host = $('hardList'); host.innerHTML = '';
+  $('hardStatus').textContent = list.length ? `${list.length} nehéz mondat.` : 'Jelenleg nincs nehéz mondat. 👍';
+  for (const h of list.slice(0, 40)) {
+    const d = document.createElement('div'); d.className = 'hard';
+    const a = document.createElement('div'); a.textContent = h.hu + ' – ' + h.it;
+    const b = document.createElement('div'); b.className = 'muted'; b.textContent = niceName(h.slug) + ' · ' + h.n + '. mondat';
+    d.append(a, b); host.append(d);
+  }
+  if (list.length > 40) { const m = document.createElement('p'); m.className = 'muted'; m.textContent = `… és még ${list.length - 40}.`; host.append(m); }
+}
+
+// ============================================================
+// FELHASZNÁLÓ / BEJELENTKEZÉS
+// ============================================================
+function setAuthUI() {
+  const s = !!auth;
+  $('signout').classList.toggle('hidden', !s); $('signin').classList.toggle('hidden', s); $('signup').classList.toggle('hidden', s);
+  $('email').disabled = s; $('password').disabled = s;
+  if (s) {
+    $('authStatus').textContent = 'Bejelentkezve: ' + auth.user.email + '.';
+    listLibrary(); loadDailyReview().then(renderHard); flush();
+  } else if (client) { $('authStatus').textContent = 'Nincs bejelentkezve. A készüléken minden működik, de nincs szinkronizálás.'; listLibrary(); }
+}
+async function authAction(type) {
+  if (!client) { $('authStatus').textContent = 'A felhő nem érhető el (nincs internet, vagy hiányzik a Supabase beállítás).'; return; }
+  const email = $('email').value.trim(), password = $('password').value;
+  if (!email || !password) { $('authStatus').textContent = 'Add meg az e-mail-címedet és a jelszavadat.'; return; }
+  try {
+    $('authStatus').textContent = 'Folyamatban…';
+    const r = type === 'signup' ? await client.auth.signUp({ email, password }) : await client.auth.signInWithPassword({ email, password });
+    if (r.error) throw r.error;
+    if (type === 'signup' && !r.data.session) { $('authStatus').textContent = 'A fiók létrejött. Erősítsd meg az e-mail-címedet, majd jelentkezz be.'; return; }
+    auth = r.data.session; setAuthUI();
+  } catch (e) { $('authStatus').textContent = 'Bejelentkezési hiba: ' + e.message; }
+}
+
+// ============================================================
+// BEÁLLÍTÁSOK
+// ============================================================
+function saveSettings() { saveJSON('nyelvisziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked }); }
+function loadSettings() {
+  const s = loadJSON('nyelvisziget-settings', {});
+  if (s.direction) $('dir').value = s.direction; if (s.mode) $('mode').value = s.mode;
+  if (s.l1Speed) $('l1Speed').value = s.l1Speed; if (s.l2Speed) $('l2Speed').value = s.l2Speed;
+  if (s.newLimit !== undefined) $('newLimit').value = s.newLimit; if (s.autoAnswer !== undefined) $('autoAnswer').checked = s.autoAnswer;
+}
+function updateSpeedLabels() { $('l1Val').textContent = Math.round($('l1Speed').value * 100) + '%'; $('l2Val').textContent = Math.round($('l2Speed').value * 100) + '%'; }
+function updateNet() { $('netStatus').textContent = online() ? '' : 'Nincs internet – offline mód. A haladás a készüléken mentődik, és később szinkronizálódik.'; }
+
+// ============================================================
+// ESEMÉNYEK
+// ============================================================
+$('signup').onclick = () => authAction('signup');
+$('signin').onclick = () => authAction('signin');
+$('signout').onclick = async () => { await flush(); if (client) await client.auth.signOut(); auth = null; setAuthUI(); };
+$('refreshLibrary').onclick = listLibrary;
+$('downloadAll').onclick = downloadAll;
+$('uploadIsland').onclick = uploadIsland;
+$('loadDailyReview').onclick = loadDailyReview;
+$('dailyAll').onclick = startDailyAll;
+$('hardRefresh').onclick = async () => { try { if (signedIn() && online()) await pullAll(); } catch {} renderHard(); };
+$('hardPractice').onclick = async () => {
+  const ok = await startMulti('Nehéz mondataim', async () => hardItems().map(h => ({ ...h, dir: pickDir() })));
+  if (!ok) $('hardStatus').textContent = 'Nincs nehéz mondat.';
+};
+$('load').onclick = () => loadFromFiles().catch(e => { $('status').textContent = e.message; });
+$('show').onclick = () => { $('answrap').classList.remove('hidden'); $('show').classList.add('hidden'); if ($('autoAnswer').checked) play(aLang()); };
+$('hideAnswer').onclick = () => { $('answrap').classList.add('hidden'); $('show').classList.remove('hidden'); };
+$('qAudio').onclick = () => play(qLang());
+$('aAudio').onclick = () => play(aLang());
+$('next').onclick = () => sess && advance();
+$('prev').onclick = () => { if (sess && sess.pos) { sess.pos--; render(); savePos(); } };
+$('shuffle').onclick = () => { if (!sess) return; for (let i = sess.items.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sess.items[i], sess.items[j]] = [sess.items[j], sess.items[i]]; } sess.pos = 0; sess.single = null; render(); };
+document.querySelectorAll('[data-rate]').forEach(b => b.onclick = () => sess && rate(b.dataset.rate));
+$('mode').onchange = () => { saveSettings(); if (current) startSession($('mode').value); };
+$('dir').onchange = () => { saveSettings(); if (sess) { sess.items.forEach(i => i.dir = pickDir()); render(); } };
+$('newLimit').onchange = () => { saveSettings(); renderStats(); };
+$('autoAnswer').onchange = saveSettings;
+$('l1Speed').oninput = () => { saveSettings(); updateSpeedLabels(); };
+$('l2Speed').oninput = () => { saveSettings(); updateSpeedLabels(); };
+$('clear').onclick = () => {
+  if (!current || !confirm('Törlöd a(z) „' + niceName(current.slug) + '” sziget mentett haladását?')) return;
+  progress[current.slug] = { ...emptyProg(), total: current.pairs.length, posAt: Date.now() }; saveProg(current.slug);
+  startSession($('mode').value); $('status').textContent = 'Haladás törölve.'; renderStats(); renderHard();
+};
+$('export').onclick = () => {
+  if (!current) return alert('Előbb tölts be egy szigetet.');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify({ island: current.slug, progress: getProg(current.slug) }, null, 2)], { type: 'application/json' }));
+  a.download = current.slug + '-haladas.json'; a.click();
+};
+$('import').onchange = async e => {
+  try {
+    const d = JSON.parse(await e.target.files[0].text());
+    if (!current) throw new Error('Előbb tölts be egy szigetet.');
+    const remote = normalizeRemote(d.progress);
+    const { merged } = mergeProg(getProg(current.slug), remote);
+    progress[current.slug] = merged; migrateLegacy(current.slug, current.pairs); saveProg(current.slug);
+    startSession($('mode').value); $('status').textContent = 'Haladás visszatöltve.'; renderStats();
+  } catch (err) { $('status').textContent = 'Nem sikerült a JSON-t beolvasni: ' + err.message; }
+};
+window.addEventListener('online', () => { updateNet(); flush(); });
+window.addEventListener('offline', updateNet);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+window.addEventListener('pagehide', () => flush());
+
+// ============================================================
+// INDÍTÁS
+// ============================================================
+loadSettings(); updateSpeedLabels(); updateNet(); renderStats(); renderHard();
+const configured = SUPABASE_URL.startsWith('https://') && SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
+if (configured && window.supabase) {
+  client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  $('authStatus').textContent = 'Kapcsolódás…';
+  client.auth.getSession().then(({ data }) => { auth = data.session; setAuthUI(); }).catch(() => setAuthUI());
+  client.auth.onAuthStateChange((ev, s) => { const was = !!auth; auth = s; if (was !== !!s) setAuthUI(); });
+} else {
+  $('authStatus').textContent = configured ? 'A felhő most nem érhető el (offline). A letöltött szigetek használhatók.' : 'A Supabase-adatok nincsenek kitöltve a fájl elején.';
+  listLibrary(); loadDailyReview();
+}
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  navigator.serviceWorker.register('sw.js').catch(e => console.warn('Service worker:', e));
+} else if (location.protocol === 'file:') {
+  $('netStatus').textContent = 'Fájlként megnyitva: az offline mód csak webcímről (https) megnyitva működik teljesen.';
+}
+// a kötegelt felhőmentés tesztelhetősége miatt
+window.__nyelvisziget = { schedule, studyDay, dueAfterDays, parse, getProg, stats: () => stats, flushNow: flush };
 })();
-</script></body></html>
+</script>
+</body>
+</html>
