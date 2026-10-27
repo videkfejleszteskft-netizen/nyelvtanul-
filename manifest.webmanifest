@@ -1,0 +1,14 @@
+{
+  "name": "Nyelvi sziget – olasz gyakorló",
+  "short_name": "Nyelvi sziget",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f5f7",
+  "theme_color": "#243b53",
+  "lang": "hu",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

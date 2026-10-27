@@ -1,0 +1,50 @@
+NYELVI SZIGET GYAKORLÓ – V9
+===========================
+
+TELEPÍTÉS
+- Mind a 7 fájlt (index.html, sw.js, manifest.webmanifest, icon-192.png, icon-512.png,
+  apple-touch-icon.png, OLVASS_EL.txt) ugyanabba a mappába töltsd fel, ahol eddig az
+  index.html volt (ugyanarra a webcímre).
+- Az offline működés csak https-webcímről megnyitva működik, fájlként megnyitva nem.
+- iPhone: nyisd meg Safariban → Megosztás → „Főképernyőhöz adás”. Ha a régi ikon már
+  kint van, töröld, és add hozzá újra, hogy az új ikont és az offline módot kapja meg.
+- Ha később módosítod az index.html-t, a sw.js elején emeld meg a verziót
+  (nyelvisziget-v9-1 → v9-2), így a telefon is biztosan frissül.
+- FONTOS: a laptopon és az iPhone-on is a V9-et használd. A régi V8 nem érti az új
+  mentési formát.
+
+MI VÁLTOZOTT
+- A haladás a mondat szövegéhez kötődik. Sort beszúrhatsz vagy törölhetsz a txt-ben,
+  az értékelések nem csúsznak el. A V8-as haladást az első megnyitáskor magától átveszi.
+- Hangfájlok: a hanganyag-programok (v5, v2) mostantól az
+  output/gyakorlo/<sziget>/ mappába a txt-t és az L1/01.mp3…, L2/01.mp3… fájlokat is
+  elkészítik. Ezeket töltsd fel / válaszd ki.
+- A könyvtár lapozva tölt, nincs 100-as korlát.
+- „Esedékes” mód mindenhol ugyanaz: esedékes ismétlések + napi limitig új mondatok
+  (alapból 10/nap, a beállításoknál állítható).
+- Ütemezés (Anki-szerű):
+    Nem ment → 1 perc múlva, a körön belül 3 mondat múlva újra előjön
+    Nehéz   → a még tanulás alatt lévő mondat 10 perc / 5 mondat múlva;
+              a már tanult mondatnál kb. +20% időköz (nem nullázza le)
+    Jól ment → 1 nap → 3 nap → utána időköz × nehézségi érték (kezdetben 2,5)
+    Könnyű  → nagyobb ugrás, és könnyebbnek jelöli a mondatot
+  Minden mondatnak saját nehézségi értéke van. A nap hajnali 4-kor fordul.
+  A gombokon látod, mikor jönne újra a mondat.
+- „Minden esedékes egyben”: egy körben az összes szigetből.
+- „Nehéz mondataim”: az utolsó 4 értékelésből legalább 2 „Nem ment”/„Nehéz”, vagy
+  az utolsó „Nem ment” volt. Egy gombbal gyakorolhatók együtt.
+- Statisztika: napos sorozat, mai ismétlések, ebből hány ment jól, mai új mondatok.
+- Offline: a megnyitott sziget (txt + hangok) a készüléken marad. „Összes letöltése
+  offline használatra” egyszerre letölt mindent. Később csak a megváltozott fájlokat
+  tölti le újra.
+- Felhőmentés néhány másodpercenként összevonva. Internet nélkül sorba áll, és amikor
+  újra van net, elküldi.
+- A válasz felfedésekor magától megszólal a válasz hangja (kikapcsolható).
+
+BIZTONSÁG (Supabase)
+- Authentication → Sign In / Providers: kapcsold ki az új regisztrációt („Allow new
+  users to sign up”), miután a saját fiókod megvan.
+- Ellenőrizd, hogy a learning_progress táblán be van-e kapcsolva az RLS, és hogy a
+  szabály a saját sorokra szűkít: user_id = auth.uid().
+- A V9 ugyanazt a táblát használja, sémaváltozás nem kell. A statisztika egy
+  „__stats__” nevű sorba kerül.
