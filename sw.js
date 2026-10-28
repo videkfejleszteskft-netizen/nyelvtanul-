@@ -1,6 +1,6 @@
 // Nyelvi sziget V9 – service worker (offline működés)
-// Ha frissíted az index.html-t, emeld meg a verziószámot, hogy a telefon is frissüljön.
-const CACHE = 'nyelvisziget-v9-2';
+// V9-3: kényszerített frissítés az új, végtelen tanuló módhoz.
+const CACHE = 'nyelvisziget-v9-3';
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
@@ -9,7 +9,7 @@ self.addEventListener('install', e => {
     const c = await caches.open(CACHE);
     await c.addAll(SHELL);
     try { await c.add(new Request(SUPABASE_JS, { mode: 'cors' })); } catch (err) { /* később, első használatkor kerül be */ }
-    self.skipWaiting();
+    await self.skipWaiting();
   })());
 });
 
@@ -24,19 +24,26 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.hostname.endsWith('supabase.co')) return;          // felhő: mindig hálózat
-  if (req.mode === 'navigate') {                              // az oldal: előbb hálózat, offline a tárolt
+  if (url.hostname.endsWith('supabase.co')) return; // felhő: mindig hálózat
+  if (req.mode === 'navigate') {
     e.respondWith((async () => {
-      try { const r = await fetch(req); (await caches.open(CACHE)).put('index.html', r.clone()); return r; }
-      catch { return (await caches.match('index.html')) || (await caches.match('./')); }
+      try {
+        const r = await fetch(req, { cache: 'no-store' });
+        if (r && r.ok) (await caches.open(CACHE)).put('index.html', r.clone());
+        return r;
+      } catch {
+        return (await caches.match('index.html')) || (await caches.match('./'));
+      }
     })());
     return;
   }
-  e.respondWith((async () => {                                // egyéb: előbb tárolt
+  e.respondWith((async () => {
     const hit = await caches.match(req);
     if (hit) return hit;
     const r = await fetch(req);
-    if (r.ok && (url.origin === location.origin || url.hostname === 'cdn.jsdelivr.net')) (await caches.open(CACHE)).put(req, r.clone());
+    if (r.ok && (url.origin === location.origin || url.hostname === 'cdn.jsdelivr.net')) {
+      (await caches.open(CACHE)).put(req, r.clone());
+    }
     return r;
   })());
 });
