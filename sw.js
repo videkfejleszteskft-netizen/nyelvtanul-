@@ -1,6 +1,6 @@
 // Nyelvi sziget V9 – service worker (offline működés)
-// V9-3: kényszerített frissítés az új, végtelen tanuló módhoz.
-const CACHE = 'nyelvisziget-v9-3';
+// V10-1: frissítés a könyvtár, ismétlések és nehéz mondatok módosításaihoz.
+const CACHE = 'nyelvisziget-v10-1';
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
