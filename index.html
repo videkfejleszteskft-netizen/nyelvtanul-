@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V9</title>
+<title>Nyelvi sziget – V10</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -42,7 +42,7 @@ details summary{cursor:pointer;font-weight:600}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V9-3</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V10</div></header>
 <main>
 
 <section class="box"><h3>Statisztika</h3>
@@ -156,6 +156,7 @@ const memAudio = new Map();     // tartalék, ha nincs IndexedDB
 let stats = loadJSON('nyelvisziget-stats', { v: 1, days: {} });
 const dirty = new Set(loadJSON('nyelvisziget-dirty', []));
 let flushTimer = null, flushing = false;
+let libraryRenderToken = 0, dailyRenderToken = 0;
 
 // ============================================================
 // SEGÉDFÜGGVÉNYEK
@@ -258,7 +259,7 @@ async function cachedSlugs() { return (await idb.keys('islands').catch(() => [])
 // ============================================================
 // HALADÁS – a mondat szövegéhez kötve
 // ============================================================
-const emptyProg = () => ({ v: 2, cards: {}, pos: 0, posAt: 0, total: 0 });
+const emptyProg = () => ({ v: 2, cards: {}, pos: 0, posAt: 0, total: 0, resetAt: 0 });
 function getProg(slug) {
   if (!progress[slug]) {
     const p = loadJSON(LS + slug, null);
@@ -289,21 +290,44 @@ function migrateLegacy(slug, pairs, extraLegacy) {
 }
 function normalizeRemote(obj) { return obj && obj.v === 2 ? obj : { ...emptyProg(), legacy: obj || {} }; }
 function mergeProg(local, remote) {
-  const merged = { ...emptyProg(), ...remote, cards: { ...(remote.cards || {}) } };
-  let remoteStale = false;
-  for (const [k, c] of Object.entries(local.cards || {})) {
-    const r = merged.cards[k];
-    if (!r || (c.lastReviewed || 0) > (r.lastReviewed || 0)) { merged.cards[k] = c; remoteStale = true; }
+  const resetAt = Math.max(Number(local.resetAt) || 0, Number(remote.resetAt) || 0);
+  const merged = { ...emptyProg(), ...remote, resetAt, cards: {} };
+  let remoteStale = (Number(local.resetAt) || 0) > (Number(remote.resetAt) || 0);
+
+  // A törlés előtti kártyákat ne élessze újra a másik készülék régi felhőadata.
+  const sources = [
+    { cards: remote.cards || {}, isLocal: false },
+    { cards: local.cards || {}, isLocal: true }
+  ];
+  for (const source of sources) {
+    for (const [k, c] of Object.entries(source.cards)) {
+      if (!c || (Number(c.lastReviewed) || 0) <= resetAt) continue;
+      const existing = merged.cards[k];
+      if (!existing || (Number(c.lastReviewed) || 0) > (Number(existing.lastReviewed) || 0)) {
+        merged.cards[k] = { ...c };
+        if (source.isLocal) remoteStale = true;
+      } else if ((Number(c.lastReviewed) || 0) === (Number(existing.lastReviewed) || 0)) {
+        const dismissAt = Math.max(Number(existing.hardDismissedAt) || 0, Number(c.hardDismissedAt) || 0);
+        if (dismissAt) existing.hardDismissedAt = dismissAt;
+        if (source.isLocal && JSON.stringify(c) !== JSON.stringify(existing)) remoteStale = true;
+      }
+    }
   }
   if ((local.posAt || 0) > (remote.posAt || 0)) { merged.pos = local.pos; merged.posAt = local.posAt; remoteStale = true; }
   merged.total = local.total || remote.total || 0;
   if (local.total && local.total !== remote.total) remoteStale = true;
-  const legacy = local.legacy || remote.legacy;
-  if (legacy && Object.keys(legacy).length) merged.legacy = legacy; else delete merged.legacy;
+
+  // Ha volt ismétlési törlés, a régi (sorszámos) haladást sem szabad visszahozni.
+  if (!resetAt) {
+    const legacy = local.legacy || remote.legacy;
+    if (legacy && Object.keys(legacy).length) merged.legacy = legacy; else delete merged.legacy;
+  } else {
+    delete merged.legacy;
+  }
   return { merged, remoteStale };
 }
 function isHard(c) {
-  if (!c || !c.reps) return false;
+  if (!c || !c.reps || (Number(c.hardDismissedAt) || 0) > (Number(c.lastReviewed) || 0)) return false;
   if (c.last === 'again') return true;
   const h = (c.hist || '').slice(-4);
   return (h.match(/[ah]/g) || []).length >= 2;
@@ -446,7 +470,18 @@ async function listFolder(prefix) {
   return out;
 }
 async function download(path) { const { data, error } = await client.storage.from(BUCKET).download(path); if (error) throw error; return data; }
-const librarySlugs = () => loadJSON('nyelvisziget-library', []);
+function uniqueSlugs(items) {
+  const seen = new Set(), out = [];
+  for (const raw of items || []) {
+    const slug = String(raw || '').trim();
+    if (!slug) continue;
+    const key = slug.toLocaleLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key); out.push(slug);
+  }
+  return out;
+}
+const librarySlugs = () => uniqueSlugs(loadJSON('nyelvisziget-library', []));
 
 async function ensureIslandCached(slug, onTick) {
   const top = await listFolder(slug);
@@ -475,19 +510,24 @@ async function ensureIslandCached(slug, onTick) {
 }
 
 async function listLibrary() {
+  const token = ++libraryRenderToken;
   const host = $('islandList'); host.innerHTML = '';
   let slugs = librarySlugs();
   if (signedIn() && online()) {
     try {
       $('libStatus').textContent = 'Könyvtár betöltése…';
-      slugs = (await listFolder('')).filter(x => isFolder(x) && x.name && !x.name.startsWith('.')).map(x => x.name);
+      slugs = uniqueSlugs((await listFolder('')).filter(x => isFolder(x) && x.name && !x.name.startsWith('.')).map(x => x.name));
+      if (token !== libraryRenderToken) return;
       saveJSON('nyelvisziget-library', slugs);
     } catch (e) { $('libStatus').textContent = 'Könyvtárhiba: ' + e.message + '. A letöltött szigetek továbbra is elérhetők.'; }
   }
-  const cached = new Set(await cachedSlugs());
-  const all = [...new Set([...slugs, ...cached])].sort();
+  const cached = new Set(uniqueSlugs(await cachedSlugs()));
+  if (token !== libraryRenderToken) return;
+  slugs = uniqueSlugs(slugs);
+  const all = uniqueSlugs([...slugs, ...cached]).sort();
   if (!all.length) { $('libStatus').textContent = signedIn() ? 'Még nincs feltöltött sziget.' : 'Jelentkezz be a felhős könyvtárhoz.'; return; }
   for (const slug of all) {
+    if (token !== libraryRenderToken) return;
     const row = document.createElement('div'); row.className = 'cloud item';
     const label = document.createElement('div');
     label.innerHTML = '<strong></strong>'; label.firstChild.textContent = niceName(slug);
@@ -522,7 +562,7 @@ async function listLibrary() {
     }
     row.append(label, actions); host.append(row);
   }
-  $('libStatus').textContent = `Szigetek: ${all.length}, ebből a készüléken (offline): ${[...cached].length}.`;
+  if (token === libraryRenderToken) $('libStatus').textContent = `Szigetek: ${all.length}, ebből a készüléken (offline): ${[...cached].length}.`;
 }
 async function deleteIsland(slug, btn) {
   if (!confirm('Biztosan törlöd a „' + niceName(slug) + '” sziget összes fájlját a felhőből és a haladását? Ez nem vonható vissza.')) return;
@@ -754,7 +794,7 @@ function rate(v) {
   const it = sess.items[sess.pos], prog = getProg(it.slug), now = Date.now();
   const old = prog.cards[it.k], wasNew = !old || !old.reps;
   const { card, requeue } = schedule(old, v, now);
-  Object.assign(card, { hu: it.hu, it: it.it, n: it.n });
+  Object.assign(card, { hu: it.hu, it: it.it, n: it.n, hardDismissedAt: now });
   prog.cards[it.k] = card; saveProg(it.slug);
   recordRating(v, wasNew);
   if (requeue) sess.items.splice(Math.min(sess.items.length, sess.pos + 1 + requeue), 0, { ...it });
@@ -767,24 +807,32 @@ function rate(v) {
 // MAI ISMÉTLÉSEK (minden szigetből)
 // ============================================================
 async function knownIslands() {
-  const set = new Set([...librarySlugs(), ...(await cachedSlugs())]);
-  for (const s of allProgSlugs()) if (Object.keys(getProg(s).cards).length || getProg(s).legacy) set.add(s);
-  return [...set].sort();
+  const items = [...librarySlugs(), ...(await cachedSlugs())];
+  for (const s of allProgSlugs()) if (Object.keys(getProg(s).cards).length || getProg(s).legacy) items.push(s);
+  return uniqueSlugs(items).sort();
 }
 function countDue(slug) {
   const prog = getProg(slug), now = Date.now(); let due = 0, seen = 0;
-  for (const c of Object.values(prog.cards)) if (c.reps > 0) { seen++; if (c.due <= now) due++; }
-  if (prog.legacy) for (const [k, v] of Object.entries(prog.legacy)) if (/^\d+$/.test(k) && v && v.lastReviewed) { seen++; if (Number(v.due || 0) <= now) due++; }
+  for (const c of Object.values(prog.cards)) if (c.reps > 0 && (Number(c.lastReviewed) || 0) > (Number(prog.resetAt) || 0)) { seen++; if (c.due <= now) due++; }
+  if (!prog.resetAt && prog.legacy) for (const [k, v] of Object.entries(prog.legacy)) if (/^\d+$/.test(k) && v && v.lastReviewed) { seen++; if (Number(v.due || 0) <= now) due++; }
   return { due, seen, fresh: Math.max(0, (prog.total || 0) - seen), total: prog.total || 0 };
 }
 async function loadDailyReview() {
+  const token = ++dailyRenderToken;
   const host = $('dailyList'); host.innerHTML = '';
-  try { if (signedIn() && online()) await pullAll(); } catch (e) { $('dailyStatus').textContent = 'Felhő most nem érhető el, a készüléken lévő adatokból számolok.'; }
-  const cached = new Set(await cachedSlugs());
+  try {
+    if (signedIn() && online()) await pullAll();
+  } catch (e) {
+    if (token === dailyRenderToken) $('dailyStatus').textContent = 'Felhő most nem érhető el, a készüléken lévő adatokból számolok.';
+  }
+  if (token !== dailyRenderToken) return;
+  const cached = new Set(uniqueSlugs(await cachedSlugs()));
+  const slugs = await knownIslands();
+  if (token !== dailyRenderToken) return;
   const left = newLeftToday(); let totalDue = 0, shown = 0;
-  for (const slug of await knownIslands()) {
+  for (const slug of slugs) {
+    if (token !== dailyRenderToken) return;
     const c = countDue(slug);
-    // új mondatot csak már elkezdett szigetből ajánlunk (különben 90+ sziget lenne a listán)
     const freshNow = c.seen > 0 ? Math.min(c.fresh, left) : 0;
     if (!c.due && !freshNow) continue;
     totalDue += c.due; shown++;
@@ -793,6 +841,7 @@ async function loadDailyReview() {
     if (!cached.has(slug)) { const b = document.createElement('span'); b.className = 'badge off'; b.textContent = 'nincs letöltve'; t.append(b); }
     const sub = document.createElement('div'); sub.className = 'muted'; sub.textContent = `${c.due} esedékes ismétlés` + (freshNow ? ` · ${c.fresh} még nem tanult mondat` : '');
     info.append(t, sub);
+    const actions = document.createElement('div');
     const btn = document.createElement('button'); btn.textContent = 'Indítás';
     btn.onclick = async () => {
       btn.disabled = true; btn.textContent = 'Betöltés…';
@@ -800,9 +849,33 @@ async function loadDailyReview() {
       catch (e) { $('dailyStatus').textContent = 'Nem sikerült elindítani: ' + e.message; }
       finally { btn.disabled = false; btn.textContent = 'Indítás'; }
     };
-    row.append(info, btn); host.append(row);
+    const clear = document.createElement('button'); clear.className = 'alt'; clear.textContent = 'Ismétlések törlése';
+    clear.onclick = async () => {
+      if (!confirm('Törlöd a(z) „' + niceName(slug) + '” sziget ismétlési ütemezését? A tananyag és a hangfájlok megmaradnak, de az eddigi mondatértékelések ütemezése törlődik.')) return;
+      clear.disabled = true;
+      try {
+        const prog = getProg(slug);
+        prog.cards = {};
+        delete prog.legacy;
+        prog.resetAt = Date.now();
+        prog.pos = 0;
+        prog.posAt = prog.resetAt;
+        saveProg(slug);
+        renderStats(); renderHard();
+        await flush();
+        await loadDailyReview();
+        $('dailyStatus').textContent = 'Az ismétlési ütemezés törölve: ' + niceName(slug) + '. A tananyag megmaradt.';
+      } catch (e) {
+        $('dailyStatus').textContent = 'Nem sikerült törölni az ismétléseket: ' + e.message;
+      } finally { clear.disabled = false; }
+    };
+    actions.append(btn, clear);
+    row.append(info, actions); host.append(row);
   }
-  $('dailyStatus').textContent = shown ? `Összesen ${totalDue} esedékes ismétlés ${shown} szigetben. Ma még ${left} új mondat vehető fel.` : `Most nincs esedékes ismétlés. Ma még ${left} új mondat vehető fel – nyiss meg egy szigetet „Esedékes” módban.`;
+  if (token !== dailyRenderToken) return;
+  $('dailyStatus').textContent = shown
+    ? `Összesen ${totalDue} esedékes ismétlés ${shown} szigetben. Ma még ${left} új mondat vehető fel.`
+    : `Most nincs esedékes ismétlés. Ma még ${left} új mondat vehető fel – nyiss meg egy szigetet „Esedékes” módban.`;
   renderStats();
 }
 async function startDailyAll() {
@@ -840,7 +913,17 @@ function renderHard() {
     const d = document.createElement('div'); d.className = 'hard';
     const a = document.createElement('div'); a.textContent = h.hu + ' – ' + h.it;
     const b = document.createElement('div'); b.className = 'muted'; b.textContent = niceName(h.slug) + ' · ' + h.n + '. mondat';
-    d.append(a, b); host.append(d);
+    const dismiss = document.createElement('button'); dismiss.className = 'alt'; dismiss.textContent = 'Eltávolítás a nehéz mondatokból';
+    dismiss.onclick = () => {
+      const prog = getProg(h.slug), card = prog.cards[h.k];
+      if (!card) return;
+      card.hardDismissedAt = Math.max(Date.now(), (Number(card.lastReviewed) || 0) + 1);
+      saveProg(h.slug);
+      renderHard();
+      $('hardStatus').textContent = 'A mondat eltávolítva a nehéz mondatok listájából. Az ismétlési ütemezése megmaradt.';
+      flush();
+    };
+    d.append(a, b, dismiss); host.append(d);
   }
   if (list.length > 40) { const m = document.createElement('p'); m.className = 'muted'; m.textContent = `… és még ${list.length - 40}.`; host.append(m); }
 }
