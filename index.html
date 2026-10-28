@@ -723,8 +723,18 @@ function savePos() {
 }
 function advance() {
   if (sess.pos < sess.items.length - 1) { sess.pos++; render(); savePos(); return; }
+
+  // A kör végén a sziget következő megnyitása az első mondattal induljon.
+  // A korábban elmentett mondatértékelésekhez nem nyúlunk.
+  if (sess.single) {
+    const prog = getProg(sess.single);
+    prog.pos = 0;
+    prog.posAt = Date.now();
+    saveProg(sess.single);
+  }
+
   $('study').classList.add('hidden');
-  $('status').textContent = 'A kör végére értél. Szép munka!';
+  $('status').textContent = 'A kör végére értél. Szép munka! A következő indítás az első mondattal kezdődik.';
   renderStats(); loadDailyReview(); renderHard();
 }
 function rate(v) {
