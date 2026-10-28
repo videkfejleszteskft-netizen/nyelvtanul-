@@ -493,7 +493,25 @@ async function listLibrary() {
     label.innerHTML = '<strong></strong>'; label.firstChild.textContent = niceName(slug);
     const b = document.createElement('span'); b.className = 'badge' + (cached.has(slug) ? '' : ' off'); b.textContent = cached.has(slug) ? 'offline ✓' : 'csak felhő'; label.append(b);
     const actions = document.createElement('div');
-    const open = document.createElement('button'); open.textContent = 'Megnyitás'; open.onclick = () => openIsland(slug).then(() => startSession($('mode').value));
+    const open = document.createElement('button');
+    open.textContent = 'Megnyitás';
+    open.onclick = async () => {
+      open.disabled = true;
+      open.textContent = 'Betöltés…';
+      $('libStatus').textContent = 'Sziget megnyitása: ' + niceName(slug) + '…';
+      try {
+        await openIsland(slug);
+        startSession($('mode').value);
+        $('libStatus').textContent = 'Megnyitva: ' + niceName(slug) + '.';
+      } catch (e) {
+        const msg = e && e.message ? e.message : String(e);
+        $('status').textContent = 'Nem sikerült megnyitni a szigetet: ' + msg;
+        $('libStatus').textContent = 'Megnyitási hiba (' + niceName(slug) + '): ' + msg;
+      } finally {
+        open.disabled = false;
+        open.textContent = 'Megnyitás';
+      }
+    };
     actions.append(open);
     if (slugs.includes(slug)) {
       const del = document.createElement('button'); del.className = 'alt'; del.textContent = 'Törlés';
