@@ -722,17 +722,30 @@ function savePos() {
   const prog = getProg(sess.single); prog.pos = sess.pos; prog.posAt = Date.now(); saveProg(sess.single);
 }
 function advance() {
-  if (sess.pos < sess.items.length - 1) { sess.pos++; render(); savePos(); return; }
+  if (sess.pos < sess.items.length - 1) {
+    sess.pos++;
+    render();
+    savePos();
+    return;
+  }
 
-  // A kör végén a sziget következő megnyitása az első mondattal induljon.
-  // A korábban elmentett mondatértékelésekhez nem nyúlunk.
+  // Szabad tanuló módban a kör végtelen: az utolsó mondat után
+  // azonnal visszatérünk az elsőre, nem zárjuk be a gyakorlót.
+  if (sess.single && !sess.rated) {
+    sess.pos = 0;
+    render();
+    savePos();
+    $('status').textContent = 'A kör újraindult az első mondattal. A gyakorlást korlátlanul folytathatod.';
+    return;
+  }
+
+  // Értékelős / esedékes körök a végükön továbbra is lezárulnak.
   if (sess.single) {
     const prog = getProg(sess.single);
     prog.pos = 0;
     prog.posAt = Date.now();
     saveProg(sess.single);
   }
-
   $('study').classList.add('hidden');
   $('status').textContent = 'A kör végére értél. Szép munka! A következő indítás az első mondattal kezdődik.';
   renderStats(); loadDailyReview(); renderHard();
