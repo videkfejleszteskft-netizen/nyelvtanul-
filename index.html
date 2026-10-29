@@ -150,11 +150,12 @@ const STATS_ID = '__stats__';
 let client = null, auth = null;
 let current = null;             // {slug, pairs} – a megnyitott sziget
 let sess = null;                // {title, items, pos, rated, single}
-let preparedAudio = {};         // aktuális mondat hangjai: {hu, it}
-const audioElements = new Map(); // újrafelhasználható hang-elemek, mondatonként és nyelvenként
-const audioObjectUrls = new Map(); // az Object URL-eket nem vonjuk vissza minden rendernél
+let preparedAudio = {};         // aktuális mondat hangfájljai Blobként: {hu, it}
 let audioPrepToken = 0;
 let audioPrepPromise = Promise.resolve();
+let activeAudio = null;
+let activeAudioUrl = null;
+let audioPlayToken = 0;
 const progress = {};            // slug -> haladás
 const memAudio = new Map();     // tartalék, ha nincs IndexedDB
 let stats = loadJSON('nyelvisziget-stats', { v: 1, days: {} });
@@ -737,50 +738,49 @@ function render() {
   prepareAudio(it);
 }
 const ensuredOnce = new Set();
-function audioKey(it, lang) { return `${it.slug}|${lang === 'hu' ? 'L1' : 'L2'}|${it.n}`; }
 
-async function getReusableAudio(it, lang) {
-  const key = audioKey(it, lang);
-  const existing = audioElements.get(key);
-  if (existing) return existing;
+function stopActiveAudio() {
+  audioPlayToken++;
+  const oldAudio = activeAudio;
+  const oldUrl = activeAudioUrl;
+  activeAudio = null;
+  activeAudioUrl = null;
+  if (oldAudio) {
+    try { oldAudio.pause(); } catch {}
+    try { oldAudio.removeAttribute('src'); oldAudio.load(); } catch {}
+  }
+  if (oldUrl) {
+    try { URL.revokeObjectURL(oldUrl); } catch {}
+  }
+}
 
+async function getAudioBlobForItem(it, lang) {
   const folder = lang === 'hu' ? 'L1' : 'L2';
   let blob = await getAudioBlob(it.slug, folder, it.n);
-  if (!blob && signedIn() && online() && librarySlugs().includes(it.slug) && !ensuredOnce.has(it.slug)) {
-    ensuredOnce.add(it.slug);
-    try {
-      await ensureIslandCached(it.slug);
-      blob = await getAudioBlob(it.slug, folder, it.n);
-    } catch {}
-  }
-  if (!blob) return null;
 
-  let url = audioObjectUrls.get(key);
-  if (!url) {
-    url = URL.createObjectURL(blob);
-    audioObjectUrls.set(key, url);
+  // Ha hiányzik a helyi hang, egyszer megpróbáljuk frissíteni a felhőből.
+  if (!blob && signedIn() && online() && librarySlugs().includes(it.slug)) {
+    const key = `${it.slug}|${folder}|${it.n}`;
+    if (!ensuredOnce.has(it.slug)) {
+      ensuredOnce.add(it.slug);
+      try { await ensureIslandCached(it.slug); } catch (e) { console.warn('Hang letöltése nem sikerült:', e); }
+    }
+    blob = await getAudioBlob(it.slug, folder, it.n);
   }
-  const audio = new Audio();
-  audio.preload = 'auto';
-  audio.src = url;
-  audioElements.set(key, audio);
-  // A böngésző elkezdi előkészíteni a hangot; a play() szükség esetén megvárja.
-  try { audio.load(); } catch {}
-  return audio;
+  return blob || null;
 }
 
 async function prepareAudio(it) {
   const token = ++audioPrepToken;
+  // Az előző mondatból ne maradjon használatban hang.
+  stopActiveAudio();
+  preparedAudio = {};
   const task = (async () => {
+    const entries = await Promise.all(['hu', 'it'].map(async lang => [lang, await getAudioBlobForItem(it, lang)]));
+    if (token !== audioPrepToken || !sess || sess.items[sess.pos] !== it) return;
     const next = {};
-    for (const lang of ['hu', 'it']) {
-      const audio = await getReusableAudio(it, lang);
-      if (token !== audioPrepToken || !sess || sess.items[sess.pos] !== it) return;
-      if (audio) next[lang] = audio;
-    }
-    if (token === audioPrepToken && sess && sess.items[sess.pos] === it) {
-      preparedAudio = next;
-    }
+    for (const [lang, blob] of entries) if (blob) next[lang] = blob;
+    preparedAudio = next;
   })();
   audioPrepPromise = task.catch(err => {
     console.warn('Hang előkészítési hiba:', err);
@@ -789,42 +789,54 @@ async function prepareAudio(it) {
 }
 
 async function play(lang) {
-  // Ha a felhasználó gyorsan fedte fel a választ, várjuk meg a hang előkészítését.
-  const token = audioPrepToken;
-  await audioPrepPromise;
   if (!sess) return;
   const it = sess.items[sess.pos];
-  const a = preparedAudio[lang] || await getReusableAudio(it, lang);
-  if (!a) {
-    $('status').textContent = 'Ehhez a mondathoz nem található hangfájl.';
+  const token = audioPrepToken;
+  await audioPrepPromise;
+  // Ha közben mondatot váltottunk, ne játsszuk le az előző mondat hangját.
+  if (!sess || sess.items[sess.pos] !== it || token !== audioPrepToken) return;
+
+  let blob = preparedAudio[lang];
+  if (!blob) blob = await getAudioBlobForItem(it, lang);
+  if (!blob) {
+    $('status').textContent = `Ehhez a mondathoz nem található ${lang === 'it' ? 'olasz' : 'magyar'} hangfájl.`;
     return;
   }
-  // Ha közben másik mondatra léptünk, ne a régi mondat hangja induljon el.
-  if (token !== audioPrepToken && sess.items[sess.pos] !== it) return;
+  if (!sess || sess.items[sess.pos] !== it || token !== audioPrepToken) return;
+
+  // Minden indítás új Audio elemet kap. Így a befejezett/leállított elem
+  // állapota nem tudja megakadályozni ugyanannak a mondatnak az újrajátszását.
+  stopActiveAudio();
+  const thisPlayToken = audioPlayToken;
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio();
+  activeAudio = audio;
+  activeAudioUrl = url;
+  audio.preload = 'auto';
+  audio.src = url;
+  audio.playbackRate = Number($(lang === 'hu' ? 'l1Speed' : 'l2Speed').value);
+
+  const cleanup = () => {
+    if (activeAudio === audio) {
+      activeAudio = null;
+      activeAudioUrl = null;
+    }
+    try { audio.pause(); } catch {}
+    try { audio.removeAttribute('src'); audio.load(); } catch {}
+    try { URL.revokeObjectURL(url); } catch {}
+  };
+  audio.addEventListener('ended', cleanup, { once: true });
+  audio.addEventListener('error', () => {
+    if (activeAudio === audio) $('status').textContent = 'A hangfájl nem játszható le. Próbáld meg újra.';
+    cleanup();
+  }, { once: true });
 
   try {
-    a.pause();
-    a.playbackRate = Number($(lang === 'hu' ? 'l1Speed' : 'l2Speed').value);
-    // A currentTime visszaállítása csak akkor történjen, amikor a média már metaadatot kapott.
-    if (a.readyState === 0) {
-      await new Promise((resolve, reject) => {
-        const onReady = () => { cleanup(); resolve(); };
-        const onError = () => { cleanup(); reject(new Error('A hangfájl nem tölthető be.')); };
-        const cleanup = () => {
-          a.removeEventListener('loadedmetadata', onReady);
-          a.removeEventListener('canplay', onReady);
-          a.removeEventListener('error', onError);
-        };
-        a.addEventListener('loadedmetadata', onReady, { once: true });
-        a.addEventListener('canplay', onReady, { once: true });
-        a.addEventListener('error', onError, { once: true });
-        try { a.load(); } catch {}
-      });
-    }
-    try { a.currentTime = 0; } catch {}
-    await a.play();
+    await audio.play();
+    if (thisPlayToken !== audioPlayToken) cleanup();
   } catch (e) {
     console.warn('Hang lejátszási hiba:', e);
+    cleanup();
     $('status').textContent = 'Nem sikerült lejátszani a hangot. Próbáld meg újra a hanggombbal.';
   }
 }
