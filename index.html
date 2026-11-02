@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V11</title>
+<title>Nyelvi sziget – V12</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -24,7 +24,23 @@ input,select,button{font:inherit}input{max-width:100%}
 button{border:0;border-radius:9px;background:#176b87;color:#fff;padding:10px 14px;cursor:pointer;margin:4px}
 button.alt{background:#e8edf1;color:#243b53}button:disabled{opacity:.55;cursor:default}
 .prompt{text-align:center;font-size:clamp(1.3rem,4vw,2rem);font-weight:700;margin:28px 0}
-.answer{text-align:center;font-size:1.2rem;border-top:1px solid #ddd;padding:16px}
+.answer{text-align:center;font-size:clamp(1.3rem,4vw,2rem);font-weight:700;line-height:1.35;color:#0e5a43;background:#e3f5ec;border:2px solid #8fd1b2;border-radius:14px;padding:18px 16px;margin:14px 0 10px;animation:ansIn .18s ease-out}
+#answer.answer{font-size:clamp(1.3rem,4vw,2rem)!important;color:#0e5a43!important;background:#e3f5ec!important}
+.tools2{display:flex;justify-content:center;align-items:center;gap:4px 10px;flex-wrap:wrap;margin-top:6px;padding-top:8px;border-top:1px dashed #d8e1e8}
+.tools2 select{padding:7px;border:1px solid #cbd5df;border-radius:8px;background:#fff}
+button.on{background:#a74343!important;color:#fff!important}
+#typeBox{margin:6px auto 14px;max-width:640px}
+#typeInput{width:100%;box-sizing:border-box;font-size:1.15rem;padding:12px;border:2px solid #cbd5df;border-radius:10px;text-align:center}
+#typeInput:focus{outline:none;border-color:#176b87}
+#typeResult{margin-top:10px;font-size:1.1rem;line-height:1.7}
+#typeResult .w{padding:1px 4px;border-radius:5px;margin:0 1px}
+#typeResult .ok{background:#d7efe4;color:#14523c}
+#typeResult .acc{background:#fff0c9;color:#7a5200}
+#typeResult .miss{background:#f9d9d9;color:#8a1f1f;text-decoration:underline wavy}
+#typeResult .extra{background:#f9d9d9;color:#8a1f1f;text-decoration:line-through}
+#typeResult .verdict{font-weight:700;margin-bottom:4px}
+.istat{display:block;font-size:.8rem;color:#647482;font-weight:400}
+@keyframes ansIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .muted{color:#647482;font-size:.9rem}.hidden{display:none!important}.center{text-align:center}
 .authrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .authrow input{flex:1;min-width:190px;padding:9px;border:1px solid #cbd5df;border-radius:8px}
@@ -55,7 +71,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V11</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V12</div></header>
 <main>
 
 <section class="box"><h3>Statisztika</h3>
@@ -111,6 +127,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
   <label>Új mondat naponta<br><input id="newLimit" type="number" min="0" max="100" value="10" style="width:90px;padding:8px"></label>
  </div>
  <label class="muted"><input type="checkbox" id="autoAnswer" checked> A válasz felfedésekor szólaljon meg a válasz hangja</label><br>
+ <label class="muted"><input type="checkbox" id="typeMode"> Gépelős mód – begépelem a választ, és a program ellenőrzi</label><br>
  <button id="load">Betöltés fájlból</button><button class="alt" id="clear">Haladás törlése (ez a sziget)</button>
  <p id="status" class="muted">Válassz tananyagot.</p>
 </section>
@@ -118,6 +135,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <section id="study" class="box hidden">
  <div class="muted"><span id="island"></span> · <span id="count"></span></div>
  <div class="prompt" id="question"></div>
+ <div id="typeBox" class="hidden center"><input id="typeInput" placeholder="Írd be a választ…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"><button id="typeCheck">Ellenőrzés</button><div id="typeResult"></div></div>
  <div class="center"><button class="alt" id="qAudio">🔊 Kérdés hangja</button><button id="show">Válasz felfedése</button></div>
  <div id="answrap" class="hidden">
   <div id="answer" class="answer"></div>
@@ -131,6 +149,10 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
   </div>
  </div>
  <div class="center"><button class="alt" id="prev">← Előző</button><button class="alt" id="next">Következő →</button><button class="alt" id="shuffle">Keverés</button></div>
+ <div class="tools2"><button class="alt" id="recBtn">🎙 Felvétel</button><button class="alt hidden" id="recPlay">▶ Saját hang</button><button class="alt hidden" id="recCompare">⇄ Saját + eredeti</button><span id="recInfo" class="muted"></span></div>
+ <div class="tools2"><button class="alt" id="hfBtn">🎧 Kézmentes mód</button>
+  <label class="muted">Szünet <select id="hfPause"><option value="auto">automatikus</option><option value="3">3 mp</option><option value="5">5 mp</option><option value="8">8 mp</option><option value="12">12 mp</option></select></label>
+  <label class="muted"><input type="checkbox" id="hfRepeat"> a választ kétszer mondja</label></div>
 </section>
 
 <section class="box"><h3>Mentés</h3>
@@ -197,7 +219,13 @@ function hash(str) { // cyrb53
 }
 const cardKey = (hu, it) => 'c' + hash(hu + '\u0001' + it);
 function slugify(s) { return s.trim().normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
-const niceName = slug => slug.replace(/-/g, ' ');
+// Megjelenített szigetnév: saját név (feltöltéskor / átnevezéskor), különben a szigetazonosítóból
+function niceName(slug) {
+  const n = folderData && folderData.names && folderData.names[slug];
+  if (n && n.name && !n.deleted) return n.name;
+  const t = String(slug || '').replace(/-/g, ' ');
+  return t.charAt(0).toLocaleUpperCase('hu') + t.slice(1);
+}
 const idxName = name => { const m = String(name).match(/^(\d+)\.(mp3|m4a|wav|ogg|aac)$/i); return m ? +m[1] : null; };
 const isFolder = x => x.id === null || x.metadata === null;
 const online = () => navigator.onLine !== false;
@@ -540,10 +568,10 @@ async function ensureIslandCached(slug, onTick) {
 // A szigetek a felhőben ugyanott maradnak; a mappa csak besorolás,
 // így a haladás és a letöltött hangok nem változnak.
 // ============================================================
-function normFolders(o) { return { v: 1, folders: { ...((o && o.folders) || {}) }, assign: { ...((o && o.assign) || {}) } }; }
+function normFolders(o) { return { v: 1, folders: { ...((o && o.folders) || {}) }, assign: { ...((o && o.assign) || {}) }, names: { ...((o && o.names) || {}) } }; }
 function mergeFolders(a, b) {
   const out = normFolders(null);
-  for (const key of ['folders', 'assign']) for (const src of [a, b]) for (const [k, v] of Object.entries((src && src[key]) || {})) {
+  for (const key of ['folders', 'assign', 'names']) for (const src of [a, b]) for (const [k, v] of Object.entries((src && src[key]) || {})) {
     const cur = out[key][k];
     if (!cur || (Number(v.at) || 0) > (Number(cur.at) || 0)) out[key][k] = { ...v };
   }
@@ -631,6 +659,8 @@ function islandRow(slug) {
   const label = document.createElement('div');
   label.innerHTML = '<strong></strong>'; label.firstChild.textContent = niceName(slug);
   const b = document.createElement('span'); b.className = 'badge' + (cached.has(slug) ? '' : ' off'); b.textContent = cached.has(slug) ? 'offline ✓' : 'csak felhő'; label.append(b);
+  const st = islandStats([slug]); const info = document.createElement('span'); info.className = 'istat';
+  info.textContent = `${st.seen}/${st.total || '?'} gyakorolt · ${st.learned} rögzült · ${st.due} esedékes`; label.append(info);
   const actions = document.createElement('div');
   const open = document.createElement('button');
   open.textContent = 'Megnyitás';
@@ -664,6 +694,13 @@ function islandRow(slug) {
     $('libStatus').textContent = niceName(slug) + ' → ' + (folderName(fid) || 'Mappa nélkül');
   };
   actions.append(move);
+  const rn = document.createElement('button'); rn.className = 'alt'; rn.textContent = 'Átnevezés';
+  rn.onclick = () => {
+    const name = prompt('A sziget megjelenített neve (ékezetekkel is):', niceName(slug)); if (name === null) return;
+    folderData.names[slug] = name.trim() ? { name: name.trim(), at: Date.now() } : { name: '', deleted: true, at: Date.now() };
+    saveFolders(); renderLibrary(); renderHard(); loadDailyReview();
+  };
+  actions.append(rn);
   if (slugs.includes(slug)) {
     const del = document.createElement('button'); del.className = 'alt'; del.textContent = 'Törlés';
     del.onclick = () => deleteIsland(slug, del); actions.append(del);
@@ -675,10 +712,19 @@ function islandRow(slug) {
   return row;
 }
 
+// Haladás összesítése szigetekre / mappára
+function islandStats(slugList) {
+  const out = { seen: 0, total: 0, due: 0, learned: 0 };
+  for (const slug of slugList) {
+    const c = countDue(slug); out.seen += c.seen; out.total += c.total; out.due += c.due;
+    for (const card of Object.values(getProg(slug).cards)) if (card.reps > 0 && card.interval >= 21) out.learned++;
+  }
+  return out;
+}
 function renderLibrary() {
   const host = $('islandList'); host.innerHTML = '';
   const { slugs, cached } = lastLibrary;
-  const all = uniqueSlugs([...slugs, ...cached]).sort();
+  const all = uniqueSlugs([...slugs, ...cached]).sort((a, b) => niceName(a).localeCompare(niceName(b), 'hu', { numeric: true }));
   const folders = liveFolders();
   refreshUploadFolderSelect();
   if (!all.length && !folders.length) { $('libStatus').textContent = signedIn() ? 'Még nincs feltöltött sziget.' : 'Jelentkezz be a felhős könyvtárhoz.'; return; }
@@ -687,7 +733,8 @@ function renderLibrary() {
 
   for (const f of folders) {
     const list = byFolder.get(f.id);
-    const g = makeGroup('lib:' + f.id, '📁 ' + f.name, `(${list.length} sziget)`, false);
+    const fs = islandStats(list);
+    const g = makeGroup('lib:' + f.id, '📁 ' + f.name, `(${list.length} sziget · ${fs.seen}/${fs.total || '?'} gyakorolt · ${fs.learned} rögzült · ${fs.due} esedékes)`, false);
     const tools = document.createElement('div'); tools.className = 'ftools';
     const addHere = document.createElement('button'); addHere.className = 'alt'; addHere.textContent = '+ Új sziget ide';
     addHere.onclick = () => { refreshUploadFolderSelect(f.id); $('uploadBox').open = true; $('uploadBox').scrollIntoView({ behavior: 'smooth', block: 'center' }); $('libName').focus(); };
@@ -787,6 +834,7 @@ async function uploadIsland() {
     $('libStatus').textContent = `Feltöltve: ${pairs.length} mondatpár, ${a.length} magyar és ${b.length} olasz hangfájl.` + (skipped.length ? ` Kihagyott sorok (nincs „ - ”): ${skipped.join(', ')}.` : '');
     if (targetFolder || folderOf(slug)) { setFolder(slug, targetFolder); if (targetFolder) rememberOpen('lib:' + targetFolder, true); }
     if (targetFolder) $('libStatus').textContent += ` Mappa: ${folderName(targetFolder)}.`;
+    if (name !== niceName(slug)) { folderData.names[slug] = { name, at: Date.now() }; saveFolders(); }
     $('libName').value = ''; $('libTxt').value = ''; $('libL1').value = ''; $('libL2').value = '';
     await listLibrary();
   } catch (e) { $('libStatus').textContent = 'Feltöltési hiba: ' + e.message; }
@@ -905,6 +953,8 @@ function render() {
     const now = Date.now(), old = getProg(it.slug).cards[it.k];
     document.querySelectorAll('[data-rate]').forEach(b => { b.querySelector('small').textContent = describeDue(schedule(old, b.dataset.rate, now).card, now); });
   }
+  resetRecording();
+  resetTyping();
   prepareAudio(it);
 }
 const ensuredOnce = new Set();
@@ -1060,6 +1110,189 @@ function rate(v) {
 }
 
 // ============================================================
+// GÉPELŐS MÓD – a begépelt válasz összevetése szavanként
+// ============================================================
+const stripAcc = w => w.normalize('NFD').replace(/[̀-ͯ]/g, '');
+function tokens(text) {
+  return String(text).replace(/[’`´]/g, "'").split(/\s+/)
+    .map(w => ({ raw: w, n: w.toLocaleLowerCase('it').replace(/^[^\p{L}\p{N}']+|[^\p{L}\p{N}']+$/gu, '') }))
+    .filter(t => t.n);
+}
+function compareAnswer(expected, typed) {
+  const E = tokens(expected), T = tokens(typed), m = E.length, n = T.length;
+  const L = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--)
+    L[i][j] = stripAcc(E[i].n) === stripAcc(T[j].n) ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+  const eState = new Array(m).fill('miss'), tState = new Array(n).fill('extra');
+  let i = 0, j = 0;
+  while (i < m && j < n) {
+    if (stripAcc(E[i].n) === stripAcc(T[j].n)) { const st = E[i].n === T[j].n ? 'ok' : 'acc'; eState[i] = st; tState[j] = st; i++; j++; }
+    else if (L[i + 1][j] >= L[i][j + 1]) i++; else j++;
+  }
+  return { E, T, eState, tState };
+}
+function resetTyping() {
+  const on = $('typeMode').checked && sess;
+  $('typeBox').classList.toggle('hidden', !on);
+  $('typeInput').value = ''; $('typeResult').innerHTML = '';
+}
+function checkTyping() {
+  if (!sess) return;
+  const it = sess.items[sess.pos], expected = it.dir === 'hu-it' ? it.it : it.hu, typed = $('typeInput').value;
+  if (!typed.trim()) { $('typeInput').focus(); return; }
+  const r = compareAnswer(expected, typed), host = $('typeResult'); host.innerHTML = '';
+  const ok = r.eState.filter(s => s === 'ok').length, acc = r.eState.filter(s => s === 'acc').length, extra = r.tState.filter(s => s === 'extra').length;
+  const v = document.createElement('div'); v.className = 'verdict';
+  v.textContent = ok === r.E.length && !extra ? '✓ Tökéletes!' : ok + acc === r.E.length && !extra ? '≈ Majdnem jó – csak ékezet hiányzik vagy tér el.' : `${ok + acc}/${r.E.length} szó stimmel.`;
+  host.append(v);
+  const line = (label, toks, states) => {
+    const d = document.createElement('div'); const l = document.createElement('span'); l.className = 'muted'; l.textContent = label + ' '; d.append(l);
+    toks.forEach((t, k) => { const w = document.createElement('span'); w.className = 'w ' + states[k]; w.textContent = t.raw; d.append(w, ' '); });
+    return d;
+  };
+  host.append(line('Helyesen:', r.E, r.eState), line('Te írtad:', r.T, r.tState));
+  revealAnswer(true);
+}
+
+// ============================================================
+// FELVÉTEL ÉS VISSZAHALLGATÁS
+// ============================================================
+const recState = { mr: null, stream: null, chunks: [], blob: null, timer: null, item: null };
+const recEl = new Audio();
+function resetRecording() {
+  if (recState.mr && recState.mr.state === 'recording') { try { recState.mr.onstop = null; recState.mr.stop(); } catch {} }
+  stopRecStream();
+  recState.mr = null; recState.blob = null; recState.chunks = []; clearTimeout(recState.timer);
+  try { recEl.pause(); } catch {}
+  $('recBtn').textContent = '🎙 Felvétel'; $('recBtn').classList.remove('on');
+  $('recPlay').classList.add('hidden'); $('recCompare').classList.add('hidden'); $('recInfo').textContent = '';
+}
+function stopRecStream() { if (recState.stream) { recState.stream.getTracks().forEach(t => t.stop()); recState.stream = null; } }
+async function toggleRecording() {
+  if (!sess) return;
+  if (recState.mr && recState.mr.state === 'recording') { recState.mr.stop(); return; }
+  stopHandsFree();
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) { $('recInfo').textContent = 'Ez a böngésző nem támogatja a hangfelvételt.'; return; }
+  try {
+    stopActiveAudio();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    const type = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm'].find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t));
+    const mr = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+    const item = sess.items[sess.pos];
+    Object.assign(recState, { mr, stream, chunks: [], blob: null, item });
+    mr.ondataavailable = e => { if (e.data && e.data.size) recState.chunks.push(e.data); };
+    mr.onstop = () => {
+      clearTimeout(recState.timer); stopRecStream();
+      $('recBtn').textContent = '🎙 Újra'; $('recBtn').classList.remove('on');
+      if (!sess || sess.items[sess.pos] !== item || !recState.chunks.length) return;
+      recState.blob = new Blob(recState.chunks, { type: mr.mimeType || type || 'audio/mp4' });
+      $('recPlay').classList.remove('hidden'); $('recCompare').classList.remove('hidden');
+      $('recInfo').textContent = 'Kész. Hallgasd meg, és vesd össze az eredetivel.';
+    };
+    mr.start();
+    $('recBtn').textContent = '⏹ Leállítás'; $('recBtn').classList.add('on');
+    $('recInfo').textContent = 'Felvétel… mondd ki az olasz mondatot (legfeljebb 15 mp).';
+    recState.timer = setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, 15000);
+  } catch (e) {
+    stopRecStream();
+    $('recInfo').textContent = 'A mikrofon nem érhető el: ' + (e && e.message ? e.message : e) + '. Engedélyezd a mikrofont a böngészőben.';
+  }
+}
+function playOnRecEl(blob, rate) {
+  return new Promise(res => {
+    const url = URL.createObjectURL(blob);
+    const done = ok => { recEl.onended = recEl.onerror = null; try { URL.revokeObjectURL(url); } catch {} res(ok); };
+    recEl.onended = () => done(true); recEl.onerror = () => done(false);
+    recEl.src = url; recEl.playbackRate = rate || 1;
+    recEl.play().catch(() => done(false));
+  });
+}
+async function playOwn(compare) {
+  if (!recState.blob || !sess) return;
+  stopActiveAudio(); stopHandsFree();
+  const it = sess.items[sess.pos];
+  const orig = compare ? (preparedAudio.it || await getAudioBlobForItem(it, 'it')) : null;
+  const ok = await playOnRecEl(recState.blob, 1);
+  if (!ok) { $('recInfo').textContent = 'A felvétel nem játszható le.'; return; }
+  if (compare) {
+    if (!orig) { $('recInfo').textContent = 'Ehhez a mondathoz nincs olasz hangfájl.'; return; }
+    await new Promise(r => setTimeout(r, 400));
+    if (sess && sess.items[sess.pos] === it) await playOnRecEl(orig, Number($('l2Speed').value));
+  }
+}
+
+// ============================================================
+// KÉZMENTES MÓD – kérdés → szünet (kimondod) → válasz → következő
+// ============================================================
+const hf = { on: false, token: 0, wake: null };
+const hfEl = new Audio();
+const SILENT_WAV = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function hfAlive(token) { return hf.on && token === hf.token && sess && !$('study').classList.contains('hidden'); }
+function hfPlay(blob, rate) {
+  return new Promise(res => {
+    const url = URL.createObjectURL(blob);
+    const done = ok => { hfEl.onended = hfEl.onerror = null; try { URL.revokeObjectURL(url); } catch {} res(ok); };
+    hfEl.onended = () => done(true); hfEl.onerror = () => done(false);
+    hfEl.src = url; hfEl.playbackRate = rate;
+    hfEl.play().catch(() => done(false));
+  });
+}
+function blobDuration(blob) {
+  return new Promise(res => {
+    const a = new Audio(), url = URL.createObjectURL(blob);
+    const fin = v => { try { URL.revokeObjectURL(url); } catch {} res(v); };
+    a.preload = 'metadata'; a.onloadedmetadata = () => fin(isFinite(a.duration) ? a.duration : 0); a.onerror = () => fin(0);
+    a.src = url; setTimeout(() => fin(0), 3000);
+  });
+}
+function speedOf(lang) { return Number($(lang === 'hu' ? 'l1Speed' : 'l2Speed').value) || 1; }
+async function startHandsFree() {
+  if (!sess) return;
+  resetRecording(); stopActiveAudio();
+  hf.on = true; const token = ++hf.token;
+  $('hfBtn').textContent = '⏹ Kézmentes leállítása'; $('hfBtn').classList.add('on');
+  // iOS: a hang a gombnyomáskor „feloldódik”, így a későbbi lejátszások is működnek
+  try { hfEl.src = SILENT_WAV; await hfEl.play(); } catch {}
+  try { if (navigator.wakeLock) hf.wake = await navigator.wakeLock.request('screen'); } catch {}
+  $('status').textContent = 'Kézmentes mód: hallgasd a kérdést, a szünetben mondd ki hangosan a választ.';
+  while (hfAlive(token)) {
+    const it = sess.items[sess.pos];
+    const qL = it.dir === 'hu-it' ? 'hu' : 'it', aL = it.dir === 'hu-it' ? 'it' : 'hu';
+    const [qb, ab] = await Promise.all([getAudioBlobForItem(it, qL), getAudioBlobForItem(it, aL)]);
+    if (!hfAlive(token)) break;
+    $('answrap').classList.add('hidden'); $('show').classList.remove('hidden');
+    if (qb) await hfPlay(qb, speedOf(qL)); else await sleep(1500);
+    if (!hfAlive(token)) break;
+    let pause;
+    if ($('hfPause').value === 'auto') {
+      const dur = ab ? await blobDuration(ab) : 0;
+      pause = dur ? Math.max(2500, dur * 1000 / speedOf(aL) * 1.3 + 1500) : Math.max(3000, (it.dir === 'hu-it' ? it.it : it.hu).length * 90);
+    } else pause = Number($('hfPause').value) * 1000;
+    await sleep(pause);
+    if (!hfAlive(token)) break;
+    $('answrap').classList.remove('hidden'); $('show').classList.add('hidden');
+    if (ab) { await hfPlay(ab, speedOf(aL)); if ($('hfRepeat').checked && hfAlive(token)) { await sleep(700); await hfPlay(ab, speedOf(aL)); } }
+    else await sleep(2000);
+    await sleep(1300);
+    if (!hfAlive(token)) break;
+    advance();
+  }
+  if (token === hf.token) stopHandsFree();
+}
+function stopHandsFree() {
+  if (!hf.on) return;
+  hf.on = false; hf.token++;
+  try { hfEl.pause(); } catch {}
+  try { if (hf.wake) hf.wake.release(); } catch {} hf.wake = null;
+  $('hfBtn').textContent = '🎧 Kézmentes mód'; $('hfBtn').classList.remove('on');
+}
+function revealAnswer(withSound) {
+  $('answrap').classList.remove('hidden'); $('show').classList.add('hidden');
+  if (withSound && $('autoAnswer').checked) play(aLang());
+}
+
+// ============================================================
 // MAI ISMÉTLÉSEK (minden szigetből)
 // ============================================================
 async function knownIslands() {
@@ -1205,7 +1438,7 @@ function renderHard() {
     const tools = document.createElement('div'); tools.className = 'ftools';
     tools.append(hardPracticeButton('A mappa nehéz mondatainak gyakorlása', items, 'Nehéz mondataim – ' + (folderName(fid) || 'Mappa nélkül')));
     fg.body.append(tools);
-    for (const slug of [...islands.keys()].sort()) {
+    for (const slug of [...islands.keys()].sort((a, b) => niceName(a).localeCompare(niceName(b), 'hu', { numeric: true }))) {
       const hs = islands.get(slug);
       const ig = makeGroup('hardi:' + slug, niceName(slug), `(${hs.length})`, false);
       const t2 = document.createElement('div'); t2.className = 'ftools';
@@ -1246,12 +1479,13 @@ async function authAction(type) {
 // ============================================================
 // BEÁLLÍTÁSOK
 // ============================================================
-function saveSettings() { saveJSON('nyelvisziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked }); }
+function saveSettings() { saveJSON('nyelvisziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked }); }
 function loadSettings() {
   const s = loadJSON('nyelvisziget-settings', {});
   if (s.direction) $('dir').value = s.direction; if (s.mode) $('mode').value = s.mode;
   if (s.l1Speed) $('l1Speed').value = s.l1Speed; if (s.l2Speed) $('l2Speed').value = s.l2Speed;
   if (s.newLimit !== undefined) $('newLimit').value = s.newLimit; if (s.autoAnswer !== undefined) $('autoAnswer').checked = s.autoAnswer;
+  if (s.typeMode !== undefined) $('typeMode').checked = s.typeMode; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat;
 }
 function updateSpeedLabels() { $('l1Val').textContent = Math.round($('l1Speed').value * 100) + '%'; $('l2Val').textContent = Math.round($('l2Speed').value * 100) + '%'; }
 function updateNet() { $('netStatus').textContent = online() ? '' : 'Nincs internet – offline mód. A haladás a készüléken mentődik, és később szinkronizálódik.'; }
@@ -1282,14 +1516,22 @@ $('hardPractice').onclick = async () => {
   if (!ok) $('hardStatus').textContent = 'Nincs nehéz mondat.';
 };
 $('load').onclick = () => loadFromFiles().catch(e => { $('status').textContent = e.message; });
-$('show').onclick = () => { $('answrap').classList.remove('hidden'); $('show').classList.add('hidden'); if ($('autoAnswer').checked) play(aLang()); };
+$('show').onclick = () => { stopHandsFree(); revealAnswer(true); };
 $('hideAnswer').onclick = () => { $('answrap').classList.add('hidden'); $('show').classList.remove('hidden'); };
 $('qAudio').onclick = () => play(qLang());
 $('aAudio').onclick = () => play(aLang());
-$('next').onclick = () => sess && advance();
-$('prev').onclick = () => { if (sess && sess.pos) { sess.pos--; render(); savePos(); } };
-$('shuffle').onclick = () => { if (!sess) return; for (let i = sess.items.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sess.items[i], sess.items[j]] = [sess.items[j], sess.items[i]]; } sess.pos = 0; sess.single = null; render(); };
-document.querySelectorAll('[data-rate]').forEach(b => b.onclick = () => sess && rate(b.dataset.rate));
+$('next').onclick = () => { stopHandsFree(); sess && advance(); };
+$('prev').onclick = () => { stopHandsFree(); if (sess && sess.pos) { sess.pos--; render(); savePos(); } };
+$('recBtn').onclick = toggleRecording;
+$('recPlay').onclick = () => playOwn(false);
+$('recCompare').onclick = () => playOwn(true);
+$('hfBtn').onclick = () => { if (hf.on) { stopHandsFree(); $('status').textContent = 'Kézmentes mód leállítva.'; } else startHandsFree(); };
+$('hfPause').onchange = saveSettings; $('hfRepeat').onchange = saveSettings;
+$('typeMode').onchange = () => { saveSettings(); resetTyping(); };
+$('typeCheck').onclick = checkTyping;
+$('typeInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkTyping(); } });
+$('shuffle').onclick = () => { stopHandsFree(); if (!sess) return; for (let i = sess.items.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sess.items[i], sess.items[j]] = [sess.items[j], sess.items[i]]; } sess.pos = 0; sess.single = null; render(); };
+document.querySelectorAll('[data-rate]').forEach(b => b.onclick = () => { stopHandsFree(); sess && rate(b.dataset.rate); });
 $('mode').onchange = () => { saveSettings(); if (current) startSession($('mode').value); };
 $('dir').onchange = () => { saveSettings(); if (sess) { sess.items.forEach(i => i.dir = pickDir()); render(); } };
 $('newLimit').onchange = () => { saveSettings(); renderStats(); };
