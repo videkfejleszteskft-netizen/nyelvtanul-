@@ -1,6 +1,6 @@
 // Nyelvi sziget V9 – service worker (offline működés)
-// V11: mappák a könyvtárban és a nehéz mondatoknál; minden V10-3 funkció változatlan.
-const CACHE = 'nyelvisziget-v11-1-mappak';
+// V12: felvétel, kézmentes mód, gépelős mód, haladás mappánként, szigetnevek; minden korábbi funkció megmaradt.
+const CACHE = 'nyelvisziget-v12-1';
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
