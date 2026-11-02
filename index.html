@@ -1,9 +1,10 @@
+
 <!doctype html>
 <html lang="hu">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V12</title>
+<title>Nyelvi sziget – V13</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -39,6 +40,14 @@ button.on{background:#a74343!important;color:#fff!important}
 #typeResult .miss{background:#f9d9d9;color:#8a1f1f;text-decoration:underline wavy}
 #typeResult .extra{background:#f9d9d9;color:#8a1f1f;text-decoration:line-through}
 #typeResult .verdict{font-weight:700;margin-bottom:4px}
+.vtype{width:100%;box-sizing:border-box;font-size:1.15rem;padding:12px;border:2px solid #cbd5df;border-radius:10px;text-align:center}
+.vtype:focus{outline:none;border-color:#176b87}
+.vfield{width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbd5df;border-radius:8px}
+.tres{margin-top:10px;font-size:1.1rem;line-height:1.7}
+.tres .w{padding:1px 4px;border-radius:5px;margin:0 1px}
+.tres .ok{background:#d7efe4;color:#14523c}.tres .acc{background:#fff0c9;color:#7a5200}
+.tres .miss{background:#f9d9d9;color:#8a1f1f;text-decoration:underline wavy}.tres .extra{background:#f9d9d9;color:#8a1f1f;text-decoration:line-through}
+.tres .verdict{font-weight:700;margin-bottom:4px}
 .istat{display:block;font-size:.8rem;color:#647482;font-weight:400}
 @keyframes ansIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .muted{color:#647482;font-size:.9rem}.hidden{display:none!important}.center{text-align:center}
@@ -71,7 +80,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V12</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V13 · szótanulással</div></header>
 <main>
 
 <section class="box"><h3>Statisztika</h3>
@@ -102,6 +111,73 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
  <p class="muted">Amiket a legutóbbi ismétléseknél többször „Nem ment” vagy „Nehéz” értékeléssel jelöltél, az összes szigetből.</p>
  <button id="hardRefresh" class="alt">Lista frissítése</button><button id="hardPractice">Nehéz mondatok gyakorlása</button>
  <p id="hardStatus" class="muted"></p><div id="hardList"></div>
+</section>
+
+<section class="box" id="vocabBox"><h3>Szótanulás</h3>
+ <p class="muted">Szókártyák FSRS-ütemezéssel: minden kártyát pont akkor kérdez, amikor már kezdenéd elfelejteni. Forrás: a letöltött szigetek szókincsbővítő mondatai és a saját szólistáid.</p>
+ <div class="stats">
+  <div class="stat"><b id="vStDue">0</b>esedékes most</div>
+  <div class="stat"><b id="vStToday">0</b>ismétlés ma</div>
+  <div class="stat"><b id="vStGood">0</b>ment jól ma</div>
+  <div class="stat"><b id="vStNew">0</b>új kártya ma</div>
+ </div>
+ <p id="vStInfo" class="muted"></p>
+ <button id="vStartAll">Esedékes szavak gyakorlása</button><button id="vRefresh" class="alt">Szólisták frissítése</button>
+ <p id="vStatus" class="muted"></p>
+
+ <section id="vstudy" class="hidden" style="border-top:1px solid #e1e8ee;margin-top:10px;padding-top:6px">
+  <div class="muted"><span id="vInfo"></span></div>
+  <div class="muted center" id="vHint" style="margin-top:14px"></div>
+  <div class="prompt" id="vQ" style="margin:12px 0 18px"></div>
+  <div id="vTypeBox" class="hidden center" style="margin:6px auto 14px;max-width:640px"><input id="vTypeInput" class="vtype" placeholder="Írd be a választ…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"><button id="vCheck">Ellenőrzés</button><div id="vTypeRes" class="tres"></div></div>
+  <div class="center"><button class="alt" id="vQAudio">🔊 Kérdés hangja</button><button id="vShow">Válasz felfedése</button></div>
+  <div id="vAnsWrap" class="hidden">
+   <div id="vAns" class="answer"></div>
+   <div id="vExample" class="muted center" style="font-size:1rem;margin:-2px 0 8px"></div>
+   <div class="center"><button class="alt" id="vAAudio">🔊 Válasz hangja</button>
+    <div><p class="muted">Mennyire sikerült felidézni?</p>
+     <button class="rate" style="background:#a74343" data-vrate="1">Nem ment<small></small></button>
+     <button class="rate alt" data-vrate="2">Nehéz<small></small></button>
+     <button class="rate" style="background:#237a52" data-vrate="3">Jól ment<small></small></button>
+     <button class="rate" style="background:#1d6346" data-vrate="4">Könnyű<small></small></button>
+    </div>
+   </div>
+  </div>
+  <div class="center"><button class="alt" id="vQuit">Kilépés a szótanulásból</button></div>
+ </section>
+
+ <div id="vDeckList" style="margin-top:8px"></div>
+
+ <details style="margin-top:10px"><summary>Szótanulás beállításai</summary>
+  <div class="row" style="margin-top:8px">
+   <label>Új kártya naponta<br><input id="vNew" type="number" min="0" max="200" value="15" style="width:90px;padding:8px"></label>
+   <label>Célzott emlékezés<br><select id="vRet" class="move" style="margin:0"><option value="0.85">85% – kevesebb ismétlés</option><option value="0.9" selected>90% – ajánlott</option><option value="0.93">93%</option><option value="0.95">95% – több ismétlés</option></select></label>
+  </div>
+  <div class="muted">Kártyatípusok:</div>
+  <label class="muted"><input type="checkbox" id="vRec" checked> olasz → magyar (megértés)</label><br>
+  <label class="muted"><input type="checkbox" id="vProd" checked> magyar → olasz (beszéd)</label><br>
+  <label class="muted"><input type="checkbox" id="vCloze" checked> hiányos mondat (a szó mondatban)</label><br>
+  <label class="muted"><input type="checkbox" id="vTyping"> a magyar → olasz és a hiányos mondat válaszát begépelem</label>
+  <p class="muted">Egy szó magyar → olasz és hiányos mondatos kártyája csak a megértéses kártya első ismétlése utáni napon jön elő először, így nem kapod meg ugyanazt egy nap háromszor.</p>
+ </details>
+
+ <details style="margin-top:6px"><summary>Saját szólista feltöltése</summary>
+  <p class="muted">TXT, soronként: <b>magyar - olasz</b>, vagy példamondattal: <b>magyar - olasz || magyar példamondat - olasz példamondat</b><br>Pl.: <i>bevásárolni - fare la spesa || Holnap bevásárolok. - Domani faccio la spesa.</i> A „#”-tel kezdődő sorokat kihagyja.</p>
+  <div class="row"><label>A lista neve<br><input id="vListName" placeholder="pl. Konyha szavai" style="padding:8px;border:1px solid #cbd5df;border-radius:8px;width:100%;box-sizing:border-box"></label><label>TXT fájl<br><input id="vListFile" type="file" accept=".txt"></label></div>
+  <button id="vUpload">Szólista hozzáadása</button>
+ </details>
+
+ <details style="margin-top:6px"><summary>Szó hozzáadása kézzel</summary>
+  <div class="row" style="margin-top:8px">
+   <label>Magyarul<br><input id="vAddHu" class="vfield" placeholder="bevásárolni"></label>
+   <label>Olaszul<br><input id="vAddIt" class="vfield" placeholder="fare la spesa"></label>
+  </div>
+  <div class="row">
+   <label>Példamondat magyarul (nem kötelező)<br><input id="vAddEhu" class="vfield" placeholder="Holnap bevásárolok."></label>
+   <label>Példamondat olaszul (nem kötelező)<br><input id="vAddEit" class="vfield" placeholder="Domani faccio la spesa."></label>
+  </div>
+  <button id="vAdd">Hozzáadás a „Saját szavaim” listához</button>
+ </details>
 </section>
 
 <section class="box"><h3>Nyelvi sziget-könyvtár (felhő)</h3>
@@ -478,7 +554,7 @@ async function flush() {
   const ids = [...dirty]; dirty.clear(); saveJSON('nyelvisziget-dirty', []);
   try {
     const now = new Date().toISOString();
-    const rows = ids.map(id => ({ user_id: auth.user.id, island_id: id, progress: id === STATS_ID ? stats : id === FOLDERS_ID ? folderData : getProg(id), updated_at: now }));
+    const rows = ids.map(id => ({ user_id: auth.user.id, island_id: id, progress: id === STATS_ID ? stats : id === FOLDERS_ID ? folderData : id.startsWith('vocab:') ? vCloudPayload(id) : getProg(id), updated_at: now }));
     const { error } = await client.from('learning_progress').upsert(rows, { onConflict: 'user_id,island_id' });
     if (error) throw error;
     $('authStatus').textContent = 'Bejelentkezve: ' + auth.user.email + '. Felhőbe mentve: ' + new Date().toLocaleTimeString();
@@ -499,6 +575,7 @@ async function pullAll() {
     remoteIds.add(r.island_id);
     if (r.island_id === STATS_ID) { stats = mergeStats(stats, r.progress); saveJSON('nyelvisziget-stats', stats); if (JSON.stringify(stats) !== JSON.stringify(r.progress)) markDirty(STATS_ID); continue; }
     if (r.island_id === FOLDERS_ID) { applyRemoteFolders(r.progress); continue; }
+    if (String(r.island_id).startsWith('vocab:')) { vApplyRemote(r.island_id, r.progress); continue; }
     const { merged, remoteStale } = mergeProg(getProg(r.island_id), normalizeRemote(r.progress));
     progress[r.island_id] = merged;
     if (current && current.slug === r.island_id && merged.legacy) migrateLegacy(r.island_id, current.pairs);
@@ -507,6 +584,8 @@ async function pullAll() {
   for (const slug of allProgSlugs()) if (!remoteIds.has(slug) && Object.keys(getProg(slug).cards).length) markDirty(slug);
   if (Object.values(stats.days).length && !remoteIds.has(STATS_ID)) markDirty(STATS_ID);
   if (!remoteIds.has(FOLDERS_ID) && (Object.keys(folderData.folders).length || Object.keys(folderData.assign).length)) markDirty(FOLDERS_ID);
+  for (const id of vLocalCloudIds()) if (!remoteIds.has(id)) markDirty(id);
+  vRenderDecks();
   renderStats();
 }
 
@@ -651,6 +730,7 @@ async function listLibrary() {
   if (token !== libraryRenderToken) return;
   lastLibrary = { slugs: uniqueSlugs(slugs), cached };
   renderLibrary();
+  vRefreshAndRender();
 }
 
 function islandRow(slug) {
@@ -1564,10 +1644,397 @@ window.addEventListener('offline', updateNet);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
 window.addEventListener('pagehide', () => flush());
 
+
+// ============================================================
+// SZÓTANULÁS – FSRS (Free Spaced Repetition Scheduler, 4.5-ös alapparaméterek)
+// A haladás külön tárolódik (nyelvszo:…), a felhőben „vocab:…” sorokban,
+// így a szigetek haladását nem érinti.
+// ============================================================
+const VOC_META_ID = 'vocab:__meta', VLS = 'nyelvszo:';
+const FSRS_W = [0.4872, 1.4003, 3.7145, 13.8206, 5.1618, 1.2298, 0.8975, 0.031, 1.6474, 0.1367, 1.0461, 2.1072, 0.0793, 0.3246, 1.587, 0.2272, 2.8755];
+const F_DECAY = -0.5, F_FACTOR = 19 / 81, VMAX_DAYS = 1095;
+function vNormMeta(o) { return { v: 1, decks: { ...((o && o.decks) || {}) }, days: { ...((o && o.days) || {}) } }; }
+let vMeta = vNormMeta(loadJSON('nyelvszo-meta', null));
+const vProgs = {};                 // pakli-id -> {v, cards}
+const vNotes = new Map();          // pakli-id -> jegyzetek (szópárok)
+let vDecks = [];                   // [{id, kind:'island'|'upload', slug, name}]
+let vSess = null;                  // {title, items, pos}
+let vAudio = { hu: null, it: null };
+const vEl = new Audio();
+
+function vSaveMeta(cloud = true) { saveJSON('nyelvszo-meta', vMeta); if (cloud) markDirty(VOC_META_ID); }
+function vGetProg(id) { if (!vProgs[id]) { const p = loadJSON(VLS + id, null); vProgs[id] = p && p.cards ? p : { v: 1, cards: {} }; } return vProgs[id]; }
+function vSaveProg(id) { saveJSON(VLS + id, vGetProg(id)); markDirty('vocab:' + id); }
+function vCloudPayload(id) { return id === VOC_META_ID ? vMeta : vGetProg(id.slice(6)); }
+function vToday() { const d = studyDay(); return vMeta.days[d] || (vMeta.days[d] = { reviews: 0, new: 0, good: 0, again: 0 }); }
+function vTypes() { return { rec: $('vRec').checked, prod: $('vProd').checked, cloze: $('vCloze').checked }; }
+function vRetention() { return Math.min(0.97, Math.max(0.7, Number($('vRet').value) || 0.9)); }
+function vNewLeft() { return Math.max(0, (Number($('vNew').value) || 0) - (vToday().new || 0)); }
+function vSaveSettings() { saveJSON('nyelvszo-settings', { newPerDay: $('vNew').value, retention: $('vRet').value, rec: $('vRec').checked, prod: $('vProd').checked, cloze: $('vCloze').checked, typing: $('vTyping').checked }); }
+function vLoadSettings() {
+  const s = loadJSON('nyelvszo-settings', {});
+  if (s.newPerDay !== undefined) $('vNew').value = s.newPerDay; if (s.retention) $('vRet').value = s.retention;
+  for (const k of ['rec', 'prod', 'cloze', 'typing']) if (s[k] !== undefined) $('v' + k[0].toUpperCase() + k.slice(1)).checked = s[k];
+}
+
+// --- felhő-összefésülés
+function vApplyRemote(id, remote) {
+  if (id === VOC_META_ID) {
+    const r = vNormMeta(remote), out = vNormMeta(vMeta);
+    for (const [k, v] of Object.entries(r.decks)) { const c = out.decks[k]; if (!c || (Number(v.at) || 0) > (Number(c.at) || 0)) out.decks[k] = v; }
+    for (const [d, row] of Object.entries(r.days)) { const o = out.days[d] || (out.days[d] = {}); for (const [k, v] of Object.entries(row || {})) o[k] = Math.max(o[k] || 0, Number(v) || 0); }
+    const changed = JSON.stringify(out) !== JSON.stringify(r);
+    vMeta = out; vSaveMeta(false); if (changed) markDirty(VOC_META_ID);
+    return;
+  }
+  const deck = id.slice(6), local = vGetProg(deck);
+  const r = remote && remote.cards ? remote : { v: 1, cards: {} };
+  const out = { v: 1, cards: { ...r.cards } }; let stale = false;
+  for (const [k, c] of Object.entries(local.cards)) { const rc = out.cards[k]; if (!rc || (Number(c.lastReviewed) || 0) > (Number(rc.lastReviewed) || 0)) { out.cards[k] = c; stale = true; } }
+  vProgs[deck] = out; saveJSON(VLS + deck, out); if (stale) markDirty(id);
+}
+function vLocalCloudIds() {
+  const ids = [];
+  for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(VLS)) ids.push('vocab:' + k.slice(VLS.length)); }
+  if (Object.keys(vMeta.decks).length || Object.keys(vMeta.days).length) ids.push(VOC_META_ID);
+  return ids;
+}
+
+// --- FSRS
+const vR = (t, S) => Math.pow(1 + F_FACTOR * t / S, F_DECAY);
+const vInterval = (S, ret) => S / F_FACTOR * (Math.pow(ret, 1 / F_DECAY) - 1);
+const vClampD = d => Math.min(10, Math.max(1, d));
+const vD0 = g => vClampD(FSRS_W[4] - (g - 3) * FSRS_W[5]);
+const vNextD = (D, g) => vClampD(FSRS_W[7] * vD0(3) + (1 - FSRS_W[7]) * (D - FSRS_W[6] * (g - 3)));
+const vSRecall = (D, S, R, g) => S * (Math.exp(FSRS_W[8]) * (11 - D) * Math.pow(S, -FSRS_W[9]) * (Math.exp(FSRS_W[10] * (1 - R)) - 1) * (g === 2 ? FSRS_W[15] : 1) * (g === 4 ? FSRS_W[16] : 1) + 1);
+const vSForget = (D, S, R) => FSRS_W[11] * Math.pow(D, -FSRS_W[12]) * (Math.pow(S + 1, FSRS_W[13]) - 1) * Math.exp(FSRS_W[14] * (1 - R));
+function vSchedule(old, g, now) {
+  const c = { state: 'new', reps: 0, lapses: 0, interval: 0, ...(old || {}) };
+  let requeue = 0;
+  const isNew = !c.reps || c.state === 'new';
+  if (isNew) { c.s = FSRS_W[g - 1]; c.d = vD0(g); }
+  else {
+    const t = Math.max(0, (now - (Number(c.lastReviewed) || now)) / 864e5);
+    if (c.state === 'review') { const R = vR(t, c.s); c.s = g === 1 ? Math.min(c.s, vSForget(c.d, c.s, R)) : vSRecall(c.d, c.s, R, g); }
+    c.d = vNextD(c.d, g);
+  }
+  const graduate = () => { c.state = 'review'; c.interval = Math.min(VMAX_DAYS, Math.max(1, Math.round(vInterval(c.s, vRetention())))); c.due = dueAfterDays(c.interval, now); };
+  if (c.state === 'review' && !isNew) {
+    if (g === 1) { c.lapses++; c.state = 'learning'; c.interval = 0; c.due = now + 10 * 60e3; requeue = 4; }
+    else graduate();
+  } else { // új vagy tanulás alatt (lépések: 1 perc, 10 perc)
+    if (g === 1) { c.state = 'learning'; c.interval = 0; c.due = now + 60e3; requeue = 3; }
+    else if (g === 2 || (g === 3 && isNew)) { c.state = 'learning'; c.interval = 0; c.due = now + 10 * 60e3; requeue = 5; }
+    else graduate();
+  }
+  c.reps = (c.reps || 0) + 1; c.last = g; c.lastReviewed = now;
+  c.s = Math.round(c.s * 1000) / 1000; c.d = Math.round(c.d * 1000) / 1000;
+  return { card: c, requeue };
+}
+
+// --- források: szigetek szókincse és saját listák
+function parseSections(text) {
+  const out = []; let sec = '', n = 0;
+  String(text).replace(/^﻿/, '').split(/\r?\n/).forEach(raw => {
+    const s = raw.replace(/\s+/g, ' ').trim();
+    if (!s) return; if (s.startsWith('#')) { sec = s; return; } if (s.startsWith('//')) return;
+    const at = s.indexOf(' - '); if (at < 0) return;
+    const hu = s.slice(0, at).trim(), it = s.slice(at + 3).trim(); if (!hu || !it) return;
+    n++; out.push({ hu, it, n, sec });
+  });
+  return out;
+}
+const vNoteKey = (hu, it) => 'n' + hash(hu + '\u0001' + it);
+function parseVocabList(text) {
+  const notes = [], seen = new Set();
+  String(text).replace(/^﻿/, '').split(/\r?\n/).forEach(raw => {
+    const s = raw.replace(/\s+/g, ' ').trim(); if (!s || s.startsWith('#') || s.startsWith('//')) return;
+    const [main, ex] = s.split(' || ');
+    const at = main.indexOf(' - '); if (at < 0) return;
+    const hu = main.slice(0, at).trim(), it = main.slice(at + 3).trim(); if (!hu || !it) return;
+    let ehu = '', eit = '';
+    if (ex) { const a2 = ex.indexOf(' - '); if (a2 >= 0) { ehu = ex.slice(0, a2).trim(); eit = ex.slice(a2 + 3).trim(); } }
+    const nk = vNoteKey(hu, it); if (seen.has(nk)) return; seen.add(nk);
+    notes.push({ nk, hu, it, ehu, eit });
+  });
+  return notes;
+}
+const V_STOP = new Set(("il lo la i gli le l un uno una di a da in con su per tra fra e ed o ma che non mi ti si ci vi ne è e' sono sei siamo siete ho hai ha abbiamo avete hanno " +
+  "del dello della dei degli delle al allo alla ai agli alle dal dalla dai nel nello nella nei negli nelle sul sulla sui anche molto più poi come cosa questo questa quello quella " +
+  "io tu lui lei noi voi loro mio mia miei mie tuo tua suo sua nostro nostra lo gli le se già ancora oggi qui là sì no").split(' '));
+const vClean = w => w.toLocaleLowerCase('it').replace(/[’`´]/g, "'").replace(/^[^\p{L}\p{N}']+|[^\p{L}\p{N}']+$/gu, '').replace(/^[\p{L}]{1,4}'(?=\p{L})/u, '');
+function vCommonPrefix(a, b) { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; }
+function clozeOf(note) {
+  if (note._cz !== undefined) return note._cz;
+  const sentence = note.sentence ? note.it : note.eit;
+  if (!sentence) return (note._cz = null);
+  const toks = sentence.split(/(\s+)/);
+  let idx = [];
+  if (note.sentence) { // a sziget mondatából a leghosszabb, nem gyakori szót takarja ki
+    let best = -1, bl = 0;
+    toks.forEach((t, i) => { const c = vClean(t); if (!c || /\s/.test(t) || V_STOP.has(c) || /\d/.test(c)) return; if (c.length >= bl) { bl = c.length; best = i; } });
+    if (best >= 0 && bl >= 3) idx = [best];
+  } else { // a saját listánál a megadott olasz szót keresi meg a példamondatban (ragozva is)
+    const target = note.it.split(/\s+/).map(vClean).filter(w => w && !V_STOP.has(w)).map(stripAcc);
+    toks.forEach((t, i) => {
+      const c = stripAcc(vClean(t)); if (!c || /\s/.test(t)) return;
+      if (target.some(w => vCommonPrefix(w, c) >= Math.min(w.length, Math.max(3, Math.min(5, w.length - 2))))) idx.push(i);
+    });
+  }
+  if (!idx.length) return (note._cz = null);
+  const masked = toks.map((t, i) => idx.includes(i) ? t.replace(/[\p{L}\p{N}']+/u, m => '_'.repeat(Math.max(4, Math.min(10, m.length)))) : t).join('');
+  return (note._cz = { masked, idx, toks, answer: idx.map(i => toks[i].replace(/^[^\p{L}\p{N}']+|[^\p{L}\p{N}']+$/gu, '')).join(' ') });
+}
+function vCardTypes(note, set) { const out = []; if (set.rec) out.push('rec'); if (set.prod) out.push('prod'); if (set.cloze && clozeOf(note)) out.push('cloze'); return out; }
+
+async function vRefreshDecks() {
+  const list = [];
+  for (const slug of (await cachedSlugs()).sort()) {
+    const rec = await idb.get('islands', slug).catch(() => null);
+    if (!rec || !rec.txt) continue;
+    const notes = parseSections(rec.txt).filter(p => /SZÓKINCS/i.test(p.sec))
+      .map(p => ({ nk: vNoteKey(p.hu, p.it), hu: p.hu, it: p.it, ehu: '', eit: '', slug, n: p.n, sentence: true }));
+    if (!notes.length) continue;
+    const id = 'isl-' + slug; vNotes.set(id, notes); list.push({ id, kind: 'island', slug, name: niceName(slug) });
+  }
+  for (const [id, d] of Object.entries(vMeta.decks)) {
+    if (!d || d.deleted) continue;
+    vNotes.set(id, parseVocabList(d.txt || '')); list.push({ id, kind: 'upload', name: d.name || 'Szólista' });
+  }
+  vDecks = list;
+}
+function vDeckCounts(id) {
+  const notes = vNotes.get(id) || [], set = vTypes(), prog = vGetProg(id), now = Date.now();
+  const o = { fresh: 0, due: 0, learned: 0, total: 0, words: notes.length };
+  for (const n of notes) for (const t of vCardTypes(n, set)) {
+    o.total++; const c = prog.cards[n.nk + ':' + t];
+    if (!c || !c.reps) o.fresh++; else { if (c.due <= now) o.due++; if (c.state === 'review' && c.interval >= 21) o.learned++; }
+  }
+  return o;
+}
+function vBuild(deckIds) {
+  const set = vTypes(), now = Date.now(), today = studyDay(); let budget = vNewLeft();
+  const reviews = [], fresh = [];
+  for (const id of deckIds) {
+    const prog = vGetProg(id);
+    for (const note of vNotes.get(id) || []) for (const type of vCardTypes(note, set)) {
+      const cid = note.nk + ':' + type, c = prog.cards[cid];
+      if (c && c.reps) { if (c.due <= now) reviews.push({ deck: id, note, type, cid, due: c.due }); continue; }
+      if (budget <= 0) continue;
+      if (type !== 'rec' && set.rec) { const rc = prog.cards[note.nk + ':rec']; if (!rc || !rc.reps || studyDay(rc.lastReviewed) === today) continue; }
+      fresh.push({ deck: id, note, type, cid }); budget--;
+    }
+  }
+  reviews.sort((a, b) => a.due - b.due);
+  return interleave(reviews, fresh);
+}
+
+// --- megjelenítés: statisztika és paklik mappákban
+function vRenderStats() {
+  const t = vToday(); let due = 0, total = 0, learned = 0;
+  for (const d of vDecks) { const c = vDeckCounts(d.id); due += c.due; total += c.total; learned += c.learned; }
+  $('vStDue').textContent = due; $('vStToday').textContent = t.reviews || 0; $('vStGood').textContent = t.good || 0; $('vStNew').textContent = t.new || 0;
+  $('vStInfo').textContent = `Ma még ${vNewLeft()} új kártya vehető fel. Kártyák összesen: ${total}, ebből jól rögzült (3+ hét): ${learned}. Szólisták: ${vDecks.length}.`;
+}
+function vRenderDecks() {
+  const host = $('vDeckList'); if (!host) return; host.innerHTML = '';
+  vRenderStats();
+  if (!vDecks.length) { const p = document.createElement('p'); p.className = 'muted'; p.textContent = 'Még nincs szólista. Nyiss meg (vagy tölts le offline) egy szigetet – a szókincsbővítő mondatai magától megjelennek itt –, vagy tölts fel saját szólistát.'; host.append(p); return; }
+  const groups = new Map();
+  for (const d of vDecks) {
+    const key = d.kind === 'upload' ? '__own__' : (folderOf(d.slug) || '__none__');
+    if (!groups.has(key)) groups.set(key, []); groups.get(key).push(d);
+  }
+  const order = [...liveFolders().map(f => f.id).filter(id => groups.has(id)), ...['__none__', '__own__'].filter(k => groups.has(k))];
+  for (const key of order) {
+    const decks = groups.get(key).sort((a, b) => a.name.localeCompare(b.name, 'hu', { numeric: true }));
+    const sum = decks.reduce((s, d) => { const c = vDeckCounts(d.id); s.due += c.due; s.fresh += c.fresh; s.total += c.total; return s; }, { due: 0, fresh: 0, total: 0 });
+    const title = key === '__own__' ? '📝 Saját szólisták' : key === '__none__' ? 'Szigetek mappa nélkül' : '📁 ' + folderName(key);
+    const g = makeGroup('voc:' + key, title, `(${decks.length} lista · ${sum.due} esedékes · ${sum.fresh} új)`, false);
+    const tools = document.createElement('div'); tools.className = 'ftools';
+    const all = document.createElement('button'); all.textContent = 'A csoport gyakorlása'; all.onclick = () => vStart(decks.map(d => d.id), title.replace(/^\S+\s/, ''));
+    tools.append(all); g.body.append(tools);
+    for (const d of decks) {
+      const c = vDeckCounts(d.id);
+      const row = document.createElement('div'); row.className = 'cloud item';
+      const lab = document.createElement('div'); const st = document.createElement('strong'); st.textContent = d.name; lab.append(st);
+      const info = document.createElement('span'); info.className = 'istat'; info.textContent = `${c.words} szó · ${c.total} kártya · ${c.due} esedékes · ${c.fresh} új · ${c.learned} rögzült`; lab.append(info);
+      const act = document.createElement('div');
+      const go = document.createElement('button'); go.textContent = 'Gyakorlás'; go.onclick = () => vStart([d.id], d.name); act.append(go);
+      if (d.kind === 'upload') {
+        const del = document.createElement('button'); del.className = 'alt'; del.textContent = 'Törlés';
+        del.onclick = () => {
+          if (!confirm('Törlöd a „' + d.name + '” szólistát és a haladását?')) return;
+          vMeta.decks[d.id] = { ...vMeta.decks[d.id], deleted: true, txt: '', at: Date.now() }; vSaveMeta();
+          vProgs[d.id] = { v: 1, cards: {} }; vSaveProg(d.id);
+          vRefreshAndRender();
+        };
+        act.append(del);
+      }
+      row.append(lab, act); g.body.append(row);
+    }
+    host.append(g.el);
+  }
+}
+let vRefreshing = null;
+function vRefreshAndRender() {
+  if (!vRefreshing) vRefreshing = vRefreshDecks().then(vRenderDecks).catch(e => console.warn('Szótanulás:', e)).finally(() => { vRefreshing = null; });
+  return vRefreshing;
+}
+
+// --- gyakorlás
+async function vStart(deckIds, title) {
+  stopHandsFree();
+  await vRefreshAndRender();
+  const items = vBuild(deckIds);
+  if (!items.length) { $('vStatus').textContent = 'Itt most nincs esedékes kártya, és a mai új kártyák limitje elfogyott (vagy nincs több új).'; return; }
+  vSess = { title: title || 'Szótanulás', items, pos: 0 };
+  const nRev = items.filter(i => { const c = vGetProg(i.deck).cards[i.cid]; return c && c.reps; }).length;
+  $('vStatus').textContent = `${nRev} esedékes ismétlés és ${items.length - nRev} új kártya.`;
+  vRender(); $('vstudy').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function vQuestionLang(it) { return it.type === 'rec' ? 'it' : it.type === 'prod' ? 'hu' : null; }
+function vAnswerLang(it) { return it.type === 'rec' ? 'hu' : 'it'; }
+function vAnswerText(it) { const n = it.note; return it.type === 'rec' ? n.hu : it.type === 'prod' ? n.it : (n.sentence ? n.it : n.eit); }
+function vRender() {
+  if (!vSess || vSess.pos >= vSess.items.length) return vFinish();
+  const it = vSess.items[vSess.pos], n = it.note;
+  $('vstudy').classList.remove('hidden');
+  const label = { rec: 'olasz → magyar', prod: 'magyar → olasz', cloze: 'hiányos mondat' }[it.type];
+  const deck = vDecks.find(d => d.id === it.deck);
+  $('vInfo').textContent = `${vSess.title} · ${vSess.pos + 1} / ${vSess.items.length} · ${label}` + (deck && deck.name !== vSess.title ? ' · ' + deck.name : '');
+  const cz = it.type === 'cloze' ? clozeOf(n) : null;
+  $('vHint').textContent = it.type === 'rec' ? 'Mit jelent magyarul?' : it.type === 'prod' ? 'Mondd ki (vagy írd be) olaszul:' : 'Egészítsd ki – ' + (n.sentence ? n.hu : (n.ehu || n.hu));
+  $('vQ').textContent = it.type === 'rec' ? n.it : it.type === 'prod' ? n.hu : cz.masked;
+  $('vQAudio').classList.toggle('hidden', !vQuestionLang(it));
+  const typing = $('vTyping').checked && it.type !== 'rec';
+  $('vTypeBox').classList.toggle('hidden', !typing); $('vTypeInput').value = ''; $('vTypeRes').innerHTML = '';
+  // válasz
+  const ans = $('vAns'); ans.innerHTML = '';
+  if (cz) cz.toks.forEach((t, i) => { if (cz.idx.includes(i)) { const m = document.createElement('mark'); m.textContent = t; m.style.cssText = 'background:#ffe08a;color:#3d2c00;border-radius:4px;padding:0 3px'; ans.append(m); } else ans.append(t); });
+  else ans.textContent = vAnswerText(it);
+  $('vExample').textContent = n.sentence ? '' : it.type === 'cloze' ? n.it + ' = ' + n.hu : (n.eit ? n.eit + ' – ' + n.ehu : '');
+  $('vAnsWrap').classList.add('hidden'); $('vShow').classList.remove('hidden');
+  const now = Date.now(), old = vGetProg(it.deck).cards[it.cid];
+  document.querySelectorAll('[data-vrate]').forEach(b => { b.querySelector('small').textContent = describeDue(vSchedule(old, Number(b.dataset.vrate), now).card, now); });
+  // hang előkészítése (szigetnél MP3, saját listánál a készülék felolvasója)
+  vAudio = { hu: null, it: null };
+  if (n.slug && n.n) {
+    const token = it;
+    Promise.all([getAudioBlob(n.slug, 'L1', n.n), getAudioBlob(n.slug, 'L2', n.n)]).then(([h, i]) => { if (vSess && vSess.items[vSess.pos] === token) vAudio = { hu: h, it: i }; }).catch(() => {});
+  }
+  if (typing) setTimeout(() => $('vTypeInput').focus(), 50);
+}
+function vSpeak(text, lang) {
+  if (!('speechSynthesis' in window)) { $('vStatus').textContent = 'Ehhez a kártyához nincs hangfájl, és a készülék felolvasója sem érhető el.'; return; }
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = lang === 'it' ? 'it-IT' : 'hu-HU';
+    const v = speechSynthesis.getVoices().find(x => x.lang && x.lang.toLowerCase().startsWith(lang)); if (v) u.voice = v;
+    u.rate = Math.min(1.2, Math.max(0.6, Number($(lang === 'hu' ? 'l1Speed' : 'l2Speed').value) || 1));
+    speechSynthesis.speak(u);
+  } catch {}
+}
+function vPlay(lang, text) {
+  if (!vSess) return;
+  stopActiveAudio(); try { recEl.pause(); hfEl.pause(); } catch {}
+  const blob = vAudio[lang];
+  if (blob) {
+    const url = URL.createObjectURL(blob);
+    vEl.onended = () => { try { URL.revokeObjectURL(url); } catch {} };
+    vEl.src = url; vEl.playbackRate = Number($(lang === 'hu' ? 'l1Speed' : 'l2Speed').value) || 1;
+    vEl.play().catch(() => vSpeak(text, lang));
+  } else vSpeak(text, lang);
+}
+function vReveal() {
+  if (!vSess) return;
+  const it = vSess.items[vSess.pos];
+  $('vAnsWrap').classList.remove('hidden'); $('vShow').classList.add('hidden');
+  if ($('autoAnswer').checked) vPlay(vAnswerLang(it), vAnswerText(it));
+}
+function vCheckTyping() {
+  if (!vSess) return;
+  const it = vSess.items[vSess.pos], typed = $('vTypeInput').value;
+  if (!typed.trim()) { $('vTypeInput').focus(); return; }
+  const expected = it.type === 'cloze' ? clozeOf(it.note).answer : it.note.it;
+  const r = compareAnswer(expected, typed), host = $('vTypeRes'); host.innerHTML = '';
+  const ok = r.eState.filter(s => s === 'ok').length, acc = r.eState.filter(s => s === 'acc').length, extra = r.tState.filter(s => s === 'extra').length;
+  const v = document.createElement('div'); v.className = 'verdict';
+  v.textContent = ok === r.E.length && !extra ? '✓ Tökéletes!' : ok + acc === r.E.length && !extra ? '≈ Majdnem jó – csak ékezet hiányzik vagy tér el.' : `${ok + acc}/${r.E.length} szó stimmel.`;
+  host.append(v);
+  const line = (label, toks, states) => { const d = document.createElement('div'); const l = document.createElement('span'); l.className = 'muted'; l.textContent = label + ' '; d.append(l); toks.forEach((t, k) => { const w = document.createElement('span'); w.className = 'w ' + states[k]; w.textContent = t.raw; d.append(w, ' '); }); return d; };
+  host.append(line('Helyesen:', r.E, r.eState), line('Te írtad:', r.T, r.tState));
+  vReveal();
+}
+function vRate(g) {
+  if (!vSess) return;
+  const it = vSess.items[vSess.pos], prog = vGetProg(it.deck), now = Date.now();
+  const old = prog.cards[it.cid], wasNew = !old || !old.reps;
+  const { card, requeue } = vSchedule(old, g, now);
+  prog.cards[it.cid] = card; vSaveProg(it.deck);
+  const t = vToday(); t.reviews = (t.reviews || 0) + 1; if (wasNew) t.new = (t.new || 0) + 1; if (g >= 3) t.good = (t.good || 0) + 1; if (g === 1) t.again = (t.again || 0) + 1;
+  vSaveMeta();
+  if (requeue) vSess.items.splice(Math.min(vSess.items.length, vSess.pos + 1 + requeue), 0, { ...it });
+  vSess.pos++;
+  $('vStatus').textContent = g === 1 ? 'Nem ment: hamarosan újra előjön.' : card.interval < 1 ? 'Hamarosan még egyszer előjön.' : 'Következő ismétlés: ' + describeDue(card, now) + '.';
+  vRenderStats();
+  vRender();
+}
+function vFinish() {
+  const had = !!vSess; vSess = null;
+  $('vstudy').classList.add('hidden');
+  try { vEl.pause(); speechSynthesis && speechSynthesis.cancel(); } catch {}
+  if (had) $('vStatus').textContent = 'A szótanulási kör végére értél. Szép munka!';
+  vRenderDecks();
+}
+
+// --- saját szólisták
+async function vUploadList() {
+  const f = $('vListFile').files[0], name = $('vListName').value.trim() || (f ? f.name.replace(/\.[^.]+$/, '') : '');
+  if (!f) { $('vStatus').textContent = 'Válaszd ki a szólista TXT-fájlját.'; return; }
+  const txt = await f.text(), notes = parseVocabList(txt);
+  if (!notes.length) { $('vStatus').textContent = 'A fájlban nem találtam „magyar - olasz” sort.'; return; }
+  const id = 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  vMeta.decks[id] = { name, txt, at: Date.now() }; vSaveMeta();
+  $('vListFile').value = ''; $('vListName').value = '';
+  const withEx = notes.filter(n => n.eit).length;
+  $('vStatus').textContent = `Szólista hozzáadva: ${name} – ${notes.length} szó, ebből ${withEx} példamondattal.`;
+  rememberOpen('voc:__own__', true); vRefreshAndRender();
+}
+function vAddWord() {
+  const hu = $('vAddHu').value.trim(), it = $('vAddIt').value.trim(), ehu = $('vAddEhu').value.trim(), eit = $('vAddEit').value.trim();
+  if (!hu || !it) { $('vStatus').textContent = 'Add meg a szót magyarul és olaszul.'; return; }
+  const clean = s => s.replace(/\s+-\s+/g, ' – ').replace(/\s*\|\|\s*/g, ' ');
+  const line = clean(hu) + ' - ' + clean(it) + (ehu && eit ? ' || ' + clean(ehu) + ' - ' + clean(eit) : '');
+  const d = vMeta.decks.sajat && !vMeta.decks.sajat.deleted ? vMeta.decks.sajat : { name: 'Saját szavaim', txt: '' };
+  vMeta.decks.sajat = { ...d, deleted: false, name: d.name || 'Saját szavaim', txt: (d.txt ? d.txt.replace(/\s*$/, '') + '\n' : '') + line, at: Date.now() };
+  vSaveMeta();
+  for (const k of ['vAddHu', 'vAddIt', 'vAddEhu', 'vAddEit']) $(k).value = '';
+  $('vStatus').textContent = 'Hozzáadva a „Saját szavaim” listához: ' + hu + ' – ' + it;
+  rememberOpen('voc:__own__', true); vRefreshAndRender(); $('vAddHu').focus();
+}
+
+// --- események
+$('vStartAll').onclick = () => vStart(vDecks.map(d => d.id), 'Minden szólista');
+$('vRefresh').onclick = () => vRefreshAndRender().then(() => { $('vStatus').textContent = 'Szólisták frissítve.'; });
+$('vShow').onclick = vReveal;
+$('vQAudio').onclick = () => { const it = vSess && vSess.items[vSess.pos]; if (it) vPlay(vQuestionLang(it), it.type === 'rec' ? it.note.it : it.note.hu); };
+$('vAAudio').onclick = () => { const it = vSess && vSess.items[vSess.pos]; if (it) vPlay(vAnswerLang(it), vAnswerText(it)); };
+document.querySelectorAll('[data-vrate]').forEach(b => b.onclick = () => vRate(Number(b.dataset.vrate)));
+$('vQuit').onclick = () => { vSess = null; vFinish(); $('vStatus').textContent = 'Kiléptél a szótanulásból. A haladás mentve.'; };
+$('vCheck').onclick = vCheckTyping;
+$('vTypeInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); vCheckTyping(); } });
+$('vUpload').onclick = () => vUploadList().catch(e => { $('vStatus').textContent = 'Hiba: ' + e.message; });
+$('vAdd').onclick = vAddWord;
+for (const id of ['vNew', 'vRet', 'vRec', 'vProd', 'vCloze', 'vTyping']) $(id).onchange = () => { vSaveSettings(); vRenderDecks(); };
+vLoadSettings();
+if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch {} }
+
+
 // ============================================================
 // INDÍTÁS
 // ============================================================
-loadSettings(); updateSpeedLabels(); updateNet(); renderStats(); renderHard(); refreshUploadFolderSelect('');
+loadSettings(); updateSpeedLabels(); updateNet(); renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender();
 const configured = SUPABASE_URL.startsWith('https://') && SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
 if (configured && window.supabase) {
   client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
