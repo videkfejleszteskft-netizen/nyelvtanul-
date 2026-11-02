@@ -79,12 +79,8 @@ details summary{cursor:pointer;font-weight:600}
  <p class="muted">Az egyszer megnyitott sziget a készüléken marad, és internet nélkül is használható.</p>
  <button id="refreshLibrary">Könyvtár frissítése</button><button id="downloadAll" class="alt">Összes letöltése offline használatra</button>
  <p id="libStatus" class="muted">Jelentkezz be a könyvtár használatához.</p><div id="islandList"></div>
- <details style="margin-top:10px"><summary>Új mappa létrehozása</summary>
-  <div class="row" style="margin-top:8px"><label>Mappa neve<br><input id="folderName" placeholder="pl. Utazás"></label><label>Helye<br><select id="parentFolder"><option value="">Főkönyvtár</option></select></label></div>
-  <button id="createFolder">Mappa létrehozása</button>
- </details>
  <details style="margin-top:10px"><summary>Új sziget feltöltése</summary>
-  <div class="row" style="margin-top:8px"><label>Sziget neve<br><input id="libName" placeholder="pl. Az étteremben"></label><label>Mappa<br><select id="libFolder"><option value="">Főkönyvtár</option></select></label><label>TXT tananyag<br><input id="libTxt" type="file" accept=".txt"></label></div>
+  <div class="row" style="margin-top:8px"><label>Sziget neve<br><input id="libName" placeholder="pl. Az étteremben"></label><label>TXT tananyag<br><input id="libTxt" type="file" accept=".txt"></label></div>
   <div class="row"><label>L1 magyar hangfájlok (01.mp3…)<br><input id="libL1" type="file" accept="audio/*" multiple></label><label>L2 olasz hangfájlok (01.mp3…)<br><input id="libL2" type="file" accept="audio/*" multiple></label></div>
   <button id="uploadIsland">Sziget feltöltése a felhőbe</button>
  </details>
@@ -518,87 +514,60 @@ async function ensureIslandCached(slug, onTick) {
   return rec;
 }
 
-async function scanLibraryTree() {
-  const islands = [], folders = new Set();
-  const walk = async (prefix, depth = 0) => {
-    if (depth > 20) return;
-    const entries = await listFolder(prefix);
-    if (entries.some(x => x.name === 'tananyag.txt' && !isFolder(x))) { islands.push(prefix); return; }
-    if (prefix) folders.add(prefix);
-    for (const entry of entries) {
-      if (!isFolder(entry) || !entry.name || entry.name.startsWith('.')) continue;
-      const child = prefix ? prefix + '/' + entry.name : entry.name;
-      await walk(child, depth + 1);
-    }
-  };
-  await walk('');
-  return { islands: uniqueSlugs(islands), folders: [...folders].sort() };
-}
-function niceFolderName(path) { return path ? path.split('/').map(niceName).join(' / ') : 'Főkönyvtár'; }
-function refreshFolderSelects(folders) {
-  for (const id of ['parentFolder', 'libFolder']) {
-    const el = $(id); if (!el) continue;
-    const old = el.value; el.innerHTML = '';
-    const root = document.createElement('option'); root.value = ''; root.textContent = 'Főkönyvtár'; el.append(root);
-    for (const path of folders) { const o = document.createElement('option'); o.value = path; o.textContent = niceFolderName(path); el.append(o); }
-    if ([...el.options].some(o => o.value === old)) el.value = old;
-  }
-}
 async function listLibrary() {
   const token = ++libraryRenderToken;
   const host = $('islandList'); host.innerHTML = '';
-  let slugs = librarySlugs(), folders = [];
+  let slugs = librarySlugs();
   if (signedIn() && online()) {
     try {
       $('libStatus').textContent = 'Könyvtár betöltése…';
-      const tree = await scanLibraryTree(); slugs = tree.islands; folders = tree.folders;
+      slugs = uniqueSlugs((await listFolder('')).filter(x => isFolder(x) && x.name && !x.name.startsWith('.')).map(x => x.name));
       if (token !== libraryRenderToken) return;
       saveJSON('nyelvisziget-library', slugs);
-      saveJSON('nyelvisziget-folders', folders);
-    } catch (e) { $('libStatus').textContent = 'Könyvtárhiba: ' + e.message + '. A letöltött szigetek továbbra is elérhetők.'; folders = loadJSON('nyelvisziget-folders', []); }
-  } else folders = loadJSON('nyelvisziget-folders', []);
+    } catch (e) { $('libStatus').textContent = 'Könyvtárhiba: ' + e.message + '. A letöltött szigetek továbbra is elérhetők.'; }
+  }
   const cached = new Set(uniqueSlugs(await cachedSlugs()));
   if (token !== libraryRenderToken) return;
-  slugs = uniqueSlugs([...slugs, ...cached]).sort();
-  refreshFolderSelects(folders);
-  if (!slugs.length && !folders.length) { $('libStatus').textContent = signedIn() ? 'Még nincs feltöltött sziget. Hozz létre egy mappát, vagy tölts fel egy szigetet.' : 'Jelentkezz be a felhős könyvtárhoz.'; return; }
-  const byParent = new Map();
-  for (const slug of slugs) { const i = slug.lastIndexOf('/'); const parent = i < 0 ? '' : slug.slice(0, i); if (!byParent.has(parent)) byParent.set(parent, []); byParent.get(parent).push(slug); }
-  const allParents = [...new Set([...folders, ...byParent.keys()])].sort((a,b) => a.split('/').length-b.split('/').length || a.localeCompare(b));
-  const renderIsland = slug => {
-    const row = document.createElement('div'); row.className = 'cloud item'; row.style.marginLeft = '12px';
-    const label = document.createElement('div'); const strong = document.createElement('strong'); strong.textContent = niceName(slug.split('/').pop()); label.append(strong);
+  slugs = uniqueSlugs(slugs);
+  const all = uniqueSlugs([...slugs, ...cached]).sort();
+  if (!all.length) { $('libStatus').textContent = signedIn() ? 'Még nincs feltöltött sziget.' : 'Jelentkezz be a felhős könyvtárhoz.'; return; }
+  for (const slug of all) {
+    if (token !== libraryRenderToken) return;
+    const row = document.createElement('div'); row.className = 'cloud item';
+    const label = document.createElement('div');
+    label.innerHTML = '<strong></strong>'; label.firstChild.textContent = niceName(slug);
     const b = document.createElement('span'); b.className = 'badge' + (cached.has(slug) ? '' : ' off'); b.textContent = cached.has(slug) ? 'offline ✓' : 'csak felhő'; label.append(b);
-    const actions = document.createElement('div'); const open = document.createElement('button'); open.textContent = 'Megnyitás';
-    open.onclick = async () => { open.disabled = true; open.textContent = 'Betöltés…'; $('libStatus').textContent = 'Sziget megnyitása: ' + niceFolderName(slug) + '…'; try { await openIsland(slug); startSession($('mode').value); $('libStatus').textContent = 'Megnyitva: ' + niceFolderName(slug) + '.'; } catch(e) { const msg=e?.message||String(e); $('status').textContent='Nem sikerült megnyitni a szigetet: '+msg; $('libStatus').textContent='Megnyitási hiba ('+niceFolderName(slug)+'): '+msg; } finally { open.disabled=false; open.textContent='Megnyitás'; } };
+    const actions = document.createElement('div');
+    const open = document.createElement('button');
+    open.textContent = 'Megnyitás';
+    open.onclick = async () => {
+      open.disabled = true;
+      open.textContent = 'Betöltés…';
+      $('libStatus').textContent = 'Sziget megnyitása: ' + niceName(slug) + '…';
+      try {
+        await openIsland(slug);
+        startSession($('mode').value);
+        $('libStatus').textContent = 'Megnyitva: ' + niceName(slug) + '.';
+      } catch (e) {
+        const msg = e && e.message ? e.message : String(e);
+        $('status').textContent = 'Nem sikerült megnyitni a szigetet: ' + msg;
+        $('libStatus').textContent = 'Megnyitási hiba (' + niceName(slug) + '): ' + msg;
+      } finally {
+        open.disabled = false;
+        open.textContent = 'Megnyitás';
+      }
+    };
     actions.append(open);
-    if (librarySlugs().includes(slug) || (signedIn() && online() && slugs.includes(slug))) { const del=document.createElement('button'); del.className='alt'; del.textContent='Törlés'; del.onclick=()=>deleteIsland(slug,del); actions.append(del); }
-    else { const del=document.createElement('button'); del.className='alt'; del.textContent='Eltávolítás a készülékről'; del.onclick=async()=>{ await deleteIslandCache(slug); listLibrary(); }; actions.append(del); }
-    row.append(label,actions); return row;
-  };
-  const renderFolder = (path) => {
-    const details = document.createElement('details'); details.open = true; details.style.margin = '8px 0';
-    const summary = document.createElement('summary'); summary.textContent = '📁 ' + niceName(path.split('/').pop()); details.append(summary);
-    const children = (byParent.get(path) || []).sort(); for (const slug of children) details.append(renderIsland(slug));
-    const prefix = path + '/';
-    for (const childFolder of folders.filter(f => f.startsWith(prefix) && !f.slice(prefix.length).includes('/')).sort()) details.append(renderFolder(childFolder));
-    return details;
-  };
-  for (const slug of (byParent.get('') || []).sort()) host.append(renderIsland(slug));
-  for (const folder of folders.filter(f => !f.includes('/')).sort()) host.append(renderFolder(folder));
-  if (token === libraryRenderToken) $('libStatus').textContent = `Szigetek: ${slugs.length}, mappák: ${folders.length}, ebből offline: ${[...cached].length}.`;
-}
-async function createLibraryFolder() {
-  if (!signedIn() || !online()) { $('libStatus').textContent = 'Mappa létrehozásához internet és bejelentkezés kell.'; return; }
-  const name = slugify($('folderName').value), parent = $('parentFolder').value;
-  if (!name) { $('libStatus').textContent = 'Add meg a mappa nevét.'; return; }
-  const path = parent ? parent + '/' + name : name;
-  try {
-    const { error } = await client.storage.from(BUCKET).upload(path + '/.folder', new Blob(['Nyelvi sziget mappa']), { upsert: true, contentType: 'text/plain' });
-    if (error) throw error;
-    $('folderName').value = ''; $('libStatus').textContent = 'Mappa létrehozva: ' + niceFolderName(path); await listLibrary();
-    $('parentFolder').value = path; $('libFolder').value = path;
-  } catch(e) { $('libStatus').textContent = 'Mappalétrehozási hiba: ' + (e?.message || e); }
+    if (slugs.includes(slug)) {
+      const del = document.createElement('button'); del.className = 'alt'; del.textContent = 'Törlés';
+      del.onclick = () => deleteIsland(slug, del); actions.append(del);
+    } else {
+      const del = document.createElement('button'); del.className = 'alt'; del.textContent = 'Eltávolítás a készülékről';
+      del.onclick = async () => { await deleteIslandCache(slug); listLibrary(); }; actions.append(del);
+    }
+    row.append(label, actions); host.append(row);
+  }
+  if (token === libraryRenderToken) $('libStatus').textContent = `Szigetek: ${all.length}, ebből a készüléken (offline): ${[...cached].length}.`;
 }
 async function deleteIsland(slug, btn) {
   if (!confirm('Biztosan törlöd a „' + niceName(slug) + '” sziget összes fájlját a felhőből és a haladását? Ez nem vonható vissza.')) return;
@@ -631,12 +600,11 @@ async function uploadIsland() {
   if (!signedIn()) { $('libStatus').textContent = 'Előbb jelentkezz be.'; return; }
   const name = $('libName').value.trim(), txt = $('libTxt').files[0], a = [...$('libL1').files], b = [...$('libL2').files];
   if (!name || !txt) { $('libStatus').textContent = 'Add meg a sziget nevét és válaszd ki a TXT-t.'; return; }
-  const leaf = slugify(name), parent = $('libFolder').value;
-  const slug = parent ? parent + '/' + leaf : leaf;
-  if (!leaf || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(leaf)) { $('libStatus').textContent = 'Adj meg érvényes szigetnevet.'; return; }
+  const slug = slugify(name);
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) { $('libStatus').textContent = 'Adj meg érvényes szigetnevet.'; return; }
   try {
     const { pairs, skipped } = parse(await txt.text());
-    const existing = librarySlugs().includes(slug) || !!(await idb.get('islands', slug).catch(() => null));
+    const existing = (await listFolder('')).some(x => x.name === slug && isFolder(x));
     if (existing && !confirm('Már létezik ilyen nevű sziget (' + name + '). Az azonos nevű fájlok felülíródnak. Folytatod?')) return;
     if (!a.length || !b.length) { if (!confirm('Nem választottál ki minden hangfájlcsoportot. Folytatod?')) return; }
     $('uploadIsland').disabled = true;
@@ -1093,7 +1061,6 @@ $('signout').onclick = async () => { await flush(); if (client) await client.aut
 $('refreshLibrary').onclick = listLibrary;
 $('downloadAll').onclick = downloadAll;
 $('uploadIsland').onclick = uploadIsland;
-$('createFolder').onclick = createLibraryFolder;
 $('loadDailyReview').onclick = loadDailyReview;
 $('dailyAll').onclick = startDailyAll;
 $('hardRefresh').onclick = async () => { try { if (signedIn() && online()) await pullAll(); } catch {} renderHard(); };
