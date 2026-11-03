@@ -1,10 +1,9 @@
-
 <!doctype html>
 <html lang="hu">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V13</title>
+<title>Nyelvi sziget – V14</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -48,6 +47,11 @@ button.on{background:#a74343!important;color:#fff!important}
 .tres .ok{background:#d7efe4;color:#14523c}.tres .acc{background:#fff0c9;color:#7a5200}
 .tres .miss{background:#f9d9d9;color:#8a1f1f;text-decoration:underline wavy}.tres .extra{background:#f9d9d9;color:#8a1f1f;text-decoration:line-through}
 .tres .verdict{font-weight:700;margin-bottom:4px}
+.mnbox{background:#fff7e0;border:1px solid #f0d58a;border-radius:12px;padding:10px 12px;margin:6px auto 10px;max-width:640px;text-align:left}
+.mnbox #vMnText{font-size:1.05rem;color:#4a3800}
+.mnbox #vMnTip{margin:4px 0}
+.mnbox.warn{border-color:#e39b3a;box-shadow:0 0 0 2px #fde2b8}
+.mnbox textarea{font:inherit;margin:6px 0}
 .istat{display:block;font-size:.8rem;color:#647482;font-weight:400}
 @keyframes ansIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .muted{color:#647482;font-size:.9rem}.hidden{display:none!important}.center{text-align:center}
@@ -80,7 +84,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V13 · szótanulással</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V14 · szótanulás emlékeztetőkkel</div></header>
 <main>
 
 <section class="box"><h3>Statisztika</h3>
@@ -134,6 +138,14 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
   <div id="vAnsWrap" class="hidden">
    <div id="vAns" class="answer"></div>
    <div id="vExample" class="muted center" style="font-size:1rem;margin:-2px 0 8px"></div>
+   <div id="vMnBox" class="mnbox">
+    <div id="vMnText"></div><div id="vMnTip" class="muted"></div>
+    <button class="alt" id="vMnEditBtn">✏️ Saját emlékeztető</button><button class="alt" id="vMnReset">Eredeti visszaállítása</button>
+    <div id="vMnEditor" class="hidden">
+     <textarea id="vMnInput" rows="2" class="vfield" placeholder="Pl.: letto ≈ „lett”: reggelre egy óriási ágy lett a szobámban"></textarea>
+     <button id="vMnSave">Mentés</button><button class="alt" id="vMnCancel">Mégse</button>
+    </div>
+   </div>
    <div class="center"><button class="alt" id="vAAudio">🔊 Válasz hangja</button>
     <div><p class="muted">Mennyire sikerült felidézni?</p>
      <button class="rate" style="background:#a74343" data-vrate="1">Nem ment<small></small></button>
@@ -161,6 +173,10 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
   <p class="muted">Egy szó magyar → olasz és hiányos mondatos kártyája csak a megértéses kártya első ismétlése utáni napon jön elő először, így nem kapod meg ugyanazt egy nap háromszor.</p>
  </details>
 
+ <details style="margin-top:6px"><summary>🧠 Emlékeztetők betöltése</summary>
+  <p class="muted">Töltsd be a <b>B1_Szokincsbovites_osszes_sziget.txt</b> és a <b>B2_Szokincsbovites_osszes_sziget.txt</b> fájlt (egyszerre többet is kijelölhetsz). A program a mondatok alapján párosítja az emlékeztetőket a szókártyákhoz, akárhogy nevezted el vagy bontottad a szigeteket. Elég egyszer betölteni, a felhőn át a másik készülékre is átkerül.</p>
+  <input id="vMnFile" type="file" accept=".txt" multiple><button id="vMnLoad">Betöltés</button>
+ </details>
  <details style="margin-top:6px"><summary>Saját szólista feltöltése</summary>
   <p class="muted">TXT, soronként: <b>magyar - olasz</b>, vagy példamondattal: <b>magyar - olasz || magyar példamondat - olasz példamondat</b><br>Pl.: <i>bevásárolni - fare la spesa || Holnap bevásárolok. - Domani faccio la spesa.</i> A „#”-tel kezdődő sorokat kihagyja.</p>
   <div class="row"><label>A lista neve<br><input id="vListName" placeholder="pl. Konyha szavai" style="padding:8px;border:1px solid #cbd5df;border-radius:8px;width:100%;box-sizing:border-box"></label><label>TXT fájl<br><input id="vListFile" type="file" accept=".txt"></label></div>
@@ -1653,7 +1669,7 @@ window.addEventListener('pagehide', () => flush());
 const VOC_META_ID = 'vocab:__meta', VLS = 'nyelvszo:';
 const FSRS_W = [0.4872, 1.4003, 3.7145, 13.8206, 5.1618, 1.2298, 0.8975, 0.031, 1.6474, 0.1367, 1.0461, 2.1072, 0.0793, 0.3246, 1.587, 0.2272, 2.8755];
 const F_DECAY = -0.5, F_FACTOR = 19 / 81, VMAX_DAYS = 1095;
-function vNormMeta(o) { return { v: 1, decks: { ...((o && o.decks) || {}) }, days: { ...((o && o.days) || {}) } }; }
+function vNormMeta(o) { return { v: 1, decks: { ...((o && o.decks) || {}) }, days: { ...((o && o.days) || {}) }, mn: { ...((o && o.mn) || {}) }, own: { ...((o && o.own) || {}) } }; }
 let vMeta = vNormMeta(loadJSON('nyelvszo-meta', null));
 const vProgs = {};                 // pakli-id -> {v, cards}
 const vNotes = new Map();          // pakli-id -> jegyzetek (szópárok)
@@ -1682,6 +1698,7 @@ function vApplyRemote(id, remote) {
   if (id === VOC_META_ID) {
     const r = vNormMeta(remote), out = vNormMeta(vMeta);
     for (const [k, v] of Object.entries(r.decks)) { const c = out.decks[k]; if (!c || (Number(v.at) || 0) > (Number(c.at) || 0)) out.decks[k] = v; }
+    for (const key of ['mn', 'own']) for (const [k, v] of Object.entries(r[key])) { const c = out[key][k]; if (!c || (Number(v.at) || 0) > (Number(c.at) || 0)) out[key][k] = v; }
     for (const [d, row] of Object.entries(r.days)) { const o = out.days[d] || (out.days[d] = {}); for (const [k, v] of Object.entries(row || {})) o[k] = Math.max(o[k] || 0, Number(v) || 0); }
     const changed = JSON.stringify(out) !== JSON.stringify(r);
     vMeta = out; vSaveMeta(false); if (changed) markDirty(VOC_META_ID);
@@ -1737,7 +1754,9 @@ function parseSections(text) {
   const out = []; let sec = '', n = 0;
   String(text).replace(/^﻿/, '').split(/\r?\n/).forEach(raw => {
     const s = raw.replace(/\s+/g, ' ').trim();
-    if (!s) return; if (s.startsWith('#')) { sec = s; return; } if (s.startsWith('//')) return;
+    if (!s) return;
+    if (s.startsWith('#') && s.includes('🧠')) { if (out.length) out[out.length - 1].mn = s.replace(/^#\s*🧠\s*/, '').trim(); return; }
+    if (s.startsWith('#')) { sec = s; return; } if (s.startsWith('//')) return;
     const at = s.indexOf(' - '); if (at < 0) return;
     const hu = s.slice(0, at).trim(), it = s.slice(at + 3).trim(); if (!hu || !it) return;
     n++; out.push({ hu, it, n, sec });
@@ -1748,7 +1767,9 @@ const vNoteKey = (hu, it) => 'n' + hash(hu + '\u0001' + it);
 function parseVocabList(text) {
   const notes = [], seen = new Set();
   String(text).replace(/^﻿/, '').split(/\r?\n/).forEach(raw => {
-    const s = raw.replace(/\s+/g, ' ').trim(); if (!s || s.startsWith('#') || s.startsWith('//')) return;
+    const s = raw.replace(/\s+/g, ' ').trim();
+    if (s.startsWith('#') && s.includes('🧠')) { if (notes.length && !notes[notes.length - 1].mn) notes[notes.length - 1].mn = s.replace(/^#\s*🧠\s*/, '').trim(); return; }
+    if (!s || s.startsWith('#') || s.startsWith('//')) return;
     const [main, ex] = s.split(' || ');
     const at = main.indexOf(' - '); if (at < 0) return;
     const hu = main.slice(0, at).trim(), it = main.slice(at + 3).trim(); if (!hu || !it) return;
@@ -1793,7 +1814,7 @@ async function vRefreshDecks() {
     const rec = await idb.get('islands', slug).catch(() => null);
     if (!rec || !rec.txt) continue;
     const notes = parseSections(rec.txt).filter(p => /SZÓKINCS/i.test(p.sec))
-      .map(p => ({ nk: vNoteKey(p.hu, p.it), hu: p.hu, it: p.it, ehu: '', eit: '', slug, n: p.n, sentence: true }));
+      .map(p => ({ nk: vNoteKey(p.hu, p.it), hu: p.hu, it: p.it, ehu: '', eit: '', slug, n: p.n, sentence: true, mn: p.mn || '' }));
     if (!notes.length) continue;
     const id = 'isl-' + slug; vNotes.set(id, notes); list.push({ id, kind: 'island', slug, name: niceName(slug) });
   }
@@ -1834,7 +1855,7 @@ function vRenderStats() {
   const t = vToday(); let due = 0, total = 0, learned = 0;
   for (const d of vDecks) { const c = vDeckCounts(d.id); due += c.due; total += c.total; learned += c.learned; }
   $('vStDue').textContent = due; $('vStToday').textContent = t.reviews || 0; $('vStGood').textContent = t.good || 0; $('vStNew').textContent = t.new || 0;
-  $('vStInfo').textContent = `Ma még ${vNewLeft()} új kártya vehető fel. Kártyák összesen: ${total}, ebből jól rögzült (3+ hét): ${learned}. Szólisták: ${vDecks.length}.`;
+  $('vStInfo').textContent = `Ma még ${vNewLeft()} új kártya vehető fel. Kártyák összesen: ${total}, ebből jól rögzült (3+ hét): ${learned}. Szólisták: ${vDecks.length}. Betöltött emlékeztetők: ${Object.keys(vMeta.mn).length}.`;
 }
 function vRenderDecks() {
   const host = $('vDeckList'); if (!host) return; host.innerHTML = '';
@@ -1923,6 +1944,7 @@ function vRender() {
     const token = it;
     Promise.all([getAudioBlob(n.slug, 'L1', n.n), getAudioBlob(n.slug, 'L2', n.n)]).then(([h, i]) => { if (vSess && vSess.items[vSess.pos] === token) vAudio = { hu: h, it: i }; }).catch(() => {});
   }
+  vRenderMn(it);
   if (typing) setTimeout(() => $('vTypeInput').focus(), 50);
 }
 function vSpeak(text, lang) {
@@ -2026,6 +2048,50 @@ $('vCheck').onclick = vCheckTyping;
 $('vTypeInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); vCheckTyping(); } });
 $('vUpload').onclick = () => vUploadList().catch(e => { $('vStatus').textContent = 'Hiba: ' + e.message; });
 $('vAdd').onclick = vAddWord;
+
+// ============================================================
+// EMLÉKEZTETŐK (mnemonikák)
+// Sorrend: saját emlékeztető > a sziget txt-jében lévő „# 🧠” sor > betöltött emlékeztető-fájl
+// ============================================================
+function vMnOriginal(note) { if (note.mn) return note.mn; const l = vMeta.mn[note.nk]; return l && l.t ? l.t : ''; }
+function vMnOwn(note) { const o = vMeta.own[note.nk]; return o && !o.deleted && o.t ? o.t : ''; }
+function vRenderMn(it) {
+  const note = it.note, own = vMnOwn(note), orig = vMnOriginal(note), text = own || orig;
+  const c = vGetProg(it.deck).cards[it.cid];
+  const struggling = c && c.reps && (c.last === 1 || (c.lapses || 0) >= 1);
+  $('vMnText').textContent = text ? '🧠 ' + text : '🧠 Ehhez a szóhoz még nincs emlékeztető.';
+  $('vMnTip').textContent = own ? 'Ez a saját emlékeztetőd.' : struggling ? 'Ez a szó nehezen megy – érdemes saját, a te életedből vett képet írni hozzá.' : (text ? '' : 'Írj hozzá egy rövid, élénk képet – a saját kép rögzül a legjobban.');
+  $('vMnBox').classList.toggle('warn', !!struggling && !own);
+  $('vMnEditBtn').textContent = own ? '✏️ Saját emlékeztető szerkesztése' : '✏️ Saját emlékeztető';
+  $('vMnEditor').classList.add('hidden'); $('vMnEditBtn').classList.remove('hidden');
+  $('vMnReset').classList.toggle('hidden', !own);
+}
+$('vMnEditBtn').onclick = () => {
+  const it = vSess && vSess.items[vSess.pos]; if (!it) return;
+  $('vMnInput').value = vMnOwn(it.note) || vMnOriginal(it.note);
+  $('vMnEditor').classList.remove('hidden'); $('vMnEditBtn').classList.add('hidden'); $('vMnInput').focus();
+};
+$('vMnCancel').onclick = () => { const it = vSess && vSess.items[vSess.pos]; if (it) vRenderMn(it); };
+$('vMnSave').onclick = () => {
+  const it = vSess && vSess.items[vSess.pos]; if (!it) return;
+  const t = $('vMnInput').value.replace(/\s+/g, ' ').trim();
+  vMeta.own[it.note.nk] = t ? { t, at: Date.now() } : { t: '', deleted: true, at: Date.now() };
+  vSaveMeta(); vRenderMn(it); $('vStatus').textContent = t ? 'Saját emlékeztető elmentve.' : 'Saját emlékeztető törölve.';
+};
+$('vMnReset').onclick = () => {
+  const it = vSess && vSess.items[vSess.pos]; if (!it) return;
+  vMeta.own[it.note.nk] = { t: '', deleted: true, at: Date.now() }; vSaveMeta(); vRenderMn(it);
+  $('vStatus').textContent = 'Visszaállítva az eredeti emlékeztető.';
+};
+$('vMnLoad').onclick = async () => {
+  const files = [...$('vMnFile').files];
+  if (!files.length) { $('vStatus').textContent = 'Válaszd ki az emlékeztetőket tartalmazó txt-fájl(oka)t.'; return; }
+  let n = 0; const now = Date.now();
+  for (const f of files) for (const p of parseSections(await f.text())) if (p.mn) { vMeta.mn[vNoteKey(p.hu, p.it)] = { t: p.mn, at: now }; n++; }
+  vSaveMeta(); $('vMnFile').value = '';
+  $('vStatus').textContent = n ? `${n} emlékeztető betöltve. A szókártyák válaszánál jelennek meg.` : 'Nem találtam „# 🧠” kezdetű emlékeztetősort a fájlban.';
+  vRenderStats();
+};
 for (const id of ['vNew', 'vRet', 'vRec', 'vProd', 'vCloze', 'vTyping']) $(id).onchange = () => { vSaveSettings(); vRenderDecks(); };
 vLoadSettings();
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch {} }
