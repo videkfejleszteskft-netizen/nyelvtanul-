@@ -1,6 +1,6 @@
 // Nyelvi sziget V9 – service worker (offline működés)
-// V14: emlékeztetők a szótanulásban; minden korábbi funkció megmaradt.
-const CACHE = 'nyelvisziget-v14-1-emlekezteto';
+// V15: gyűjtőfájlok szigetenkénti szólistává bontása; minden korábbi funkció megmaradt.
+const CACHE = 'nyelvisziget-v15-1';
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
