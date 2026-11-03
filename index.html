@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V14</title>
+<title>Nyelvi sziget – V15</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -84,7 +84,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V14 · szótanulás emlékeztetőkkel</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V15 · szótanulás emlékeztetőkkel</div></header>
 <main>
 
 <section class="box"><h3>Statisztika</h3>
@@ -177,9 +177,10 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
   <p class="muted">Töltsd be a <b>B1_Szokincsbovites_osszes_sziget.txt</b> és a <b>B2_Szokincsbovites_osszes_sziget.txt</b> fájlt (egyszerre többet is kijelölhetsz). A program a mondatok alapján párosítja az emlékeztetőket a szókártyákhoz, akárhogy nevezted el vagy bontottad a szigeteket. Elég egyszer betölteni, a felhőn át a másik készülékre is átkerül.</p>
   <input id="vMnFile" type="file" accept=".txt" multiple><button id="vMnLoad">Betöltés</button>
  </details>
- <details style="margin-top:6px"><summary>Saját szólista feltöltése</summary>
+ <details style="margin-top:6px" id="vListBox"><summary>Saját szólista feltöltése</summary>
+  <p class="muted"><b>A szigetek szókincséhez:</b> töltsd fel ide a <b>B1_Szokincsbovites_osszes_sziget.txt</b> és a <b>B2_Szokincsbovites_osszes_sziget.txt</b> fájlt (egyszerre kijelölhető). A program szigetenként külön szólistát készít belőlük, emlékeztetőkkel együtt; a csoport neve a „lista neve” mező lesz (üresen hagyva a fájl neve).</p>
   <p class="muted">TXT, soronként: <b>magyar - olasz</b>, vagy példamondattal: <b>magyar - olasz || magyar példamondat - olasz példamondat</b><br>Pl.: <i>bevásárolni - fare la spesa || Holnap bevásárolok. - Domani faccio la spesa.</i> A „#”-tel kezdődő sorokat kihagyja.</p>
-  <div class="row"><label>A lista neve<br><input id="vListName" placeholder="pl. Konyha szavai" style="padding:8px;border:1px solid #cbd5df;border-radius:8px;width:100%;box-sizing:border-box"></label><label>TXT fájl<br><input id="vListFile" type="file" accept=".txt"></label></div>
+  <div class="row"><label>A lista neve<br><input id="vListName" placeholder="pl. Konyha szavai" style="padding:8px;border:1px solid #cbd5df;border-radius:8px;width:100%;box-sizing:border-box"></label><label>TXT fájl<br><input id="vListFile" type="file" accept=".txt" multiple></label></div>
   <button id="vUpload">Szólista hozzáadása</button>
  </details>
 
@@ -1820,7 +1821,9 @@ async function vRefreshDecks() {
   }
   for (const [id, d] of Object.entries(vMeta.decks)) {
     if (!d || d.deleted) continue;
-    vNotes.set(id, parseVocabList(d.txt || '')); list.push({ id, kind: 'upload', name: d.name || 'Szólista' });
+    const notes = parseVocabList(d.txt || '');
+    for (const n of notes) if (!n.eit && n.it.split(/\s+/).length >= 3) n.sentence = true; // mondatból automatikus hiányos mondat
+    vNotes.set(id, notes); list.push({ id, kind: 'upload', name: d.name || 'Szólista', group: d.group || 'Saját szólisták' });
   }
   vDecks = list;
 }
@@ -1860,21 +1863,32 @@ function vRenderStats() {
 function vRenderDecks() {
   const host = $('vDeckList'); if (!host) return; host.innerHTML = '';
   vRenderStats();
-  if (!vDecks.length) { const p = document.createElement('p'); p.className = 'muted'; p.textContent = 'Még nincs szólista. Nyiss meg (vagy tölts le offline) egy szigetet – a szókincsbővítő mondatai magától megjelennek itt –, vagy tölts fel saját szólistát.'; host.append(p); return; }
+  if (!vDecks.length) { const p = document.createElement('p'); p.className = 'muted'; p.textContent = 'Még nincs szólista. Nyisd le lent a „Saját szólista feltöltése” részt, és töltsd fel a B1_Szokincsbovites_osszes_sziget.txt és B2_Szokincsbovites_osszes_sziget.txt fájlt – ebből szigetenként külön szólisták lesznek, emlékeztetőkkel.'; host.append(p); return; }
   const groups = new Map();
   for (const d of vDecks) {
-    const key = d.kind === 'upload' ? '__own__' : (folderOf(d.slug) || '__none__');
+    const key = d.kind === 'upload' ? 'own:' + d.group : (folderOf(d.slug) || '__none__');
     if (!groups.has(key)) groups.set(key, []); groups.get(key).push(d);
   }
-  const order = [...liveFolders().map(f => f.id).filter(id => groups.has(id)), ...['__none__', '__own__'].filter(k => groups.has(k))];
+  const ownKeys = [...groups.keys()].filter(k => k.startsWith('own:')).sort((a, b) => a.localeCompare(b, 'hu', { numeric: true }));
+  const order = [...liveFolders().map(f => f.id).filter(id => groups.has(id)), ...(groups.has('__none__') ? ['__none__'] : []), ...ownKeys];
   for (const key of order) {
     const decks = groups.get(key).sort((a, b) => a.name.localeCompare(b.name, 'hu', { numeric: true }));
     const sum = decks.reduce((s, d) => { const c = vDeckCounts(d.id); s.due += c.due; s.fresh += c.fresh; s.total += c.total; return s; }, { due: 0, fresh: 0, total: 0 });
-    const title = key === '__own__' ? '📝 Saját szólisták' : key === '__none__' ? 'Szigetek mappa nélkül' : '📁 ' + folderName(key);
+    const title = key.startsWith('own:') ? '📝 ' + key.slice(4) : key === '__none__' ? 'Szigetek mappa nélkül' : '📁 ' + folderName(key);
     const g = makeGroup('voc:' + key, title, `(${decks.length} lista · ${sum.due} esedékes · ${sum.fresh} új)`, false);
     const tools = document.createElement('div'); tools.className = 'ftools';
     const all = document.createElement('button'); all.textContent = 'A csoport gyakorlása'; all.onclick = () => vStart(decks.map(d => d.id), title.replace(/^\S+\s/, ''));
-    tools.append(all); g.body.append(tools);
+    tools.append(all);
+    if (key.startsWith('own:') && decks.length > 1) {
+      const delAll = document.createElement('button'); delAll.className = 'alt'; delAll.textContent = 'Az egész csoport törlése';
+      delAll.onclick = () => {
+        if (!confirm('Törlöd a „' + key.slice(4) + '” csoport mind a ' + decks.length + ' szólistáját és a haladásukat?')) return;
+        for (const d of decks) { vMeta.decks[d.id] = { ...vMeta.decks[d.id], deleted: true, txt: '', at: Date.now() }; vProgs[d.id] = { v: 1, cards: {} }; vSaveProg(d.id); }
+        vSaveMeta(); vRefreshAndRender();
+      };
+      tools.append(delAll);
+    }
+    g.body.append(tools);
     for (const d of decks) {
       const c = vDeckCounts(d.id);
       const row = document.createElement('div'); row.className = 'cloud item';
@@ -2011,29 +2025,51 @@ function vFinish() {
 }
 
 // --- saját szólisták
+// Egy fájlt szigetenként szétbont, ha „# 02 – Egy napom – …” típusú fejlécek vannak benne (gyűjtőfájl)
+const V_SPLIT = /^#\s*((?:\d{2}[a-e]?)|T\d{2}|TA|TB|B\d{2})\s+–\s+(.+?)\s*$/;
+function splitVocabFile(text) {
+  const segs = []; let cur = { name: '', lines: [] };
+  for (const raw of String(text).replace(/^\uFEFF/, '').split(/\r?\n/)) {
+    const m = raw.trim().match(V_SPLIT);
+    if (m) { if (cur.lines.some(l => l.includes(' - '))) segs.push(cur); cur = { name: m[1] + ' – ' + m[2].split(' – ')[0], lines: [] }; continue; }
+    cur.lines.push(raw);
+  }
+  if (cur.lines.some(l => l.includes(' - '))) segs.push(cur);
+  return segs.map(s => ({ name: s.name, txt: s.lines.join('\n') }));
+}
 async function vUploadList() {
-  const f = $('vListFile').files[0], name = $('vListName').value.trim() || (f ? f.name.replace(/\.[^.]+$/, '') : '');
-  if (!f) { $('vStatus').textContent = 'Válaszd ki a szólista TXT-fájlját.'; return; }
-  const txt = await f.text(), notes = parseVocabList(txt);
-  if (!notes.length) { $('vStatus').textContent = 'A fájlban nem találtam „magyar - olasz” sort.'; return; }
-  const id = 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  vMeta.decks[id] = { name, txt, at: Date.now() }; vSaveMeta();
-  $('vListFile').value = ''; $('vListName').value = '';
-  const withEx = notes.filter(n => n.eit).length;
-  $('vStatus').textContent = `Szólista hozzáadva: ${name} – ${notes.length} szó, ebből ${withEx} példamondattal.`;
-  rememberOpen('voc:__own__', true); vRefreshAndRender();
+  const files = [...$('vListFile').files];
+  if (!files.length) { $('vStatus').textContent = 'Válaszd ki a szólista TXT-fájlját (vagy fájljait).'; return; }
+  const typed = $('vListName').value.trim(); let lists = 0, words = 0, mns = 0;
+  for (const f of files) {
+    const stem = f.name.replace(/\.[^.]+$/, '');
+    const bm = stem.match(/^(B1|B2)_Szokincs/i);
+    const group = (files.length > 1 ? '' : typed) || (bm ? bm[1].toUpperCase() + ' szigetek szókincse' : stem.replace(/_/g, ' '));
+    const segs = splitVocabFile(await f.text());
+    for (const seg of segs) {
+      const notes = parseVocabList(seg.txt); if (!notes.length) continue;
+      const id = 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      vMeta.decks[id] = { name: seg.name || (segs.length > 1 ? group + ' ' + (lists + 1) : (typed || stem)), group, txt: seg.txt, at: Date.now() };
+      lists++; words += notes.length; mns += notes.filter(n => n.mn).length;
+      rememberOpen('voc:own:' + group, true);
+    }
+  }
+  if (!lists) { $('vStatus').textContent = 'A fájlban nem találtam „magyar - olasz” sort.'; return; }
+  vSaveMeta(); $('vListFile').value = ''; $('vListName').value = '';
+  $('vStatus').textContent = `Hozzáadva: ${lists} szólista, ${words} szó/mondat, ebből ${mns} emlékeztetővel.`;
+  vRefreshAndRender();
 }
 function vAddWord() {
   const hu = $('vAddHu').value.trim(), it = $('vAddIt').value.trim(), ehu = $('vAddEhu').value.trim(), eit = $('vAddEit').value.trim();
   if (!hu || !it) { $('vStatus').textContent = 'Add meg a szót magyarul és olaszul.'; return; }
   const clean = s => s.replace(/\s+-\s+/g, ' – ').replace(/\s*\|\|\s*/g, ' ');
   const line = clean(hu) + ' - ' + clean(it) + (ehu && eit ? ' || ' + clean(ehu) + ' - ' + clean(eit) : '');
-  const d = vMeta.decks.sajat && !vMeta.decks.sajat.deleted ? vMeta.decks.sajat : { name: 'Saját szavaim', txt: '' };
+  const d = vMeta.decks.sajat && !vMeta.decks.sajat.deleted ? vMeta.decks.sajat : { name: 'Saját szavaim', group: 'Saját szólisták', txt: '' };
   vMeta.decks.sajat = { ...d, deleted: false, name: d.name || 'Saját szavaim', txt: (d.txt ? d.txt.replace(/\s*$/, '') + '\n' : '') + line, at: Date.now() };
   vSaveMeta();
   for (const k of ['vAddHu', 'vAddIt', 'vAddEhu', 'vAddEit']) $(k).value = '';
   $('vStatus').textContent = 'Hozzáadva a „Saját szavaim” listához: ' + hu + ' – ' + it;
-  rememberOpen('voc:__own__', true); vRefreshAndRender(); $('vAddHu').focus();
+  rememberOpen('voc:own:Saját szólisták', true); vRefreshAndRender(); $('vAddHu').focus();
 }
 
 // --- események
