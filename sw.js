@@ -1,6 +1,6 @@
 // Nyelvi sziget V9 – service worker (offline működés)
-// V15: gyűjtőfájlok szigetenkénti szólistává bontása; minden korábbi funkció megmaradt.
-const CACHE = 'nyelvisziget-v15-1';
+// V16: diktálás, hallgatható MP3-összeállítás; minden korábbi funkció megmaradt.
+const CACHE = 'nyelvisziget-v16-1';
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
@@ -41,7 +41,7 @@ self.addEventListener('fetch', e => {
     const hit = await caches.match(req);
     if (hit) return hit;
     const r = await fetch(req);
-    if (r.ok && (url.origin === location.origin || url.hostname === 'cdn.jsdelivr.net')) {
+    if (r.ok && (url.origin === location.origin || url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'cdnjs.cloudflare.com')) {
       (await caches.open(CACHE)).put(req, r.clone());
     }
     return r;
