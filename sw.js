@@ -1,6 +1,6 @@
 // Nyelvi sziget V9 – service worker (offline működés)
-// V19: több szigetből / mappából összefűzhető hallgatható hanganyag.
-const CACHE = 'nyelvisziget-v19-1';
+// V20: lépcsőzetes (Pimsleur) hanganyag, felépítés a végéről, napi cél, naptár, előrejelzés.
+const CACHE = 'nyelvisziget-v20-1';
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
