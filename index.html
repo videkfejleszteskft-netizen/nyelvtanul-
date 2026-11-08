@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V17</title>
+<title>Nyelvi sziget – V19</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -84,7 +84,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V17 · hallgatható összeállítás bippel és térhatással</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V19 · több szigetből összefűzhető hanganyag</div></header>
 <main>
 
 <section class="box"><h3>Statisztika</h3>
@@ -114,8 +114,14 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <section class="box" id="mixBox"><h3>🎧 Hallgatható összeállítás</h3>
  <p class="muted">A kiválasztott mondatok hangfájljaiból egyetlen folyamatos MP3 készül: magyar mondat → szünet (ilyenkor mondd ki olaszul) → olasz mondat, beállítható ismétléssel. Lezárt képernyővel is szól, és le is töltheted.</p>
  <div class="row">
-  <label>Miből?<br><select id="mixSrc" class="move" style="margin:0;width:100%"><option value="daily">Mai ismétlések (esedékes + mai új)</option><option value="hard">Nehéz mondataim</option><option value="current">A megnyitott sziget</option></select></label>
+  <label>Miből?<br><select id="mixSrc" class="move" style="margin:0;width:100%" data-v18="1"><option value="daily_all">Mai ismétlések: a ma már átvettek + a még esedékesek</option><option value="today_done">Csak a ma már átvett mondatok</option><option value="daily">Csak a még esedékes mondatok</option><option value="hard_today">Nehéz mondataim + a ma nehéznek jelöltek</option><option value="hard">Nehéz mondataim (a jelenlegi lista)</option><option value="current">A megnyitott sziget</option><option value="multi">Több sziget / mappa – én választom ki</option></select></label>
   <label>Irány<br><select id="mixDir" class="move" style="margin:0;width:100%"><option value="hu-it">magyar → olasz</option><option value="it-hu">olasz → magyar</option></select></label>
+ </div>
+ <div id="mixMulti" class="hidden" style="margin:6px 0 10px">
+  <p class="muted" style="margin:0 0 4px">Pipáld ki a mappákat vagy az egyes szigeteket. A kiválasztott szigetek mondatai a mappák és szigetek sorrendjében, egymás után kerülnek a hanganyagba.</p>
+  <div class="ftools"><button class="alt" id="mixSelAll">Mind</button><button class="alt" id="mixSelNone">Egyik sem</button><label class="muted" style="align-self:center"><input type="checkbox" id="mixShuffle"> mondatok keverése</label></div>
+  <div id="mixPicker"></div>
+  <p id="mixSelInfo" class="muted" style="margin:4px 0 0"></p>
  </div>
  <div class="row">
   <label>Szünet a kérdés után<br><select id="mixPause" class="move" style="margin:0;width:100%"><option value="auto">automatikus (a mondat hosszához)</option><option value="2">2 mp</option><option value="3">3 mp</option><option value="4">4 mp</option><option value="5">5 mp</option><option value="6">6 mp</option><option value="8">8 mp</option><option value="10">10 mp</option></select></label>
@@ -775,6 +781,7 @@ async function listLibrary() {
   if (token !== libraryRenderToken) return;
   lastLibrary = { slugs: uniqueSlugs(slugs), cached };
   renderLibrary();
+  renderMixPicker();
   vRefreshAndRender();
 }
 
@@ -1227,6 +1234,7 @@ function rate(v) {
   const old = prog.cards[it.k], wasNew = !old || !old.reps;
   const { card, requeue } = schedule(old, v, now);
   Object.assign(card, { hu: it.hu, it: it.it, n: it.n, hardDismissedAt: now });
+  if (v === 'again' || v === 'hard') card.hardDay = studyDay(now); // a mai hallgatható összeállításhoz
   prog.cards[it.k] = card; saveProg(it.slug);
   recordRating(v, wasNew);
   if (requeue) sess.items.splice(Math.min(sess.items.length, sess.pos + 1 + requeue), 0, { ...it });
@@ -1608,14 +1616,14 @@ async function authAction(type) {
 // ============================================================
 // BEÁLLÍTÁSOK
 // ============================================================
-function saveSettings() { saveJSON('nyelvisziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, dictMode: $('dictMode').checked, mixSrc: $('mixSrc').value, mixDir: $('mixDir').value, mixPause: $('mixPause').value, mixReps: $('mixReps').value, mixGap: $('mixGap').value, mixHu: $('mixHu').value, mixIt: $('mixIt').value, mixBip: $('mixBip').value, mixWave: $('mixWave').value, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked }); }
+function saveSettings() { saveJSON('nyelvisziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, dictMode: $('dictMode').checked, mixSrc: $('mixSrc').value, mixDir: $('mixDir').value, mixPause: $('mixPause').value, mixReps: $('mixReps').value, mixGap: $('mixGap').value, mixHu: $('mixHu').value, mixIt: $('mixIt').value, mixBip: $('mixBip').value, mixShuffle: $('mixShuffle').checked, v18: true, mixWave: $('mixWave').value, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked }); }
 function loadSettings() {
   const s = loadJSON('nyelvisziget-settings', {});
   if (s.direction) $('dir').value = s.direction; if (s.mode) $('mode').value = s.mode;
   if (s.l1Speed) $('l1Speed').value = s.l1Speed; if (s.l2Speed) $('l2Speed').value = s.l2Speed;
   if (s.newLimit !== undefined) $('newLimit').value = s.newLimit; if (s.autoAnswer !== undefined) $('autoAnswer').checked = s.autoAnswer;
   if (s.typeMode !== undefined) $('typeMode').checked = s.typeMode; if (s.dictMode !== undefined) $('dictMode').checked = s.dictMode;
-  for (const k of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixHu', 'mixIt', 'mixBip', 'mixWave']) if (s[k] !== undefined) $(k).value = s[k]; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat;
+  for (const k of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixHu', 'mixIt', 'mixBip', 'mixWave']) if (s[k] !== undefined) $(k).value = s[k]; if (s.mixSrc === 'daily' && !s.v18) $('mixSrc').value = 'daily_all'; if (s.mixShuffle !== undefined) $('mixShuffle').checked = s.mixShuffle; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat;
 }
 function updateSpeedLabels() { $('l1Val').textContent = Math.round($('l1Speed').value * 100) + '%'; $('l2Val').textContent = Math.round($('l2Speed').value * 100) + '%'; }
 function updateNet() { $('netStatus').textContent = online() ? '' : 'Nincs internet – offline mód. A haladás a készüléken mentődik, és később szinkronizálódik.'; }
@@ -2218,15 +2226,86 @@ function stretch(x, rate) {
   for (let i = 0; i < last; i++) if (norm[i] > 1e-3) out[i] /= norm[i];
   return out.subarray(0, last);
 }
+// A ma (hajnali 4 óta) már értékelt mondatok, az értékelés sorrendjében
+function reviewedToday(onlyHard) {
+  const since = dayStart(), today = studyDay(), out = [];
+  for (const slug of allProgSlugs()) for (const [k, c] of Object.entries(getProg(slug).cards)) {
+    if (!c || !c.reps || (Number(c.lastReviewed) || 0) < since) continue;
+    if (onlyHard && c.hardDay !== today) continue;
+    out.push({ slug, k, n: c.n, hu: c.hu, it: c.it, at: c.lastReviewed });
+  }
+  return out.sort((a, b) => a.at - b.at);
+}
+function uniqItems(list) {
+  const seen = new Set(), out = [];
+  for (const i of list) { const key = i.slug + '|' + (i.k || i.n); if (seen.has(key) || !i.n) continue; seen.add(key); out.push({ slug: i.slug, n: i.n, hu: i.hu, it: i.it }); }
+  return out;
+}
+// ---- Több sziget kiválasztása (mappánként) ----
+let mixSel = new Set(loadJSON('nyelvisziget-mixsel', []));
+function saveMixSel() { saveJSON('nyelvisziget-mixsel', [...mixSel]); }
+function mixGroups() {
+  const { slugs, cached } = lastLibrary;
+  const all = uniqueSlugs([...slugs, ...cached]).sort((a, b) => niceName(a).localeCompare(niceName(b), 'hu', { numeric: true }));
+  const folders = liveFolders(), groups = folders.map(f => ({ id: f.id, name: '📁 ' + f.name, list: [] })), loose = { id: '__none__', name: 'Mappa nélkül', list: [] };
+  for (const slug of all) { const f = folderOf(slug), g = groups.find(x => x.id === f); (g || loose).list.push(slug); }
+  return [...groups, loose].filter(g => g.list.length);
+}
+function mixOrderedSelection() { return mixGroups().flatMap(g => g.list).filter(s => mixSel.has(s)); }
+function renderMixPicker() {
+  const host = $('mixPicker'); if (!host || $('mixSrc').value !== 'multi') return;
+  host.innerHTML = '';
+  const groups = mixGroups();
+  if (!groups.length) { host.textContent = 'Még nincs sziget a könyvtárban.'; return; }
+  for (const g of groups) {
+    const n = g.list.filter(s => mixSel.has(s)).length;
+    const grp = makeGroup('mix:' + g.id, '', `(${n}/${g.list.length} kiválasztva)`, false);
+    const sm = grp.el.querySelector('summary'); sm.firstChild.remove();
+    const lab = document.createElement('label'); lab.style.cssText = 'display:inline-flex;gap:8px;align-items:center;font-weight:600';
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = n === g.list.length; cb.indeterminate = n > 0 && n < g.list.length;
+    cb.onclick = e => { e.stopPropagation(); g.list.forEach(s => cb.checked ? mixSel.add(s) : mixSel.delete(s)); saveMixSel(); renderMixPicker(); };
+    lab.append(cb, document.createTextNode(g.name)); lab.onclick = e => e.stopPropagation();
+    sm.prepend(lab);
+    for (const slug of g.list) {
+      const row = document.createElement('label'); row.style.cssText = 'display:flex;gap:8px;align-items:center;padding:5px 2px';
+      const c = document.createElement('input'); c.type = 'checkbox'; c.checked = mixSel.has(slug);
+      c.onchange = () => { c.checked ? mixSel.add(slug) : mixSel.delete(slug); saveMixSel(); renderMixPicker(); };
+      const t = getProg(slug).total;
+      row.append(c, document.createTextNode(niceName(slug) + (t ? ` (${t} mondat)` : '')));
+      grp.body.append(row);
+    }
+    host.append(grp.el);
+  }
+  const sel = mixOrderedSelection(), sentences = sel.reduce((a, s) => a + (getProg(s).total || 0), 0);
+  $('mixSelInfo').textContent = sel.length ? `Kiválasztva: ${sel.length} sziget, kb. ${sentences} mondatpár.` : 'Még nincs kiválasztva sziget.';
+}
 async function mixItems() {
   const src = $('mixSrc').value;
-  if (src === 'hard') return hardItems().map(h => ({ slug: h.slug, n: h.n, hu: h.hu, it: h.it }));
+  if (src === 'multi') {
+    const sel = mixOrderedSelection();
+    if (!sel.length) throw new Error('Pipálj ki legalább egy szigetet vagy mappát.');
+    const out = [];
+    for (let i = 0; i < sel.length; i++) {
+      const slug = sel[i];
+      $('mixStatus').textContent = `Szigetek betöltése: ${i + 1}/${sel.length} – ${niceName(slug)}…`;
+      let rec = await idb.get('islands', slug).catch(() => null);
+      if ((!rec || !rec.txt) && signedIn() && online() && librarySlugs().includes(slug)) { try { rec = await ensureIslandCached(slug); } catch {} }
+      if (!rec || !rec.txt) continue;
+      try { for (const p of parse(rec.txt).pairs) out.push({ slug, n: p.n, hu: p.hu, it: p.it }); } catch {}
+    }
+    if ($('mixShuffle').checked) for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+    return out;
+  }
+  if (src !== 'current') { try { if (signedIn() && online()) await pullAll(); } catch {} }
+  if (src === 'hard') return uniqItems(hardItems());
+  if (src === 'hard_today') return uniqItems([...hardItems(), ...reviewedToday(true)]);
+  if (src === 'today_done') return uniqItems(reviewedToday(false));
+  if (src === 'daily_all') return uniqItems([...reviewedToday(false), ...(await collectDaily(newLeftToday(), false))]);
   if (src === 'current') {
     if (!current) throw new Error('Előbb nyiss meg egy szigetet a könyvtárból.');
     return current.pairs.map(p => ({ slug: current.slug, n: p.n, hu: p.hu, it: p.it }));
   }
-  try { if (signedIn() && online()) await pullAll(); } catch {}
-  return (await collectDaily(newLeftToday(), false)).map(i => ({ slug: i.slug, n: i.n, hu: i.hu, it: i.it }));
+  return uniqItems(await collectDaily(newLeftToday(), false));
 }
 function wavBlob(L, R) {
   const ch = R ? 2 : 1, n = L.length, bytes = n * 2 * ch;
@@ -2266,27 +2345,42 @@ async function buildMix() {
   const status = t => { $('mixStatus').textContent = t; };
   try {
     const items = await mixItems();
-    if (!items.length) throw new Error($('mixSrc').value === 'hard' ? 'Nincs nehéz mondat.' : 'Most nincs esedékes mondat.');
+    if (!items.length) throw new Error(/^hard/.test($('mixSrc').value) ? 'Nincs nehéz mondat.' : $('mixSrc').value === 'today_done' ? 'Ma még nem értékeltél mondatot.' : 'Nincs mondat ehhez a választáshoz.');
     const dir = $('mixDir').value, reps = Number($('mixReps').value) || 1, gap = Number($('mixGap').value) || 2;
     const huRate = Number($('mixHu').value) || 1, itRate = Number($('mixIt').value) || 1, pauseSel = $('mixPause').value;
     const bipSel = $('mixBip').value, waveSel = $('mixWave').value, stereo = waveSel !== 'off', bip = makeBip();
-    const ctx = new OfflineAudioContext(1, MIX_RATE, MIX_RATE);
-    const parts = []; let total = 0, used = 0, missing = 0;
-    const push = (x, pan) => { parts.push({ x, pan: pan || null }); total += x.length; };
-    const silence = sec => push(new Float32Array(Math.round(sec * MIX_RATE)));
-    const pauseWithBip = sec => {
-      const a = new Float32Array(Math.round(sec * MIX_RATE));
-      if (bipSel !== 'off') {
-        let at = bipSel === 'end1' ? a.length - MIX_RATE - bip.length : Math.round(a.length * Number(bipSel));
-        at = Math.max(0, Math.min(a.length - bip.length, at));
-        a.set(bip, at);
+    const estMin = Math.round(items.length * reps * (pauseSel === 'auto' ? 10 : 6 + Number(pauseSel)) / 60);
+    if (estMin > 120 && !confirm(`${items.length} mondatpár – ez kb. ${estMin} perces hanganyag lesz, az elkészítése több percig is tarthat. Folytatod?`)) throw new Error('stop');
+    // MP3-kódoló (ha nem töltődik be: WAV)
+    let enc = null; const mp3 = [], wavL = [], wavR = [];
+    try { await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js'); enc = new lamejs.Mp3Encoder(stereo ? 2 : 1, MIX_RATE, stereo ? 96 : 64); } catch { enc = null; }
+    const toI = v => { v = Math.max(-1, Math.min(1, v)); return v < 0 ? v * 0x8000 : v * 0x7fff; };
+    let total = 0, used = 0, missing = 0;
+    // egy mondatpár szakaszait PCM-mé alakítja és rögtön kódolja
+    const flushSegs = segs => {
+      let n = 0; for (const s of segs) n += s.x.length;
+      const L = new Int16Array(n), R = stereo ? new Int16Array(n) : null; let off = 0;
+      for (const { x, pan } of segs) {
+        const m = x.length;
+        if (!stereo) for (let i = 0; i < m; i++) L[off + i] = toI(x[i]);
+        else for (let i = 0; i < m; i++) { const p = pan ? panAt(pan, i / m) : 0, g = (p + 1) * Math.PI / 4; L[off + i] = toI(x[i] * Math.cos(g) * Math.SQRT2); R[off + i] = toI(x[i] * Math.sin(g) * Math.SQRT2); }
+        off += m;
       }
-      push(a);
+      total += n;
+      if (enc) { for (let i = 0; i < n; i += 1152) { const b = stereo ? enc.encodeBuffer(L.subarray(i, i + 1152), R.subarray(i, i + 1152)) : enc.encodeBuffer(L.subarray(i, i + 1152)); if (b.length) mp3.push(new Uint8Array(b)); } }
+      else { wavL.push(L); if (R) wavR.push(R); }
     };
+    const silenceSeg = sec => ({ x: new Float32Array(Math.round(sec * MIX_RATE)), pan: null });
+    const pauseSeg = sec => {
+      const a = new Float32Array(Math.round(sec * MIX_RATE));
+      if (bipSel !== 'off') { let at = bipSel === 'end1' ? a.length - MIX_RATE - bip.length : Math.round(a.length * Number(bipSel)); at = Math.max(0, Math.min(a.length - bip.length, at)); a.set(bip, at); }
+      return { x: a, pan: null };
+    };
+    const ctx = new OfflineAudioContext(1, MIX_RATE, MIX_RATE);
     for (let k = 0; k < items.length; k++) {
       if (mixCtl.stop) throw new Error('stop');
       const it = items[k];
-      status(`Hangok összeállítása: ${k + 1}/${items.length}…`);
+      status(`Hanganyag készítése: ${k + 1}/${items.length} mondatpár…`);
       let hb = await getAudioBlob(it.slug, 'L1', it.n), ib = await getAudioBlob(it.slug, 'L2', it.n);
       if ((!hb || !ib) && signedIn() && online() && librarySlugs().includes(it.slug)) { try { await ensureIslandCached(it.slug); hb = await getAudioBlob(it.slug, 'L1', it.n); ib = await getAudioBlob(it.slug, 'L2', it.n); } catch {} }
       if (!hb || !ib) { missing++; continue; }
@@ -2294,47 +2388,28 @@ async function buildMix() {
       try { hu = stretch(await decodeMono(hb, ctx), huRate); itA = stretch(await decodeMono(ib, ctx), itRate); } catch { missing++; continue; }
       const q = dir === 'hu-it' ? hu : itA, a = dir === 'hu-it' ? itA : hu;
       const pause = pauseSel === 'auto' ? Math.max(2.5, a.length / MIX_RATE * 1.3 + 1.5) : Number(pauseSel);
+      const segs = [];
       for (let r = 0; r < reps; r++) {
         // a hullámzás az olasz mondatot éri; ismétlésenként és mondatonként váltakozó oldalra
         const side = ((k + r) % 2 ? 1 : -1) * (waveSel === 'strong' ? 0.92 : Number(waveSel) || 0);
         const itPan = !stereo ? null : waveSel === 'strong' ? { type: 'strong' } : { type: 'move', side };
-        push(q, dir === 'hu-it' ? null : itPan); pauseWithBip(pause);
-        push(a, dir === 'hu-it' ? itPan : null); silence(r < reps - 1 ? 1.2 : gap);
+        segs.push({ x: q, pan: dir === 'hu-it' ? null : itPan }, pauseSeg(pause), { x: a, pan: dir === 'hu-it' ? itPan : null }, silenceSeg(r < reps - 1 ? 1.2 : gap));
       }
+      flushSegs(segs);
       used++;
       await yieldUI();
     }
     if (!used) throw new Error('Egyik kiválasztott mondathoz sincs hangfájl ezen a készüléken. Töltsd le a szigeteket offline használatra, vagy jelentkezz be.');
-    status('Összefűzés…');
-    const toI = v => { v = Math.max(-1, Math.min(1, v)); return v < 0 ? v * 0x8000 : v * 0x7fff; };
-    const pcm = new Int16Array(total), pcmR = stereo ? new Int16Array(total) : null; let off = 0;
-    for (const { x, pan } of parts) {
-      if (!stereo) { for (let i = 0; i < x.length; i++) pcm[off + i] = toI(x[i]); }
-      else {
-        const n = x.length;
-        for (let i = 0; i < n; i++) {
-          const p = pan ? panAt(pan, i / n) : 0, g = (p + 1) * Math.PI / 4; // azonos teljesítményű panoráma
-          pcm[off + i] = toI(x[i] * Math.cos(g) * Math.SQRT2); pcmR[off + i] = toI(x[i] * Math.sin(g) * Math.SQRT2);
-        }
-      }
-      off += x.length;
-      if (off % (MIX_RATE * 30) < x.length) await yieldUI();
+    let blob;
+    if (enc) { const end = enc.flush(); if (end.length) mp3.push(new Uint8Array(end)); blob = new Blob(mp3, { type: 'audio/mpeg' }); }
+    else {
+      const join = arr => { const n = arr.reduce((a, b) => a + b.length, 0), o = new Int16Array(n); let off = 0; for (const c of arr) { o.set(c, off); off += c.length; } return o; };
+      blob = wavBlob(join(wavL), stereo ? join(wavR) : null);
     }
-    let blob = null;
-    try {
-      await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js');
-      const enc = new lamejs.Mp3Encoder(stereo ? 2 : 1, MIX_RATE, stereo ? 96 : 64), chunks = [], step = 1152;
-      for (let i = 0; i < pcm.length; i += step) {
-        const b = stereo ? enc.encodeBuffer(pcm.subarray(i, i + step), pcmR.subarray(i, i + step)) : enc.encodeBuffer(pcm.subarray(i, i + step)); if (b.length) chunks.push(new Uint8Array(b));
-        if (i % (step * 400) === 0) { if (mixCtl.stop) throw new Error('stop'); status(`MP3 kódolás: ${Math.round(i / pcm.length * 100)}%`); await yieldUI(); }
-      }
-      const end = enc.flush(); if (end.length) chunks.push(new Uint8Array(end));
-      blob = new Blob(chunks, { type: 'audio/mpeg' });
-    } catch (e) { if (e && e.message === 'stop') throw e; blob = wavBlob(pcm, pcmR); }
     if (mixUrl) URL.revokeObjectURL(mixUrl);
     mixBlob = blob; mixUrl = URL.createObjectURL(blob);
     const au = $('mixAudio'); au.src = mixUrl; au.load();
-    const mins = total / MIX_RATE / 60, label = { daily: 'Mai ismétlések', hard: 'Nehéz mondataim', current: current ? niceName(current.slug) : 'Sziget' }[$('mixSrc').value];
+    const mins = total / MIX_RATE / 60, label = { daily_all: 'Mai ismétlések', today_done: 'Ma átvett mondatok', daily: 'Esedékes mondatok', hard_today: 'Nehéz mondataim', hard: 'Nehéz mondataim', current: current ? niceName(current.slug) : 'Sziget', multi: 'Válogatás' }[$('mixSrc').value];
     if ('mediaSession' in navigator) { try { navigator.mediaSession.metadata = new MediaMetadata({ title: label + ' – ' + studyDay(), artist: 'Nyelvi sziget', album: 'Olasz gyakorlás' }); } catch {} }
     $('mixInfo').textContent = ` ${used} mondatpár · ${mins.toFixed(1).replace('.', ',')} perc · ${(blob.size / 1048576).toFixed(1).replace('.', ',')} MB` + (missing ? ` · ${missing} mondatnál nem volt hang` : '') + (blob.type === 'audio/wav' ? ' · WAV (az MP3-kódoló nem töltődött be)' : '');
     $('mixOut').classList.remove('hidden');
@@ -2348,19 +2423,24 @@ async function buildMix() {
 function updateMixLabels() { $('mixHuVal').textContent = Math.round($('mixHu').value * 100) + '%'; $('mixItVal').textContent = Math.round($('mixIt').value * 100) + '%'; }
 $('mixBuild').onclick = buildMix;
 $('mixStop').onclick = () => { if (mixCtl) mixCtl.stop = true; };
-for (const id of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixBip', 'mixWave']) $(id).onchange = saveSettings;
+for (const id of ['mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixBip', 'mixWave']) $(id).onchange = saveSettings;
+function syncMixSrc() { $('mixMulti').classList.toggle('hidden', $('mixSrc').value !== 'multi'); renderMixPicker(); }
+$('mixSrc').onchange = () => { saveSettings(); syncMixSrc(); };
+$('mixSelAll').onclick = () => { mixGroups().forEach(g => g.list.forEach(s => mixSel.add(s))); saveMixSel(); renderMixPicker(); };
+$('mixSelNone').onclick = () => { mixSel.clear(); saveMixSel(); renderMixPicker(); };
+$('mixShuffle').onchange = saveSettings;
 for (const id of ['mixHu', 'mixIt']) $(id).oninput = () => { updateMixLabels(); saveSettings(); };
 $('mixDownload').onclick = () => {
   if (!mixBlob) return;
   const ext = mixBlob.type === 'audio/wav' ? 'wav' : 'mp3';
-  const name = ({ daily: 'mai_ismetlesek', hard: 'nehez_mondataim', current: current ? current.slug : 'sziget' }[$('mixSrc').value]) + '_' + studyDay() + '.' + ext;
+  const name = ({ multi: 'valogatas', daily_all: 'mai_ismetlesek', today_done: 'ma_atvett', daily: 'esedekes', hard_today: 'nehez_mondataim', hard: 'nehez_mondataim', current: current ? current.slug : 'sziget' }[$('mixSrc').value]) + '_' + studyDay() + '.' + ext;
   const a = document.createElement('a'); a.href = mixUrl; a.download = name; document.body.append(a); a.click(); a.remove();
 };
 
 // ============================================================
 // INDÍTÁS
 // ============================================================
-loadSettings(); updateSpeedLabels(); updateMixLabels(); updateNet(); renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender();
+loadSettings(); updateSpeedLabels(); updateMixLabels(); syncMixSrc(); updateNet(); renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender();
 const configured = SUPABASE_URL.startsWith('https://') && SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
 if (configured && window.supabase) {
   client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
