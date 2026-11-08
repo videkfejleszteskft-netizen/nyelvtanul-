@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V19</title>
+<title>Nyelvi sziget – V20</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -64,6 +64,15 @@ button.on{background:#a74343!important;color:#fff!important}
 .stats{display:flex;gap:10px;flex-wrap:wrap}
 .stat{flex:1;min-width:120px;background:#f5f8fa;border:1px solid #e1e8ee;border-radius:10px;padding:10px;text-align:center}
 .stat b{display:block;font-size:1.6rem;line-height:1.2}
+.goalbar{height:12px;background:#e6ebef;border-radius:7px;overflow:hidden;margin:6px 0 2px}
+.goalbar i{display:block;height:100%;width:0;background:#2f9e6a;border-radius:7px;transition:width .3s}
+.heat{display:grid;grid-template-rows:repeat(7,11px);grid-auto-flow:column;grid-auto-columns:11px;gap:2px;overflow-x:auto;padding:4px 0 2px;justify-content:start}
+.heat i{display:block;width:11px;height:11px;border-radius:2px;background:#e6ebef}
+.heat i.l1{background:#c6e9d4}.heat i.l2{background:#8fd1aa}.heat i.l3{background:#4cae7c}.heat i.l4{background:#1f7a4d}.heat i.td{outline:2px solid #1d4f73;outline-offset:-1px}.heat i.fut{background:transparent}
+.heatlegend{display:flex;gap:3px;align-items:center;font-size:.8rem;color:#5a6b78;margin:2px 0 8px}.heatlegend i{width:11px;height:11px;border-radius:2px;display:inline-block}
+.fc{display:flex;gap:6px;align-items:flex-end;height:110px;margin:6px 0 2px}
+.fc div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:.8rem;color:#5a6b78}
+.fc div b{font-size:.85rem;color:#1d2b36}.fc div span{display:block;width:70%;background:#7aa7c7;border-radius:4px 4px 0 0;min-height:2px;margin:2px 0}
 .hard{border-bottom:1px solid #edf1f4;padding:7px 0}.hard:last-child{border-bottom:0}
 .rate small{display:block;font-size:.75rem;opacity:.85}
 details summary{cursor:pointer;font-weight:600}
@@ -84,7 +93,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V19 · több szigetből összefűzhető hanganyag</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V20 · lépcsőzetes hanganyag, napi cél, naptár</div></header>
 <main>
 
 <section class="box"><h3>Statisztika</h3>
@@ -95,6 +104,16 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
   <div class="stat"><b id="stNew">0</b>új mondat ma</div>
  </div>
  <p id="stInfo" class="muted"></p>
+ <div id="goalBox"><span id="goalTxt" class="muted"></span><div class="goalbar"><i id="goalBar"></i></div></div>
+ <details id="calBox" style="margin-top:8px"><summary>Naptár, előrejelzés, napi cél</summary>
+  <p class="muted" style="margin:8px 0 2px">Az elmúlt fél év – minden négyzet egy nap (szigetek + szavak ismétlései). Minél sötétebb, annál többet gyakoroltál; a legsötétebb: megvolt a napi cél.</p>
+  <div id="heat" class="heat"></div>
+  <div class="heatlegend">kevesebb <i style="background:#e6ebef"></i><i style="background:#c6e9d4"></i><i style="background:#8fd1aa"></i><i style="background:#4cae7c"></i><i style="background:#1f7a4d"></i> napi cél ✓</div>
+  <p id="heatInfo" class="muted" style="margin:0 0 8px"></p>
+  <div class="muted">Esedékes ismétlések a következő 7 napban (új mondatok és kártyák nélkül):</div>
+  <div id="forecast" class="fc"></div>
+  <label class="muted">Napi cél (ismétlés naponta, szigetek + szavak): <input id="dailyGoal" type="number" min="5" max="2000" value="50" style="width:80px;padding:6px"></label>
+ </details>
 </section>
 
 <section class="box"><h3>Felhőszinkronizálás</h3>
@@ -123,6 +142,11 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
   <div id="mixPicker"></div>
   <p id="mixSelInfo" class="muted" style="margin:4px 0 0"></p>
  </div>
+ <div class="row">
+  <label>Sorrend és visszatérés<br><select id="mixOrder" class="move" style="margin:0;width:100%"><option value="seq">sorban, egymás után (mint eddig)</option><option value="pim3">lépcsőzetes (Pimsleur) – 3 visszatérés: azonnal, kb. ½ perc, kb. 2 perc múlva</option><option value="pim4">lépcsőzetes (Pimsleur) – 4 visszatérés: + kb. 10 perc múlva is</option></select></label>
+  <label>Hosszú olasz mondatok felépítése a végükről<br><select id="mixBack" class="move" style="margin:0;width:100%"><option value="off">nincs</option><option value="6">6 szótól hosszabb mondatoknál</option><option value="8">8 szótól hosszabb mondatoknál</option><option value="10">10 szótól hosszabb mondatoknál</option></select></label>
+ </div>
+ <p id="mixOrderInfo" class="muted" style="margin:-4px 0 8px"></p>
  <div class="row">
   <label>Szünet a kérdés után<br><select id="mixPause" class="move" style="margin:0;width:100%"><option value="auto">automatikus (a mondat hosszához)</option><option value="2">2 mp</option><option value="3">3 mp</option><option value="4">4 mp</option><option value="5">5 mp</option><option value="6">6 mp</option><option value="8">8 mp</option><option value="10">10 mp</option></select></label>
   <label>Egy mondatpár hányszor?<br><select id="mixReps" class="move" style="margin:0;width:100%"><option value="1">1×</option><option value="2" selected>2×</option><option value="3">3×</option></select></label>
@@ -571,14 +595,50 @@ function mergeStats(a, b) {
   }
   return out;
 }
+function vDaysSafe() { try { return vMeta.days || {}; } catch { return {}; } }
+function dayKey(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function dayTotal(key) { return ((stats.days[key] || {}).reviews || 0) + ((vDaysSafe()[key] || {}).reviews || 0); }
+function dailyGoal() { return Math.max(1, Number($('dailyGoal').value) || 50); }
 function streak() {
   let n = 0; const d = new Date(dayStart());
-  if (!(stats.days[studyDay()] || {}).reviews) d.setDate(d.getDate() - 1);
-  for (;;) {
-    const key = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-    if ((stats.days[key] || {}).reviews > 0) { n++; d.setDate(d.getDate() - 1); } else break;
-  }
+  if (!dayTotal(studyDay())) d.setDate(d.getDate() - 1);
+  for (;;) { if (dayTotal(dayKey(d)) > 0) { n++; d.setDate(d.getDate() - 1); } else break; }
   return n;
+}
+function renderCalendar() {
+  if (!$('heat')) return;
+  const goal = dailyGoal(), today = studyDay(), done = dayTotal(today);
+  $('goalBar').style.width = Math.min(100, done / goal * 100) + '%';
+  $('goalTxt').textContent = done >= goal ? `✓ Megvan a mai cél: ${done}/${goal} ismétlés. Szép munka!` : `Napi cél: ${done}/${goal} ismétlés (szigetek + szavak) – még ${goal - done}.`;
+  // hőtérkép: 26 hét, hétfővel kezdődő oszlopok
+  const host = $('heat'); host.innerHTML = '';
+  const end = new Date(dayStart()), start = new Date(end);
+  start.setDate(start.getDate() - 7 * 25 - ((end.getDay() + 6) % 7));
+  let active = 0, goalDays = 0, sum = 0; const frag = document.createDocumentFragment();
+  for (let d = new Date(start), i = 0; i < 7 * 26; i++, d.setDate(d.getDate() + 1)) {
+    const el = document.createElement('i'), key = dayKey(d);
+    if (d > end) { el.className = 'fut'; frag.append(el); continue; }
+    const n = dayTotal(key), r = n / goal;
+    el.className = (n <= 0 ? '' : r >= 1 ? 'l4' : r >= 0.5 ? 'l3' : r >= 0.25 ? 'l2' : 'l1') + (key === today ? ' td' : '');
+    el.title = `${key}: ${n} ismétlés`;
+    if (n > 0) { active++; sum += n; } if (r >= 1) goalDays++;
+    frag.append(el);
+  }
+  host.append(frag); host.scrollLeft = host.scrollWidth;
+  let best = 0, run = 0;
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) { if (dayTotal(dayKey(d)) > 0) { run++; best = Math.max(best, run); } else run = 0; }
+  $('heatInfo').textContent = `Fél év alatt ${active} napon gyakoroltál (${sum} ismétlés), ebből ${goalDays} napon megvolt a cél. Leghosszabb sorozat: ${best} nap.`;
+  // előrejelzés: 7 nap
+  const counts = new Array(7).fill(0), base = dayStart(), DAY = 864e5;
+  const add = due => { if (!due) return; const k = Math.max(0, Math.floor((due - base) / DAY)); if (k < 7) counts[k]++; };
+  for (const slug of allProgSlugs()) for (const c of Object.values(getProg(slug).cards)) if (c.reps) add(c.due);
+  try { const set = vTypes(); for (const dk of vDecks) { const prog = vGetProg(dk.id); for (const n of (vNotes.get(dk.id) || [])) for (const t of vCardTypes(n, set)) { const c = prog.cards[n.nk + ':' + t]; if (c && c.reps) add(c.due); } } } catch {}
+  const max = Math.max(1, ...counts), names = ['V', 'H', 'K', 'Sze', 'Cs', 'P', 'Szo'], fc = $('forecast'); fc.innerHTML = '';
+  counts.forEach((n, i) => {
+    const d = new Date(base + i * DAY + 12 * 36e5), col = document.createElement('div');
+    col.innerHTML = `<b>${n}</b><span style="height:${Math.round(n / max * 70)}px"></span>${i === 0 ? 'ma' : i === 1 ? 'holnap' : names[d.getDay()]}`;
+    fc.append(col);
+  });
 }
 function renderStats() {
   const t = todayStats();
@@ -586,6 +646,7 @@ function renderStats() {
   $('stGood').textContent = (t.good || 0) + (t.easy || 0); $('stNew').textContent = t.new;
   let learned = 0, cards = 0;
   for (const slug of allProgSlugs()) for (const c of Object.values(getProg(slug).cards)) { cards++; if (c.interval >= 21) learned++; }
+  renderCalendar();
   $('stInfo').textContent = `Ma még ${newLeftToday()} új mondat vehető fel (napi limit: ${newLimit()}). Eddig gyakorolt mondatok: ${cards}, ebből jól rögzült (3+ hét): ${learned}.`;
 }
 function allProgSlugs() {
@@ -1616,14 +1677,14 @@ async function authAction(type) {
 // ============================================================
 // BEÁLLÍTÁSOK
 // ============================================================
-function saveSettings() { saveJSON('nyelvisziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, dictMode: $('dictMode').checked, mixSrc: $('mixSrc').value, mixDir: $('mixDir').value, mixPause: $('mixPause').value, mixReps: $('mixReps').value, mixGap: $('mixGap').value, mixHu: $('mixHu').value, mixIt: $('mixIt').value, mixBip: $('mixBip').value, mixShuffle: $('mixShuffle').checked, v18: true, mixWave: $('mixWave').value, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked }); }
+function saveSettings() { saveJSON('nyelvisziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, dictMode: $('dictMode').checked, mixSrc: $('mixSrc').value, mixDir: $('mixDir').value, mixPause: $('mixPause').value, mixReps: $('mixReps').value, mixGap: $('mixGap').value, mixHu: $('mixHu').value, mixIt: $('mixIt').value, mixBip: $('mixBip').value, mixShuffle: $('mixShuffle').checked, mixOrder: $('mixOrder').value, mixBack: $('mixBack').value, dailyGoal: $('dailyGoal').value, v18: true, mixWave: $('mixWave').value, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked }); }
 function loadSettings() {
   const s = loadJSON('nyelvisziget-settings', {});
   if (s.direction) $('dir').value = s.direction; if (s.mode) $('mode').value = s.mode;
   if (s.l1Speed) $('l1Speed').value = s.l1Speed; if (s.l2Speed) $('l2Speed').value = s.l2Speed;
   if (s.newLimit !== undefined) $('newLimit').value = s.newLimit; if (s.autoAnswer !== undefined) $('autoAnswer').checked = s.autoAnswer;
   if (s.typeMode !== undefined) $('typeMode').checked = s.typeMode; if (s.dictMode !== undefined) $('dictMode').checked = s.dictMode;
-  for (const k of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixHu', 'mixIt', 'mixBip', 'mixWave']) if (s[k] !== undefined) $(k).value = s[k]; if (s.mixSrc === 'daily' && !s.v18) $('mixSrc').value = 'daily_all'; if (s.mixShuffle !== undefined) $('mixShuffle').checked = s.mixShuffle; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat;
+  for (const k of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixHu', 'mixIt', 'mixBip', 'mixWave']) if (s[k] !== undefined) $(k).value = s[k]; if (s.mixSrc === 'daily' && !s.v18) $('mixSrc').value = 'daily_all'; if (s.mixShuffle !== undefined) $('mixShuffle').checked = s.mixShuffle; if (s.mixOrder) $('mixOrder').value = s.mixOrder; if (s.mixBack) $('mixBack').value = s.mixBack; if (s.dailyGoal) $('dailyGoal').value = s.dailyGoal; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat;
 }
 function updateSpeedLabels() { $('l1Val').textContent = Math.round($('l1Speed').value * 100) + '%'; $('l2Val').textContent = Math.round($('l2Speed').value * 100) + '%'; }
 function updateNet() { $('netStatus').textContent = online() ? '' : 'Nincs internet – offline mód. A haladás a készüléken mentődik, és később szinkronizálódik.'; }
@@ -1900,6 +1961,7 @@ function vRenderStats() {
   const t = vToday(); let due = 0, total = 0, learned = 0;
   for (const d of vDecks) { const c = vDeckCounts(d.id); due += c.due; total += c.total; learned += c.learned; }
   $('vStDue').textContent = due; $('vStToday').textContent = t.reviews || 0; $('vStGood').textContent = t.good || 0; $('vStNew').textContent = t.new || 0;
+  try { renderCalendar(); } catch {}
   $('vStInfo').textContent = `Ma még ${vNewLeft()} új kártya vehető fel. Kártyák összesen: ${total}, ebből jól rögzült (3+ hét): ${learned}. Szólisták: ${vDecks.length}. Betöltött emlékeztetők: ${Object.keys(vMeta.mn).length}.`;
 }
 function vRenderDecks() {
@@ -2338,6 +2400,49 @@ function panAt(spec, t) {
   const q = Math.min(3.999, t * 4), seg = Math.floor(q), f = smooth(q - seg), S = 0.92;
   return [-S * f, -S * (1 - f), S * f, S * (1 - f)][seg];
 }
+// Pimsleur-féle lépcsőzetes sorrend: minden mondat bemutatás után egyre nagyobb közökkel tér vissza.
+// A közök "helyekben" (egy mondatpár ≈ 9–10 mp): 1 ≈ azonnal, 3 ≈ fél perc, 13 ≈ 2 perc, 65 ≈ 10 perc.
+function pimsleurOrder(n, offsets) {
+  const out = [], pend = []; let next = 0;
+  while (next < n || pend.length) {
+    pend.sort((a, b) => a.t - b.t);
+    if (pend.length && (pend[0].t <= out.length || next >= n)) {
+      const p = pend.shift(); out.push({ i: p.i, stage: p.stage });
+      if (p.stage < offsets.length) pend.push({ i: p.i, stage: p.stage + 1, t: out.length - 1 + offsets[p.stage] });
+    } else { pend.push({ i: next, stage: 1, t: out.length + offsets[0] }); out.push({ i: next, stage: 0 }); next++; }
+  }
+  return out;
+}
+// Hosszú mondat végéről felépítése: a szöveg szóhatárai alapján megbecsüli a vágási pontokat,
+// és a közelükben a leghalkabb pillanatnál (szóközi szünetnél) vág.
+function backChain(x, text, minWords) {
+  const words = String(text || '').trim().split(/\s+/).filter(w => /[\p{L}\d]/u.test(w));
+  const W = words.length; if (W < minWords) return [];
+  const step = Math.max(2, Math.round(W / 4)), starts = [];
+  for (let st = W - step; st >= 2; st -= step) starts.push(st);
+  if (!starts.length) return [];
+  const len = w => w.replace(/[^\p{L}\d]/gu, '').length + 1, tot = words.reduce((a, w) => a + len(w), 0);
+  const hop = Math.round(MIX_RATE * 0.01), win = Math.round(MIX_RATE * 0.03), env = [];
+  for (let i = 0; i + win <= x.length; i += hop) { let e = 0; for (let j = i; j < i + win; j += 2) e += x[j] * x[j]; env.push(e); }
+  if (env.length < 20) return [];
+  // simított burkoló: a hosszabb halk szakaszt (szóközi szünetet) részesíti előnyben
+  const sm = env.map((_, k) => { let e = 0; for (let j = Math.max(0, k - 3); j <= Math.min(env.length - 1, k + 3); j++) e += env[j]; return e; });
+  const mx = Math.max(...env); let s0 = 0, s1 = env.length - 1;
+  while (s0 < s1 && env[s0] < mx * 0.02) s0++; while (s1 > s0 && env[s1] < mx * 0.02) s1--;
+  const parts = []; let prevCut = s1 * hop;
+  for (const st of starts) {
+    const frac = words.slice(0, st).reduce((a, w) => a + len(w), 0) / tot;
+    const est = Math.round(s0 + frac * (s1 - s0)), rad = Math.max(12, Math.round((s1 - s0) * 0.07));
+    let best = -1, bv = Infinity;
+    for (let k = Math.max(1, est - rad); k <= Math.min(env.length - 1, est + rad); k++) { const pos = k * hop + win / 2; if (pos >= prevCut - MIX_RATE * 0.3) break; const v = sm[k] * (1 + Math.abs(k - est) / rad * 0.5); if (v < bv) { bv = v; best = k; } }
+    if (best < 0) continue;
+    const cut = Math.round(best * hop + win / 2); prevCut = cut;
+    const part = x.slice(cut), fade = Math.min(part.length, Math.round(MIX_RATE * 0.015));
+    for (let i = 0; i < fade; i++) part[i] *= i / fade;
+    parts.push(part);
+  }
+  return parts; // a legrövidebb végétől a hosszabbak felé
+}
 async function buildMix() {
   if (mixCtl) return;
   mixCtl = { stop: false };
@@ -2349,8 +2454,11 @@ async function buildMix() {
     const dir = $('mixDir').value, reps = Number($('mixReps').value) || 1, gap = Number($('mixGap').value) || 2;
     const huRate = Number($('mixHu').value) || 1, itRate = Number($('mixIt').value) || 1, pauseSel = $('mixPause').value;
     const bipSel = $('mixBip').value, waveSel = $('mixWave').value, stereo = waveSel !== 'off', bip = makeBip();
-    const estMin = Math.round(items.length * reps * (pauseSel === 'auto' ? 10 : 6 + Number(pauseSel)) / 60);
-    if (estMin > 120 && !confirm(`${items.length} mondatpár – ez kb. ${estMin} perces hanganyag lesz, az elkészítése több percig is tarthat. Folytatod?`)) throw new Error('stop');
+    const order = $('mixOrder').value, backMin = $('mixBack').value === 'off' ? 0 : Number($('mixBack').value);
+    const seq = order === 'seq' ? items.map((_, i) => ({ i, stage: 0 })) : pimsleurOrder(items.length, order === 'pim4' ? [1, 3, 13, 65] : [1, 3, 13]);
+    const repsEff = order === 'seq' ? reps : 1;
+    const estMin = Math.round(seq.length * repsEff * (pauseSel === 'auto' ? 10 : 6 + Number(pauseSel)) / 60);
+    if (estMin > 120 && !confirm(`${items.length} mondatpár (${seq.length} elhangzás) – ez kb. ${estMin} perces hanganyag lesz, az elkészítése több percig is tarthat. Folytatod?`)) throw new Error('stop');
     // MP3-kódoló (ha nem töltődik be: WAV)
     let enc = null; const mp3 = [], wavL = [], wavR = [];
     try { await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js'); enc = new lamejs.Mp3Encoder(stereo ? 2 : 1, MIX_RATE, stereo ? 96 : 64); } catch { enc = null; }
@@ -2377,26 +2485,40 @@ async function buildMix() {
       return { x: a, pan: null };
     };
     const ctx = new OfflineAudioContext(1, MIX_RATE, MIX_RATE);
-    for (let k = 0; k < items.length; k++) {
-      if (mixCtl.stop) throw new Error('stop');
-      const it = items[k];
-      status(`Hanganyag készítése: ${k + 1}/${items.length} mondatpár…`);
+    // hátralévő elhangzások száma mondatonként – a dekódolt hangot addig tartjuk meg, amíg kell
+    const left = new Map(); for (const e of seq) left.set(e.i, (left.get(e.i) || 0) + 1);
+    const cache = new Map(), bad = new Set(), usedSet = new Set();
+    const loadItem = async it => {
       let hb = await getAudioBlob(it.slug, 'L1', it.n), ib = await getAudioBlob(it.slug, 'L2', it.n);
       if ((!hb || !ib) && signedIn() && online() && librarySlugs().includes(it.slug)) { try { await ensureIslandCached(it.slug); hb = await getAudioBlob(it.slug, 'L1', it.n); ib = await getAudioBlob(it.slug, 'L2', it.n); } catch {} }
-      if (!hb || !ib) { missing++; continue; }
-      let hu, itA;
-      try { hu = stretch(await decodeMono(hb, ctx), huRate); itA = stretch(await decodeMono(ib, ctx), itRate); } catch { missing++; continue; }
+      if (!hb || !ib) return null;
+      try { return { hu: stretch(await decodeMono(hb, ctx), huRate), it: stretch(await decodeMono(ib, ctx), itRate) }; } catch { return null; }
+    };
+    for (let k = 0; k < seq.length; k++) {
+      if (mixCtl.stop) throw new Error('stop');
+      const { i, stage } = seq[k], it = items[i];
+      left.set(i, left.get(i) - 1);
+      if (bad.has(i)) continue;
+      status(order === 'seq' ? `Hanganyag készítése: ${k + 1}/${seq.length} mondatpár…` : `Hanganyag készítése (lépcsőzetes): ${k + 1}/${seq.length} elhangzás…`);
+      let au = cache.get(i);
+      if (!au) { au = await loadItem(it); if (!au) { bad.add(i); missing++; continue; } if (left.get(i) > 0) cache.set(i, au); }
+      if (left.get(i) <= 0) cache.delete(i);
+      const hu = au.hu, itA = au.it;
       const q = dir === 'hu-it' ? hu : itA, a = dir === 'hu-it' ? itA : hu;
       const pause = pauseSel === 'auto' ? Math.max(2.5, a.length / MIX_RATE * 1.3 + 1.5) : Number(pauseSel);
+      const chain = backMin && dir === 'hu-it' && stage === 0 ? backChain(itA, it.it, backMin) : [];
       const segs = [];
-      for (let r = 0; r < reps; r++) {
-        // a hullámzás az olasz mondatot éri; ismétlésenként és mondatonként váltakozó oldalra
+      for (let r = 0; r < repsEff; r++) {
+        // a hullámzás az olasz mondatot éri; elhangzásonként váltakozó oldalra
         const side = ((k + r) % 2 ? 1 : -1) * (waveSel === 'strong' ? 0.92 : Number(waveSel) || 0);
         const itPan = !stereo ? null : waveSel === 'strong' ? { type: 'strong' } : { type: 'move', side };
-        segs.push({ x: q, pan: dir === 'hu-it' ? null : itPan }, pauseSeg(pause), { x: a, pan: dir === 'hu-it' ? itPan : null }, silenceSeg(r < reps - 1 ? 1.2 : gap));
+        segs.push({ x: q, pan: dir === 'hu-it' ? null : itPan }, pauseSeg(pause));
+        if (r === 0) for (const part of chain) segs.push({ x: part, pan: null }, silenceSeg(part.length / MIX_RATE * 1.1 + 1.0));
+        segs.push({ x: a, pan: dir === 'hu-it' ? itPan : null });
+        segs.push(silenceSeg(r < repsEff - 1 ? 1.2 : (r === 0 && chain.length ? Math.max(gap, a.length / MIX_RATE + 1) : gap)));
       }
       flushSegs(segs);
-      used++;
+      usedSet.add(i); used = usedSet.size;
       await yieldUI();
     }
     if (!used) throw new Error('Egyik kiválasztott mondathoz sincs hangfájl ezen a készüléken. Töltsd le a szigeteket offline használatra, vagy jelentkezz be.');
@@ -2411,7 +2533,7 @@ async function buildMix() {
     const au = $('mixAudio'); au.src = mixUrl; au.load();
     const mins = total / MIX_RATE / 60, label = { daily_all: 'Mai ismétlések', today_done: 'Ma átvett mondatok', daily: 'Esedékes mondatok', hard_today: 'Nehéz mondataim', hard: 'Nehéz mondataim', current: current ? niceName(current.slug) : 'Sziget', multi: 'Válogatás' }[$('mixSrc').value];
     if ('mediaSession' in navigator) { try { navigator.mediaSession.metadata = new MediaMetadata({ title: label + ' – ' + studyDay(), artist: 'Nyelvi sziget', album: 'Olasz gyakorlás' }); } catch {} }
-    $('mixInfo').textContent = ` ${used} mondatpár · ${mins.toFixed(1).replace('.', ',')} perc · ${(blob.size / 1048576).toFixed(1).replace('.', ',')} MB` + (missing ? ` · ${missing} mondatnál nem volt hang` : '') + (blob.type === 'audio/wav' ? ' · WAV (az MP3-kódoló nem töltődött be)' : '');
+    $('mixInfo').textContent = ` ${used} mondatpár` + (order !== 'seq' ? ` (${seq.length} elhangzás, lépcsőzetesen)` : '') + ` · ${mins.toFixed(1).replace('.', ',')} perc · ${(blob.size / 1048576).toFixed(1).replace('.', ',')} MB` + (missing ? ` · ${missing} mondatnál nem volt hang` : '') + (blob.type === 'audio/wav' ? ' · WAV (az MP3-kódoló nem töltődött be)' : '');
     $('mixOut').classList.remove('hidden');
     status('Kész. Nyomd meg a lejátszást – lezárt képernyővel is szól.');
   } catch (e) {
@@ -2429,6 +2551,15 @@ $('mixSrc').onchange = () => { saveSettings(); syncMixSrc(); };
 $('mixSelAll').onclick = () => { mixGroups().forEach(g => g.list.forEach(s => mixSel.add(s))); saveMixSel(); renderMixPicker(); };
 $('mixSelNone').onclick = () => { mixSel.clear(); saveMixSel(); renderMixPicker(); };
 $('mixShuffle').onchange = saveSettings;
+function mixOrderInfo() {
+  const o = $('mixOrder').value, b = $('mixBack').value, t = [];
+  if (o !== 'seq') t.push(`Lépcsőzetes mód: minden mondatpár ${o === 'pim4' ? 5 : 4}× hangzik el, egyre nagyobb közökkel, közben más mondatokkal keverve – a hanganyag ennyiszer hosszabb lesz. Az „Egy mondatpár hányszor?” beállítás ilyenkor nem számít.`);
+  if (b !== 'off') t.push('Felépítés a végéről: a hosszú mondatnál a kérdés és a szünet után az olasz mondat a végétől indulva, darabonként bővülve szól („…al ristorante” → „…stasera al ristorante” → teljes mondat); minden darab után van idő utánamondani. Csak magyar → olasz irányban működik' + (o !== 'seq' ? ', és csak a mondat első előfordulásánál.' : '.'));
+  $('mixOrderInfo').textContent = t.join(' ');
+}
+$('mixOrder').onchange = () => { saveSettings(); mixOrderInfo(); };
+$('mixBack').onchange = () => { saveSettings(); mixOrderInfo(); };
+$('dailyGoal').onchange = () => { saveSettings(); renderStats(); };
 for (const id of ['mixHu', 'mixIt']) $(id).oninput = () => { updateMixLabels(); saveSettings(); };
 $('mixDownload').onclick = () => {
   if (!mixBlob) return;
@@ -2440,7 +2571,7 @@ $('mixDownload').onclick = () => {
 // ============================================================
 // INDÍTÁS
 // ============================================================
-loadSettings(); updateSpeedLabels(); updateMixLabels(); syncMixSrc(); updateNet(); renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender();
+loadSettings(); updateSpeedLabels(); updateMixLabels(); syncMixSrc(); mixOrderInfo(); updateNet(); renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender();
 const configured = SUPABASE_URL.startsWith('https://') && SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
 if (configured && window.supabase) {
   client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
