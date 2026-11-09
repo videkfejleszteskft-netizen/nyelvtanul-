@@ -1,6 +1,6 @@
 // Nyelvi sziget V9 – service worker (offline működés)
-// V20: lépcsőzetes (Pimsleur) hanganyag, felépítés a végéről, napi cél, naptár, előrejelzés.
-const CACHE = 'nyelvisziget-v20-1';
+// V21: kézmentes módban is mentődő értékelés, frissülő nehéz mondatok.
+const CACHE = 'nyelvisziget-v21-1';
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
