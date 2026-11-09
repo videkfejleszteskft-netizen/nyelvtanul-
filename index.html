@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V21</title>
+<title>Nyelvi sziget – V22</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -93,7 +93,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V21 · kézmentes módban is mentődik az értékelés</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V22 · megmaradó hanganyagok, fülhallgatós vezérlés</div></header>
 <main>
 
 <section class="box"><h3>Statisztika</h3>
@@ -163,8 +163,15 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
  <button id="mixBuild">Hanganyag elkészítése</button><button id="mixStop" class="alt hidden">Leállítás</button>
  <p id="mixStatus" class="muted"></p>
  <div id="mixOut" class="hidden">
+  <div id="mixTitle" style="font-weight:600;margin:6px 0 2px"></div>
   <audio id="mixAudio" controls preload="auto" style="width:100%"></audio>
-  <div><button id="mixDownload" class="alt">MP3 letöltése</button><span id="mixInfo" class="muted"></span></div>
+  <div class="center" style="margin:4px 0"><button class="alt" id="mixBack15">⟲ 15 mp</button><button class="alt" id="mixFwd15">15 mp ⟳</button></div>
+  <div><button id="mixDownload" class="alt">MP3 letöltése</button><button id="mixShare" class="alt hidden">Megosztás / mentés a Fájlokba</button><span id="mixInfo" class="muted"></span></div>
+ </div>
+ <div id="mixSaved" class="hidden" style="margin-top:12px">
+  <div style="font-weight:600">Elmentett hanganyagok</div>
+  <p class="muted" style="margin:2px 0 6px">Az utolsó 3 elkészült hanganyag a készüléken marad, az app bezárása után is. Ott folytatja, ahol abbahagytad.</p>
+  <div id="mixSavedList"></div>
  </div>
 </section>
 
@@ -2555,14 +2562,14 @@ async function buildMix() {
       const join = arr => { const n = arr.reduce((a, b) => a + b.length, 0), o = new Int16Array(n); let off = 0; for (const c of arr) { o.set(c, off); off += c.length; } return o; };
       blob = wavBlob(join(wavL), stereo ? join(wavR) : null);
     }
-    if (mixUrl) URL.revokeObjectURL(mixUrl);
-    mixBlob = blob; mixUrl = URL.createObjectURL(blob);
-    const au = $('mixAudio'); au.src = mixUrl; au.load();
     const mins = total / MIX_RATE / 60, label = { daily_all: 'Mai ismétlések', today_done: 'Ma átvett mondatok', daily: 'Esedékes mondatok', hard_today: 'Nehéz mondataim', hard: 'Nehéz mondataim', current: current ? niceName(current.slug) : 'Sziget', multi: 'Válogatás' }[$('mixSrc').value];
-    if ('mediaSession' in navigator) { try { navigator.mediaSession.metadata = new MediaMetadata({ title: label + ' – ' + studyDay(), artist: 'Nyelvi sziget', album: 'Olasz gyakorlás' }); } catch {} }
-    $('mixInfo').textContent = ` ${used} mondatpár` + (order !== 'seq' ? ` (${seq.length} elhangzás, lépcsőzetesen)` : '') + ` · ${mins.toFixed(1).replace('.', ',')} perc · ${(blob.size / 1048576).toFixed(1).replace('.', ',')} MB` + (missing ? ` · ${missing} mondatnál nem volt hang` : '') + (blob.type === 'audio/wav' ? ' · WAV (az MP3-kódoló nem töltődött be)' : '');
-    $('mixOut').classList.remove('hidden');
-    status('Kész. Nyomd meg a lejátszást – lezárt képernyővel is szól.');
+    const info = ` ${used} mondatpár` + (order !== 'seq' ? ` (${seq.length} elhangzás, lépcsőzetesen)` : '') + ` · ${mins.toFixed(1).replace('.', ',')} perc · ${(blob.size / 1048576).toFixed(1).replace('.', ',')} MB` + (missing ? ` · ${missing} mondatnál nem volt hang` : '') + (blob.type === 'audio/wav' ? ' · WAV (az MP3-kódoló nem töltődött be)' : '');
+    const ext = blob.type === 'audio/wav' ? 'wav' : 'mp3';
+    const fname = ({ multi: 'valogatas', daily_all: 'mai_ismetlesek', today_done: 'ma_atvett', daily: 'esedekes', hard_today: 'nehez_mondataim', hard: 'nehez_mondataim', current: current ? current.slug : 'sziget' }[$('mixSrc').value]) + '_' + studyDay() + '.' + ext;
+    const now = new Date(), meta = { id: 'm' + now.getTime(), title: `${label} – ${studyDay()} ${pad(now.getHours())}:${pad(now.getMinutes())}`, info, name: fname, size: blob.size, type: blob.type };
+    showMix(blob, meta);
+    const kept = await saveMix(blob, meta);
+    status(kept ? 'Kész, és elmentettem a készülékre – az app bezárása után is megmarad. Lezárt képernyővel is szól.' : 'Kész. Nyomd meg a lejátszást – lezárt képernyővel is szól. (A készülékre mentés nem sikerült, kevés a hely – töltsd le, ha meg akarod tartani.)');
   } catch (e) {
     status(e && e.message === 'stop' ? 'Leállítva.' : 'Nem sikerült elkészíteni: ' + (e && e.message ? e.message : e));
   } finally {
@@ -2589,16 +2596,112 @@ $('mixBack').onchange = () => { saveSettings(); mixOrderInfo(); };
 $('dailyGoal').onchange = () => { saveSettings(); renderStats(); };
 for (const id of ['mixHu', 'mixIt']) $(id).oninput = () => { updateMixLabels(); saveSettings(); };
 $('mixDownload').onclick = () => {
-  if (!mixBlob) return;
-  const ext = mixBlob.type === 'audio/wav' ? 'wav' : 'mp3';
-  const name = ({ multi: 'valogatas', daily_all: 'mai_ismetlesek', today_done: 'ma_atvett', daily: 'esedekes', hard_today: 'nehez_mondataim', hard: 'nehez_mondataim', current: current ? current.slug : 'sziget' }[$('mixSrc').value]) + '_' + studyDay() + '.' + ext;
-  const a = document.createElement('a'); a.href = mixUrl; a.download = name; document.body.append(a); a.click(); a.remove();
+  if (!mixBlob || !mixMeta) return;
+  const a = document.createElement('a'); a.href = mixUrl; a.download = mixMeta.name; document.body.append(a); a.click(); a.remove();
 };
+$('mixShare').onclick = async () => {
+  if (!mixBlob || !mixMeta) return;
+  try { await navigator.share({ files: [new File([mixBlob], mixMeta.name, { type: mixBlob.type })], title: mixMeta.title }); }
+  catch (e) { if (e && e.name !== 'AbortError') $('mixStatus').textContent = 'A megosztás nem sikerült: ' + (e.message || e); }
+};
+
+// ---- Elmentett hanganyagok (IndexedDB), folytatás ott, ahol abbahagytad
+const MIX_LIST = 'nyelvisziget-mixes', MIX_POS = 'nyelvisziget-mixpos', MIX_KEEP = 3;
+let mixMeta = null, mixPosT = 0;
+function mixList() { return loadJSON(MIX_LIST, []); }
+async function saveMix(blob, meta) {
+  try {
+    await idb.put('audio', 'mix|' + meta.id, { buf: await blob.arrayBuffer(), type: blob.type });
+    let list = [meta, ...mixList().filter(m => m.id !== meta.id)];
+    for (const old of list.slice(MIX_KEEP)) await idb.del('audio', 'mix|' + old.id).catch(() => {});
+    list = list.slice(0, MIX_KEEP); saveJSON(MIX_LIST, list);
+    localStorage.setItem('nyelvisziget-mixlast', meta.id);
+    renderMixSaved(); return true;
+  } catch (e) { console.warn(e); return false; }
+}
+async function loadMix(id, play) {
+  const meta = mixList().find(m => m.id === id); if (!meta) return false;
+  const rec = await idb.get('audio', 'mix|' + id).catch(() => null);
+  if (!rec) { saveJSON(MIX_LIST, mixList().filter(m => m.id !== id)); renderMixSaved(); return false; }
+  showMix(new Blob([rec.buf], { type: rec.type }), meta);
+  localStorage.setItem('nyelvisziget-mixlast', id);
+  if (play) $('mixAudio').play().catch(() => {});
+  return true;
+}
+function showMix(blob, meta) {
+  const au = $('mixAudio');
+  if (mixUrl) URL.revokeObjectURL(mixUrl);
+  mixBlob = blob; mixMeta = meta; mixUrl = URL.createObjectURL(blob);
+  au.src = mixUrl; au.load();
+  const pos = Number(loadJSON(MIX_POS, {})[meta.id]) || 0;
+  if (pos > 3) au.addEventListener('loadedmetadata', () => { try { if (pos < au.duration - 3) au.currentTime = pos; } catch {} }, { once: true });
+  $('mixTitle').textContent = meta.title; $('mixInfo').textContent = meta.info || '';
+  $('mixOut').classList.remove('hidden');
+  try { const f = new File([blob], meta.name, { type: blob.type }); $('mixShare').classList.toggle('hidden', !(navigator.canShare && navigator.canShare({ files: [f] }))); } catch { $('mixShare').classList.add('hidden'); }
+  setMixSession();
+  renderMixSaved();
+}
+function saveMixPos(force) {
+  const au = $('mixAudio'); if (!mixMeta) return;
+  const now = Date.now(); if (!force && now - mixPosT < 4000) return; mixPosT = now;
+  const all = loadJSON(MIX_POS, {}); all[mixMeta.id] = au.ended ? 0 : Math.floor(au.currentTime);
+  for (const k of Object.keys(all)) if (!mixList().some(m => m.id === k)) delete all[k];
+  saveJSON(MIX_POS, all);
+}
+function renderMixSaved() {
+  const list = mixList(), host = $('mixSavedList'); host.innerHTML = '';
+  $('mixSaved').classList.toggle('hidden', !list.length);
+  const pos = loadJSON(MIX_POS, {});
+  for (const m of list) {
+    const row = document.createElement('div'); row.className = 'hard';
+    const t = document.createElement('div'); t.textContent = (mixMeta && mixMeta.id === m.id ? '▶ ' : '') + m.title;
+    const i = document.createElement('div'); i.className = 'muted'; i.textContent = (m.info || '').trim() + (pos[m.id] > 3 ? ` · itt tartasz: ${Math.floor(pos[m.id] / 60)}:${pad(pos[m.id] % 60)}` : '');
+    const play = document.createElement('button'); play.textContent = 'Lejátszás'; play.onclick = () => loadMix(m.id, true);
+    const del = document.createElement('button'); del.className = 'alt'; del.textContent = 'Törlés';
+    del.onclick = async () => {
+      await idb.del('audio', 'mix|' + m.id).catch(() => {});
+      saveJSON(MIX_LIST, mixList().filter(x => x.id !== m.id));
+      if (mixMeta && mixMeta.id === m.id) { $('mixAudio').pause(); $('mixAudio').removeAttribute('src'); $('mixOut').classList.add('hidden'); mixMeta = null; }
+      renderMixSaved();
+    };
+    row.append(t, i, play, del); host.append(row);
+  }
+}
+// Zárolt képernyő és fülhallgató: a rendszer lejátszás/szünet gombjai a hanganyagot vezérlik
+function seekMix(d) { const au = $('mixAudio'); try { au.currentTime = Math.max(0, Math.min((au.duration || 0) - 0.5, au.currentTime + d)); } catch {} updateMixPosState(); }
+function updateMixPosState() {
+  const au = $('mixAudio');
+  if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState || !isFinite(au.duration) || !au.duration) return;
+  try { navigator.mediaSession.setPositionState({ duration: au.duration, playbackRate: au.playbackRate || 1, position: Math.min(au.currentTime, au.duration) }); } catch {}
+}
+function setMixSession() {
+  if (!('mediaSession' in navigator) || !mixMeta) return;
+  const ms = navigator.mediaSession, au = $('mixAudio');
+  try { ms.metadata = new MediaMetadata({ title: mixMeta.title, artist: 'Nyelvi sziget', album: 'Olasz gyakorlás' }); } catch {}
+  const h = (a, f) => { try { ms.setActionHandler(a, f); } catch {} };
+  h('play', () => { au.play().catch(() => {}); });
+  h('pause', () => { au.pause(); });
+  h('stop', () => { au.pause(); });
+  h('seekbackward', d => seekMix(-((d && d.seekOffset) || 15)));
+  h('seekforward', d => seekMix((d && d.seekOffset) || 15));
+  h('previoustrack', () => seekMix(-15));
+  h('nexttrack', () => seekMix(15));
+  h('seekto', d => { if (d && isFinite(d.seekTime)) { try { au.currentTime = d.seekTime; } catch {} updateMixPosState(); } });
+}
+(() => {
+  const au = $('mixAudio');
+  au.addEventListener('play', () => { setMixSession(); try { navigator.mediaSession.playbackState = 'playing'; } catch {} updateMixPosState(); });
+  au.addEventListener('pause', () => { try { navigator.mediaSession.playbackState = 'paused'; } catch {} saveMixPos(true); renderMixSaved(); });
+  au.addEventListener('ended', () => { saveMixPos(true); renderMixSaved(); });
+  au.addEventListener('timeupdate', () => saveMixPos(false));
+  au.addEventListener('loadedmetadata', updateMixPosState);
+  $('mixBack15').onclick = () => seekMix(-15); $('mixFwd15').onclick = () => seekMix(15);
+})();
 
 // ============================================================
 // INDÍTÁS
 // ============================================================
-loadSettings(); updateSpeedLabels(); updateMixLabels(); syncMixSrc(); mixOrderInfo(); updateNet(); renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender();
+loadSettings(); updateSpeedLabels(); updateMixLabels(); syncMixSrc(); mixOrderInfo(); updateNet(); renderMixSaved(); { const last = localStorage.getItem('nyelvisziget-mixlast'); if (last) loadMix(last, false); } renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender();
 const configured = SUPABASE_URL.startsWith('https://') && SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
 if (configured && window.supabase) {
   client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
