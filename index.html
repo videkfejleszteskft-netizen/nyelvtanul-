@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V20</title>
+<title>Nyelvi sziget – V21</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -93,7 +93,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V20 · lépcsőzetes hanganyag, napi cél, naptár</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V21 · kézmentes módban is mentődik az értékelés</div></header>
 <main>
 
 <section class="box"><h3>Statisztika</h3>
@@ -303,7 +303,8 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
  <div class="tools2"><button class="alt" id="recBtn">🎙 Felvétel</button><button class="alt hidden" id="recPlay">▶ Saját hang</button><button class="alt hidden" id="recCompare">⇄ Saját + eredeti</button><span id="recInfo" class="muted"></span></div>
  <div class="tools2"><button class="alt" id="hfBtn">🎧 Kézmentes mód</button>
   <label class="muted">Szünet <select id="hfPause"><option value="auto">automatikus</option><option value="3">3 mp</option><option value="5">5 mp</option><option value="8">8 mp</option><option value="12">12 mp</option></select></label>
-  <label class="muted"><input type="checkbox" id="hfRepeat"> a választ kétszer mondja</label></div>
+  <label class="muted"><input type="checkbox" id="hfRepeat"> a választ kétszer mondja</label>
+  <label class="muted">Értékelés <select id="hfRate"><option value="wait">a válasz után vár, amíg koppintok (ajánlott)</option><option value="auto">5 mp-ig vár, utána magától „Jól ment”</option><option value="none">nincs – csak hallgatás, a haladás NEM mentődik</option></select></label></div>
 </section>
 
 <section class="box"><h3>Mentés</h3>
@@ -533,6 +534,7 @@ function isHard(c) {
   if (!c || !c.reps || (Number(c.hardDismissedAt) || 0) > (Number(c.lastReviewed) || 0)) return false;
   if (c.last === 'again') return true;
   const h = (c.hist || '').slice(-4);
+  if (/[ge]{2}$/.test(h)) return false; // két egymás utáni „Jól ment / Könnyű” után lekerül a listáról
   return (h.match(/[ah]/g) || []).length >= 2;
 }
 
@@ -1122,10 +1124,14 @@ function startSession(mode) {
   render(); $('study').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-async function startMulti(title, builder) {
-  const items = await builder();
+async function startMulti(title, builder, hard) {
+  let items = await builder();
   if (!items.length) return false;
-  sess = { title, items, pos: 0, rated: true, single: null };
+  if (hard) { // a ma már átnézett nehéz mondatok a kör végére kerülnek, így egy félbehagyott kör után az újak jönnek elöl
+    const ds = dayStart(), seen = h => (Number((getProg(h.slug).cards[h.k] || {}).lastReviewed) || 0) >= ds;
+    items = [...items.filter(h => !seen(h)), ...items.filter(seen)];
+  }
+  sess = { title, items, pos: 0, rated: true, single: null, hard: !!hard };
   render(); $('study').scrollIntoView({ behavior: 'smooth', block: 'start' });
   return true;
 }
@@ -1296,7 +1302,9 @@ function rate(v) {
   const { card, requeue } = schedule(old, v, now);
   Object.assign(card, { hu: it.hu, it: it.it, n: it.n, hardDismissedAt: now });
   if (v === 'again' || v === 'hard') card.hardDay = studyDay(now); // a mai hallgatható összeállításhoz
+  if (sess.hard && (v === 'good' || v === 'easy')) card.hardDismissedAt = now + 1; // a nehéz mondatok gyakorlásakor a jó válasz leveszi a listáról
   prog.cards[it.k] = card; saveProg(it.slug);
+  clearTimeout(rate.hardT); rate.hardT = setTimeout(renderHard, 400);
   recordRating(v, wasNew);
   if (requeue) sess.items.splice(Math.min(sess.items.length, sess.pos + 1 + requeue), 0, { ...it });
   const msg = v === 'again' ? 'Nem ment: néhány mondat múlva újra előjön.' : v === 'hard' && card.interval < 1 ? 'Nehéz: hamarosan újra előjön.' : 'Következő ismétlés: ' + describeDue(card, now) + '.';
@@ -1470,13 +1478,32 @@ async function startHandsFree() {
     $('answrap').classList.remove('hidden'); $('show').classList.add('hidden');
     if (ab) { await hfPlay(ab, speedOf(aL)); if ($('hfRepeat').checked && hfAlive(token)) { await sleep(700); await hfPlay(ab, speedOf(aL)); } }
     else await sleep(2000);
+    if (sess.rated && $('hfRate').value !== 'none') {
+      // értékelős körben a kézmentes mód is ment: koppintásra (vagy 5 mp után magától „Jól ment”) folytatja
+      const v = await hfWaitRating(token, $('hfRate').value === 'auto' ? 5 : 0);
+      if (!v || !hfAlive(token)) break;
+      rate(v);
+      await sleep(600);
+      continue;
+    }
     await sleep(1300);
     if (!hfAlive(token)) break;
     advance();
   }
   if (token === hf.token) stopHandsFree();
 }
+function hfWaitRating(token, autoSec) {
+  return new Promise(res => {
+    let left = autoSec, timer = null;
+    const finish = v => { clearInterval(timer); if (hf.waitRate === finish) hf.waitRate = null; res(v); };
+    hf.waitRate = finish;
+    const show = () => { $('status').textContent = autoSec ? `Kézmentes mód: értékelj egy gombbal – ${left} mp múlva magától „Jól ment”.` : 'Kézmentes mód: értékelj egy gombbal, utána magától folytatja.'; };
+    show();
+    if (autoSec) timer = setInterval(() => { if (!hfAlive(token)) return finish(null); left--; if (left <= 0) finish('good'); else show(); }, 1000);
+  });
+}
 function stopHandsFree() {
+  if (hf.waitRate) { const r = hf.waitRate; hf.waitRate = null; r(null); }
   if (!hf.on) return;
   hf.on = false; hf.token++;
   try { hfEl.pause(); } catch {}
@@ -1596,7 +1623,7 @@ function hardItems() {
 function hardPracticeButton(label, items, title) {
   const btn = document.createElement('button'); btn.textContent = label;
   btn.onclick = async () => {
-    const ok = await startMulti(title, async () => items.map(h => ({ ...h, dir: pickDir() })));
+    const ok = await startMulti(title, async () => hardItems().filter(h => items.some(x => x.slug === h.slug && x.k === h.k)).map(h => ({ ...h, dir: pickDir() })), true);
     if (!ok) $('hardStatus').textContent = 'Nincs nehéz mondat.';
   };
   return btn;
@@ -1677,14 +1704,14 @@ async function authAction(type) {
 // ============================================================
 // BEÁLLÍTÁSOK
 // ============================================================
-function saveSettings() { saveJSON('nyelvisziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, dictMode: $('dictMode').checked, mixSrc: $('mixSrc').value, mixDir: $('mixDir').value, mixPause: $('mixPause').value, mixReps: $('mixReps').value, mixGap: $('mixGap').value, mixHu: $('mixHu').value, mixIt: $('mixIt').value, mixBip: $('mixBip').value, mixShuffle: $('mixShuffle').checked, mixOrder: $('mixOrder').value, mixBack: $('mixBack').value, dailyGoal: $('dailyGoal').value, v18: true, mixWave: $('mixWave').value, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked }); }
+function saveSettings() { saveJSON('nyelvisziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, dictMode: $('dictMode').checked, mixSrc: $('mixSrc').value, mixDir: $('mixDir').value, mixPause: $('mixPause').value, mixReps: $('mixReps').value, mixGap: $('mixGap').value, mixHu: $('mixHu').value, mixIt: $('mixIt').value, mixBip: $('mixBip').value, mixShuffle: $('mixShuffle').checked, mixOrder: $('mixOrder').value, mixBack: $('mixBack').value, dailyGoal: $('dailyGoal').value, v18: true, mixWave: $('mixWave').value, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked, hfRate: $('hfRate').value }); }
 function loadSettings() {
   const s = loadJSON('nyelvisziget-settings', {});
   if (s.direction) $('dir').value = s.direction; if (s.mode) $('mode').value = s.mode;
   if (s.l1Speed) $('l1Speed').value = s.l1Speed; if (s.l2Speed) $('l2Speed').value = s.l2Speed;
   if (s.newLimit !== undefined) $('newLimit').value = s.newLimit; if (s.autoAnswer !== undefined) $('autoAnswer').checked = s.autoAnswer;
   if (s.typeMode !== undefined) $('typeMode').checked = s.typeMode; if (s.dictMode !== undefined) $('dictMode').checked = s.dictMode;
-  for (const k of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixHu', 'mixIt', 'mixBip', 'mixWave']) if (s[k] !== undefined) $(k).value = s[k]; if (s.mixSrc === 'daily' && !s.v18) $('mixSrc').value = 'daily_all'; if (s.mixShuffle !== undefined) $('mixShuffle').checked = s.mixShuffle; if (s.mixOrder) $('mixOrder').value = s.mixOrder; if (s.mixBack) $('mixBack').value = s.mixBack; if (s.dailyGoal) $('dailyGoal').value = s.dailyGoal; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat;
+  for (const k of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixHu', 'mixIt', 'mixBip', 'mixWave']) if (s[k] !== undefined) $(k).value = s[k]; if (s.mixSrc === 'daily' && !s.v18) $('mixSrc').value = 'daily_all'; if (s.mixShuffle !== undefined) $('mixShuffle').checked = s.mixShuffle; if (s.mixOrder) $('mixOrder').value = s.mixOrder; if (s.mixBack) $('mixBack').value = s.mixBack; if (s.dailyGoal) $('dailyGoal').value = s.dailyGoal; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat; if (s.hfRate) $('hfRate').value = s.hfRate;
 }
 function updateSpeedLabels() { $('l1Val').textContent = Math.round($('l1Speed').value * 100) + '%'; $('l2Val').textContent = Math.round($('l2Speed').value * 100) + '%'; }
 function updateNet() { $('netStatus').textContent = online() ? '' : 'Nincs internet – offline mód. A haladás a készüléken mentődik, és később szinkronizálódik.'; }
@@ -1711,7 +1738,7 @@ $('loadDailyReview').onclick = loadDailyReview;
 $('dailyAll').onclick = startDailyAll;
 $('hardRefresh').onclick = async () => { try { if (signedIn() && online()) await pullAll(); } catch {} renderHard(); };
 $('hardPractice').onclick = async () => {
-  const ok = await startMulti('Nehéz mondataim', async () => hardItems().map(h => ({ ...h, dir: pickDir() })));
+  const ok = await startMulti('Nehéz mondataim', async () => hardItems().map(h => ({ ...h, dir: pickDir() })), true);
   if (!ok) $('hardStatus').textContent = 'Nincs nehéz mondat.';
 };
 $('load').onclick = () => loadFromFiles().catch(e => { $('status').textContent = e.message; });
@@ -1725,13 +1752,13 @@ $('recBtn').onclick = toggleRecording;
 $('recPlay').onclick = () => playOwn(false);
 $('recCompare').onclick = () => playOwn(true);
 $('hfBtn').onclick = () => { if (hf.on) { stopHandsFree(); $('status').textContent = 'Kézmentes mód leállítva.'; } else startHandsFree(); };
-$('hfPause').onchange = saveSettings; $('hfRepeat').onchange = saveSettings;
+$('hfPause').onchange = saveSettings; $('hfRepeat').onchange = saveSettings; $('hfRate').onchange = saveSettings;
 $('typeMode').onchange = () => { saveSettings(); resetTyping(); };
 $('dictMode').onchange = () => { saveSettings(); if (sess) render(); };
 $('typeCheck').onclick = checkTyping;
 $('typeInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkTyping(); } });
 $('shuffle').onclick = () => { stopHandsFree(); if (!sess) return; for (let i = sess.items.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sess.items[i], sess.items[j]] = [sess.items[j], sess.items[i]]; } sess.pos = 0; sess.single = null; render(); };
-document.querySelectorAll('[data-rate]').forEach(b => b.onclick = () => { stopHandsFree(); sess && rate(b.dataset.rate); });
+document.querySelectorAll('[data-rate]').forEach(b => b.onclick = () => { if (hf.on && hf.waitRate) { hf.waitRate(b.dataset.rate); return; } stopHandsFree(); sess && rate(b.dataset.rate); });
 $('mode').onchange = () => { saveSettings(); if (current) startSession($('mode').value); };
 $('dir').onchange = () => { saveSettings(); if (sess) { sess.items.forEach(i => i.dir = pickDir()); render(); } };
 $('newLimit').onchange = () => { saveSettings(); renderStats(); };
