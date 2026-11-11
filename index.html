@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V22</title>
+<title>Nyelvi sziget – V23</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -93,7 +93,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V22 · megmaradó hanganyagok, fülhallgatós vezérlés</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V23 · hanganyag a ma / tegnap tanult új mondatokból</div></header>
 <main>
 
 <section class="box"><h3>Statisztika</h3>
@@ -133,7 +133,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <section class="box" id="mixBox"><h3>🎧 Hallgatható összeállítás</h3>
  <p class="muted">A kiválasztott mondatok hangfájljaiból egyetlen folyamatos MP3 készül: magyar mondat → szünet (ilyenkor mondd ki olaszul) → olasz mondat, beállítható ismétléssel. Lezárt képernyővel is szól, és le is töltheted.</p>
  <div class="row">
-  <label>Miből?<br><select id="mixSrc" class="move" style="margin:0;width:100%" data-v18="1"><option value="daily_all">Mai ismétlések: a ma már átvettek + a még esedékesek</option><option value="today_done">Csak a ma már átvett mondatok</option><option value="daily">Csak a még esedékes mondatok</option><option value="hard_today">Nehéz mondataim + a ma nehéznek jelöltek</option><option value="hard">Nehéz mondataim (a jelenlegi lista)</option><option value="current">A megnyitott sziget</option><option value="multi">Több sziget / mappa – én választom ki</option></select></label>
+  <label>Miből?<br><select id="mixSrc" class="move" style="margin:0;width:100%" data-v18="1"><option value="new_today">A ma tanult új mondatok (este, a másnap reggeli hallgatáshoz)</option><option value="new_yesterday">A tegnap tanult új mondatok</option><option value="daily_all">Mai ismétlések: a ma már átvettek + a még esedékesek</option><option value="today_done">Csak a ma már átvett mondatok</option><option value="daily">Csak a még esedékes mondatok</option><option value="hard_today">Nehéz mondataim + a ma nehéznek jelöltek</option><option value="hard">Nehéz mondataim (a jelenlegi lista)</option><option value="current">A megnyitott sziget</option><option value="multi">Több sziget / mappa – én választom ki</option></select></label>
   <label>Irány<br><select id="mixDir" class="move" style="margin:0;width:100%"><option value="hu-it">magyar → olasz</option><option value="it-hu">olasz → magyar</option></select></label>
  </div>
  <div id="mixMulti" class="hidden" style="margin:6px 0 10px">
@@ -1309,6 +1309,7 @@ function rate(v) {
   const { card, requeue } = schedule(old, v, now);
   Object.assign(card, { hu: it.hu, it: it.it, n: it.n, hardDismissedAt: now });
   if (v === 'again' || v === 'hard') card.hardDay = studyDay(now); // a mai hallgatható összeállításhoz
+  if (wasNew && !card.firstDay) card.firstDay = studyDay(now); // az első tanulás napja: a „ma / tegnap tanult új mondatok” hanganyaghoz
   if (sess.hard && (v === 'good' || v === 'easy')) card.hardDismissedAt = now + 1; // a nehéz mondatok gyakorlásakor a jó válasz leveszi a listáról
   prog.cards[it.k] = card; saveProg(it.slug);
   clearTimeout(rate.hardT); rate.hardT = setTimeout(renderHard, 400);
@@ -2332,6 +2333,15 @@ function reviewedToday(onlyHard) {
   }
   return out.sort((a, b) => a.at - b.at);
 }
+function newOn(day, fallbackToday) {
+  const since = dayStart(), out = [];
+  for (const slug of allProgSlugs()) for (const [k, c] of Object.entries(getProg(slug).cards)) {
+    if (!c || !c.reps) continue;
+    const isNew = c.firstDay ? c.firstDay === day : fallbackToday && (Number(c.lastReviewed) || 0) >= since && c.reps <= 3 && (Number(c.interval) || 0) <= 1;
+    if (isNew) out.push({ slug, k, n: c.n, hu: c.hu, it: c.it, at: Number(c.firstAt || c.lastReviewed) || 0 });
+  }
+  return out.sort((a, b) => a.slug.localeCompare(b.slug) || a.n - b.n);
+}
 function uniqItems(list) {
   const seen = new Set(), out = [];
   for (const i of list) { const key = i.slug + '|' + (i.k || i.n); if (seen.has(key) || !i.n) continue; seen.add(key); out.push({ slug: i.slug, n: i.n, hu: i.hu, it: i.it }); }
@@ -2396,6 +2406,8 @@ async function mixItems() {
   if (src === 'hard') return uniqItems(hardItems());
   if (src === 'hard_today') return uniqItems([...hardItems(), ...reviewedToday(true)]);
   if (src === 'today_done') return uniqItems(reviewedToday(false));
+  if (src === 'new_today') return uniqItems(newOn(studyDay(), true));
+  if (src === 'new_yesterday') return uniqItems(newOn(studyDay(Date.now() - 864e5), false));
   if (src === 'daily_all') return uniqItems([...reviewedToday(false), ...(await collectDaily(newLeftToday(), false))]);
   if (src === 'current') {
     if (!current) throw new Error('Előbb nyiss meg egy szigetet a könyvtárból.');
@@ -2484,7 +2496,7 @@ async function buildMix() {
   const status = t => { $('mixStatus').textContent = t; };
   try {
     const items = await mixItems();
-    if (!items.length) throw new Error(/^hard/.test($('mixSrc').value) ? 'Nincs nehéz mondat.' : $('mixSrc').value === 'today_done' ? 'Ma még nem értékeltél mondatot.' : 'Nincs mondat ehhez a választáshoz.');
+    if (!items.length) throw new Error(/^hard/.test($('mixSrc').value) ? 'Nincs nehéz mondat.' : $('mixSrc').value === 'today_done' ? 'Ma még nem értékeltél mondatot.' : $('mixSrc').value === 'new_today' ? 'Ma még nem tanultál új mondatot.' : $('mixSrc').value === 'new_yesterday' ? 'Tegnapról nincs új mondat (a V23 előtt tanultakat a program nem tudja azonosítani).' : 'Nincs mondat ehhez a választáshoz.');
     const dir = $('mixDir').value, reps = Number($('mixReps').value) || 1, gap = Number($('mixGap').value) || 2;
     const huRate = Number($('mixHu').value) || 1, itRate = Number($('mixIt').value) || 1, pauseSel = $('mixPause').value;
     const bipSel = $('mixBip').value, waveSel = $('mixWave').value, stereo = waveSel !== 'off', bip = makeBip();
@@ -2562,10 +2574,10 @@ async function buildMix() {
       const join = arr => { const n = arr.reduce((a, b) => a + b.length, 0), o = new Int16Array(n); let off = 0; for (const c of arr) { o.set(c, off); off += c.length; } return o; };
       blob = wavBlob(join(wavL), stereo ? join(wavR) : null);
     }
-    const mins = total / MIX_RATE / 60, label = { daily_all: 'Mai ismétlések', today_done: 'Ma átvett mondatok', daily: 'Esedékes mondatok', hard_today: 'Nehéz mondataim', hard: 'Nehéz mondataim', current: current ? niceName(current.slug) : 'Sziget', multi: 'Válogatás' }[$('mixSrc').value];
+    const mins = total / MIX_RATE / 60, label = { new_today: 'Ma tanult új mondatok', new_yesterday: 'Tegnap tanult új mondatok', daily_all: 'Mai ismétlések', today_done: 'Ma átvett mondatok', daily: 'Esedékes mondatok', hard_today: 'Nehéz mondataim', hard: 'Nehéz mondataim', current: current ? niceName(current.slug) : 'Sziget', multi: 'Válogatás' }[$('mixSrc').value];
     const info = ` ${used} mondatpár` + (order !== 'seq' ? ` (${seq.length} elhangzás, lépcsőzetesen)` : '') + ` · ${mins.toFixed(1).replace('.', ',')} perc · ${(blob.size / 1048576).toFixed(1).replace('.', ',')} MB` + (missing ? ` · ${missing} mondatnál nem volt hang` : '') + (blob.type === 'audio/wav' ? ' · WAV (az MP3-kódoló nem töltődött be)' : '');
     const ext = blob.type === 'audio/wav' ? 'wav' : 'mp3';
-    const fname = ({ multi: 'valogatas', daily_all: 'mai_ismetlesek', today_done: 'ma_atvett', daily: 'esedekes', hard_today: 'nehez_mondataim', hard: 'nehez_mondataim', current: current ? current.slug : 'sziget' }[$('mixSrc').value]) + '_' + studyDay() + '.' + ext;
+    const fname = ({ new_today: 'mai_uj_mondatok', new_yesterday: 'tegnapi_uj_mondatok', multi: 'valogatas', daily_all: 'mai_ismetlesek', today_done: 'ma_atvett', daily: 'esedekes', hard_today: 'nehez_mondataim', hard: 'nehez_mondataim', current: current ? current.slug : 'sziget' }[$('mixSrc').value]) + '_' + studyDay() + '.' + ext;
     const now = new Date(), meta = { id: 'm' + now.getTime(), title: `${label} – ${studyDay()} ${pad(now.getHours())}:${pad(now.getMinutes())}`, info, name: fname, size: blob.size, type: blob.type };
     showMix(blob, meta);
     const kept = await saveMix(blob, meta);
