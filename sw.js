@@ -1,6 +1,6 @@
 // Nyelvi sziget V9 – service worker (offline működés)
-// V25: a menü gyakorlás közben is működik.
-const CACHE = 'nyelvisziget-v25-1';
+// V27: Sayback Island megjelenés.
+const CACHE = 'nyelvisziget-v27-1';
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
@@ -15,7 +15,7 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
-    for (const k of await caches.keys()) if (k !== CACHE) await caches.delete(k);
+    for (const k of await caches.keys()) if (k !== CACHE && k.startsWith('nyelvisziget-')) await caches.delete(k); // az angol gyakorló tárát nem bántja
     await self.clients.claim();
   })());
 });
@@ -25,6 +25,7 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.hostname.endsWith('supabase.co')) return; // felhő: mindig hálózat
+  if (url.origin === location.origin && url.pathname.includes('/angol/')) return; // az angol gyakorló a sajátját intézi
   if (req.mode === 'navigate') {
     e.respondWith((async () => {
       try {
@@ -41,7 +42,7 @@ self.addEventListener('fetch', e => {
     const hit = await caches.match(req);
     if (hit) return hit;
     const r = await fetch(req);
-    if (r.ok && (url.origin === location.origin || url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'cdnjs.cloudflare.com')) {
+    if (r.ok && (url.origin === location.origin || url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'cdnjs.cloudflare.com' || url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com')) {
       (await caches.open(CACHE)).put(req, r.clone());
     }
     return r;
