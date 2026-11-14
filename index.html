@@ -156,7 +156,7 @@ details.folder{border-radius:14px}
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>IT</b> Italiano</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">V27</span>
+ <span class="ver" title="Programverzió">V28</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="ma"><i class="ti">🔥</i><span class="tl">Napi kör</span></button>
@@ -218,7 +218,12 @@ details.folder{border-radius:14px}
 <section data-tab="beallitas" class="box"><h3>Felhőszinkronizálás</h3>
  <p class="muted">Jelentkezz be ugyanazzal az e-mail-címmel a számítógépen és az iPhone-on.</p>
  <div class="authrow"><input id="email" type="email" autocomplete="email" placeholder="E-mail-cím"><input id="password" type="password" autocomplete="current-password" placeholder="Jelszó"></div>
- <div class="authrow"><button id="signup">Fiók létrehozása</button><button id="signin">Bejelentkezés</button><button id="signout" class="alt hidden">Kijelentkezés</button></div>
+ <div class="authrow"><button id="signup">Fiók létrehozása</button><button id="signin">Bejelentkezés</button><button id="signout" class="alt hidden">Kijelentkezés</button><button id="pwShow" class="alt hidden">🔑 Új jelszó beállítása</button></div>
+ <div id="pwBox" class="hidden" style="margin:6px 0">
+  <p class="muted" style="margin:4px 0">Itt be vagy jelentkezve, ezért új jelszót adhatsz meg. Utána a többi készüléken (pl. a telefonon) ezzel az új jelszóval lépj be.</p>
+  <div class="authrow"><input id="pwNew1" type="password" autocomplete="new-password" placeholder="Új jelszó (legalább 6 karakter)"><input id="pwNew2" type="password" autocomplete="new-password" placeholder="Új jelszó még egyszer"></div>
+  <div class="authrow"><button id="pwSave">Jelszó mentése</button><button id="pwCancel" class="alt">Mégse</button></div>
+ </div>
  <p id="authStatus" class="muted">A felhőkapcsolat beállításra vár.</p>
  <p id="netStatus" class="muted"></p>
 </section>
@@ -1786,7 +1791,7 @@ function renderHard() {
 // ============================================================
 function setAuthUI() {
   const s = !!auth;
-  $('signout').classList.toggle('hidden', !s); $('signin').classList.toggle('hidden', s); $('signup').classList.toggle('hidden', s);
+  $('signout').classList.toggle('hidden', !s); $('signin').classList.toggle('hidden', s); $('signup').classList.toggle('hidden', s); $('pwShow').classList.toggle('hidden', !s); if (!s) $('pwBox').classList.add('hidden');
   $('email').disabled = s; $('password').disabled = s;
   if (s) {
     $('authStatus').textContent = 'Bejelentkezve: ' + auth.user.email + '.';
@@ -1827,6 +1832,19 @@ function updateNet() { $('netStatus').textContent = online() ? '' : 'Nincs inter
 $('signup').onclick = () => authAction('signup');
 $('signin').onclick = () => authAction('signin');
 $('signout').onclick = async () => { await flush(); if (client) await client.auth.signOut(); auth = null; setAuthUI(); };
+$('pwShow').onclick = () => { $('pwBox').classList.toggle('hidden'); $('pwNew1').value = $('pwNew2').value = ''; $('pwNew1').focus(); };
+$('pwCancel').onclick = () => { $('pwBox').classList.add('hidden'); };
+$('pwSave').onclick = async () => {
+  const a = $('pwNew1').value, b = $('pwNew2').value;
+  if (a.length < 6) { $('authStatus').textContent = 'Az új jelszó legalább 6 karakter legyen.'; return; }
+  if (a !== b) { $('authStatus').textContent = 'A két jelszó nem egyezik.'; return; }
+  if (!client || !auth) { $('authStatus').textContent = 'Ehhez be kell jelentkezve lenned.'; return; }
+  $('authStatus').textContent = 'Jelszó mentése…';
+  const { error } = await client.auth.updateUser({ password: a });
+  if (error) { $('authStatus').textContent = 'Nem sikerült: ' + error.message; return; }
+  $('pwBox').classList.add('hidden'); $('pwNew1').value = $('pwNew2').value = '';
+  $('authStatus').textContent = 'Az új jelszó elmentve. A többi készüléken ezzel jelentkezz be: ' + auth.user.email;
+};
 $('refreshLibrary').onclick = listLibrary;
 $('newFolderBtn').onclick = () => {
   const name = $('newFolderName').value.trim();
