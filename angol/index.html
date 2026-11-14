@@ -149,6 +149,29 @@ button.alt{background:#eef4f7;color:var(--ink);box-shadow:none;border:1px solid 
 #resumeBar{background:linear-gradient(135deg,#fff3e6,#ffe7dc);border-color:#ffc9b3}
 #resumeBar span{color:#b4472b}
 details.folder{border-radius:14px}
+
+.tabs button .ts{font-size:.66rem;font-weight:600;opacity:.75;text-transform:lowercase;margin-top:-2px}
+.tabs button .tl{text-transform:uppercase;letter-spacing:.6px}
+.tabs .plantab{background:linear-gradient(135deg,#0e5470,#127f8c);color:#fff;border-color:transparent}
+.tabs .plantab .ts{opacity:.95}
+.tabs .plantab[aria-selected="true"]{background:linear-gradient(135deg,var(--coral),#ff9f5a)}
+@media (max-width:600px){.tabs{position:static}}
+@media (max-width:600px){.tabs .plantab{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;padding:9px}.tabs .plantab .ts{margin:0;font-size:.8rem}.tabs button .ts{font-size:.6rem}}
+.plan-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center}
+.plan-day{font:800 1.15rem 'Baloo 2','Nunito',sans-serif}
+.plan-prog{height:12px;background:#e3ecf1;border-radius:7px;overflow:hidden;margin:8px 0 4px}.plan-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--coral),var(--sun));transition:width .3s}
+.ptask{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:12px 10px;border-radius:14px;background:#f6fafb;margin:8px 0;border:1px solid #e3edf1}
+.ptask.done{background:#eefaf3;border-color:#bfe6cf}.ptask.done .pt-title{text-decoration:line-through;opacity:.6}
+.ptask input[type=checkbox]{width:24px;height:24px;accent-color:#2f9e6a;margin:0 auto}
+.pt-time{font-size:.75rem;font-weight:800;color:var(--sea);text-transform:uppercase;letter-spacing:.4px}
+.pt-title{font-weight:800}.pt-sub{font-size:.85rem;color:#5d6e7a}
+.ptask button{margin:0;white-space:nowrap}
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+.plan-grid label{display:grid;gap:4px;font-size:.88rem;color:#4b5d6a;font-weight:700}
+.plan-grid input,.plan-grid select{padding:9px;border:1px solid #cbd5df;border-radius:10px;background:#fff;width:100%;box-sizing:border-box}
+.plan-res{background:linear-gradient(135deg,#fff7ea,#ffeede);border:1px solid #ffd7b8;border-radius:14px;padding:12px 14px;margin:10px 0}
+.plan-res b{color:#b4472b}
+@media (max-width:600px){.ptask{grid-template-columns:30px 1fr}.ptask button{grid-column:2;justify-self:start}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -156,15 +179,16 @@ details.folder{border-radius:14px}
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>EN</b> English</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">EN V3</span>
+ <span class="ver" title="Programverzió">EN V4</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
- <button type="button" role="tab" data-tab="ma"><i class="ti">🔥</i><span class="tl">Napi kör</span></button>
- <button type="button" role="tab" data-tab="hallgatas"><i class="ti">🎧</i><span class="tl">Fülre</span></button>
- <button type="button" role="tab" data-tab="nehez"><i class="ti">🎯</i><span class="tl">Mumusok</span><span class="badge" id="tbHard"></span></button>
- <button type="button" role="tab" data-tab="szavak"><i class="ti">🧠</i><span class="tl">Szókincs</span><span class="badge" id="tbWords"></span></button>
- <button type="button" role="tab" data-tab="konyvtar"><i class="ti">🏝️</i><span class="tl">Szigetek</span></button>
- <button type="button" role="tab" data-tab="beallitas"><i class="ti">⚙️</i><span class="tl">Beállítások</span></button>
+ <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">GAME PLAN</span><span class="ts" id="tbPlan">a mai terv</span></button>
+ <button type="button" role="tab" data-tab="ma" title="napi kör"><i class="ti">🔥</i><span class="tl">DAILY RUN</span><span class="ts">napi kör</span></button>
+ <button type="button" role="tab" data-tab="hallgatas" title="hallgatás"><i class="ti">🎧</i><span class="tl">AUDIO FLOW</span><span class="ts">hallgatás</span></button>
+ <button type="button" role="tab" data-tab="nehez" title="nehéz mondatok"><i class="ti">🎯</i><span class="tl">BOSS MODE</span><span class="ts">nehéz mondatok</span><span class="badge" id="tbHard"></span></button>
+ <button type="button" role="tab" data-tab="szavak" title="szókincs"><i class="ti">🧠</i><span class="tl">VOCAB LAB</span><span class="ts">szókincs</span><span class="badge" id="tbWords"></span></button>
+ <button type="button" role="tab" data-tab="konyvtar" title="szigetek"><i class="ti">🏝️</i><span class="tl">MY ISLANDS</span><span class="ts">szigetek</span></button>
+ <button type="button" role="tab" data-tab="beallitas" title="beállítások"><i class="ti">⚙️</i><span class="tl">CONTROL CENTER</span><span class="ts">beállítások</span></button>
 </nav>
 <main>
 <p id="status" class="muted"></p>
@@ -193,6 +217,35 @@ details.folder{border-radius:14px}
   <label class="muted">Szünet <select id="hfPause"><option value="auto">automatikus</option><option value="3">3 mp</option><option value="5">5 mp</option><option value="8">8 mp</option><option value="12">12 mp</option></select></label>
   <label class="muted"><input type="checkbox" id="hfRepeat"> a választ kétszer mondja</label>
   <label class="muted">Értékelés <select id="hfRate"><option value="wait">a válasz után vár, amíg koppintok (ajánlott)</option><option value="auto">5 mp-ig vár, utána magától „Jól ment”</option><option value="none">nincs – csak hallgatás, a haladás NEM mentődik</option></select></label></div>
+</section>
+
+<section data-tab="terv" class="box" id="planBox"><h3>A mai terv</h3>
+ <div class="plan-head"><div class="plan-day" id="planDay"></div><div class="muted" id="planSum"></div></div>
+ <div class="plan-prog"><i id="planBar"></i></div>
+ <div id="planList"></div>
+ <p class="muted" id="planNote"></p>
+ <details id="planSet" style="margin-top:10px"><summary>🎯 Célom és időbeosztásom (minden állítható)</summary>
+  <div class="plan-grid">
+   <label>Most ezen a szinten vagyok<select id="plLevel"><option value="A0">kezdő (A0)</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option></select></label>
+   <label>Ezt a szintet akarom elérni<select id="plGoal"><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></label>
+   <label>Tervezés módja<select id="plMode"><option value="time">a napi időmből számoljon</option><option value="date">határidőre akarom elérni</option></select></label>
+   <label id="plDateL">Határidő<input id="plDate" type="date"></label>
+   <label>Tanulós napok hetente<select id="plDays"><option>5</option><option selected>6</option><option>7</option></select></label>
+  </div>
+  <div class="muted" style="margin-top:4px">Napi időkereteim (perc):</div>
+  <div class="plan-grid">
+   <label>🌅 Reggel – hallgatás<input id="plMorning" type="number" min="0" max="180"></label>
+   <label>☕ Napközben – mikrotanulás<input id="plMicro" type="number" min="0" max="120"></label>
+   <label>🕒 Délután – új mondatok<input id="plAfter" type="number" min="0" max="180"></label>
+   <label>🌙 Este – ismétlés, beszéd<input id="plEvening" type="number" min="0" max="240"></label>
+  </div>
+  <label class="muted"><input type="checkbox" id="plRead"> napi olvasás (LingQ, könnyített olvasmány)</label><br>
+  <label class="muted"><input type="checkbox" id="plSpeak" checked> beszédgyakorlat este (saját mondatok, szerepjáték, monológ)</label><br>
+  <label class="muted"><input type="checkbox" id="plTutor"> tanárral beszélek hetente – nap: <select id="plTutorDay"><option value="1">hétfő</option><option value="2">kedd</option><option value="3" selected>szerda</option><option value="4">csütörtök</option><option value="5">péntek</option><option value="6">szombat</option><option value="0">vasárnap</option></select></label>
+  <div class="plan-res" id="planRes"></div>
+  <button id="plApply">A javasolt napi új mondatszámot beállítom</button>
+  <p class="muted" style="margin:6px 0 0">A számítás tapasztalati becslés: egy új mondat az első napon kb. ½ perc, és utána a rendszeres ismétléseivel együtt naponta kb. 1,3 percet visz el. A szintenként szükséges mondatpár-szám: A1 ≈ 750, A2 ≈ 1700, B1 ≈ 2800, B2 ≈ 4000, C1 ≈ 5500, C2 ≈ 7500.</p>
+ </details>
 </section>
 
 <section data-tab="ma" class="box"><h3>Statisztika</h3>
@@ -751,6 +804,7 @@ function renderStats() {
   const t = todayStats();
   $('stStreak').textContent = streak(); $('stToday').textContent = t.reviews;
   { const h = document.getElementById('hStreak'); if (h) h.textContent = '🔥 ' + streak() + ' nap'; }
+  try { clearTimeout(renderStats.plT); renderStats.plT = setTimeout(renderPlan, 300); } catch {}
   $('stGood').textContent = (t.good || 0) + (t.easy || 0); $('stNew').textContent = t.new;
   let learned = 0, cards = 0;
   for (const slug of allProgSlugs()) for (const c of Object.values(getProg(slug).cards)) { cards++; if (c.interval >= 21) learned++; }
@@ -1788,6 +1842,102 @@ function renderHard() {
     }
     host.append(fg.el);
   }
+}
+
+
+// ============================================================
+// IL PIANO – cél, időbeosztás és napi terv
+// ============================================================
+const PL_KEY = 'angolsziget-plan', PL_DONE = 'angolsziget-plandone';
+const PL_LEVELS = ['A0', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'], PL_TARGET = { A0: 0, A1: 750, A2: 1700, B1: 2800, B2: 4000, C1: 5500, C2: 7500 };
+const PL_DEF = { level: 'A0', goal: 'A2', mode: 'time', date: '', days: '6', morning: 25, micro: 10, after: 10, evening: 35, read: false, speak: true, tutor: false, tutorDay: '3' };
+let plan = { ...PL_DEF, ...loadJSON(PL_KEY, {}) };
+const PL_MIN_PER_NEW = 1.33;
+function plLearned() { let n = 0; for (const slug of allProgSlugs()) for (const c of Object.values(getProg(slug).cards)) if (c && c.reps) n++; return n; }
+function plCalc() {
+  const learned = plLearned(), target = PL_TARGET[plan.goal] || 0, remaining = Math.max(0, target - learned);
+  const active = (Number(plan.micro) || 0) + (Number(plan.after) || 0) + (Number(plan.evening) || 0);
+  const forSentences = Math.max(5, (Number(plan.micro) || 0) / 2 + (Number(plan.after) || 0) + (Number(plan.evening) || 0) - (plan.speak ? 10 : 0)); // a szókártyák és a beszéd ideje nem a mondatoké
+  const days = Number(plan.days) || 6;
+  let perDay, finish, needMin = null;
+  if (plan.mode === 'date' && plan.date) {
+    const ms = Date.parse(plan.date) - dayStart(); const studyDays = Math.max(1, Math.floor(ms / 864e5 * days / 7));
+    perDay = Math.ceil(remaining / studyDays); needMin = Math.round(perDay * PL_MIN_PER_NEW + (Number(plan.micro) || 0) / 2 + (plan.speak ? 10 : 0));
+    finish = new Date(Date.parse(plan.date));
+  } else {
+    perDay = Math.max(3, Math.min(30, Math.floor(forSentences / PL_MIN_PER_NEW)));
+    const studyDays = Math.ceil(remaining / perDay); finish = new Date(dayStart() + Math.ceil(studyDays * 7 / days) * 864e5);
+  }
+  perDay = Math.max(0, Math.min(60, perDay || 0));
+  return { learned, target, remaining, active, perDay, finish, needMin, capped: perDay > 30 };
+}
+const plAz = g => /^A/.test(g) ? 'az' : 'a';
+function plSave() { saveJSON(PL_KEY, plan); }
+function plDone() { const all = loadJSON(PL_DONE, {}); return all[studyDay()] || {}; }
+function plMark(id, v) { const all = loadJSON(PL_DONE, {}), d = studyDay(); all[d] = { ...(all[d] || {}), [id]: v }; for (const k of Object.keys(all)) if (k < d && Object.keys(all).length > 30) delete all[k]; saveJSON(PL_DONE, all); }
+function plDue() {
+  let isl = 0; for (const slug of allProgSlugs()) isl += countDue(slug).due;
+  let voc = 0; try { for (const d of vDecks) voc += vDeckCounts(d.id).due; } catch {}
+  return { isl, voc };
+}
+function plGo(tab, after) { showTab(tab); window.scrollTo({ top: 0, behavior: 'smooth' }); if (after) setTimeout(after, 120); }
+function plTasks() {
+  const c = plCalc(), t = todayStats(), due = plDue(), wd = new Date(dayStart() + 12 * 36e5).getDay();
+  const sunday = Number(plan.days) < 7 && wd === 0, lvl = PL_LEVELS.indexOf(plan.level), newTarget = sunday ? 0 : Math.min(c.perDay, newLimit() || c.perDay);
+  const tasks = [];
+  if (Number(plan.morning) > 0) tasks.push({ id: 'morning', time: '🌅 Reggel · ' + plan.morning + ' perc', title: 'Hallgatás: a tegnap tanult új mondatok', sub: 'Lépcsőzetes hanganyag, magyar → idegen nyelv. A szünetben előbb mondd ki, csak utána halld.', btn: '🎧 Megnyitom', go: () => plGo('hallgatas', () => { const last = (loadJSON('angolsziget-mixes', [])[0]); if (last && last.title && /Ma tanult/.test(last.title)) loadMix(last.id, false); else { $('mixSrc').value = 'new_yesterday'; syncMixSrc(); } $('mixBox').scrollIntoView({ behavior: 'smooth' }); }) });
+  if (Number(plan.micro) > 0) tasks.push({ id: 'micro', time: '☕ Napközben · ' + plan.micro + ' perc, több részletben', title: due.voc ? `Szókártyák (${due.voc} esedékes) és a mumusok` : 'A mumusok (nehéz mondatok) átnézése', sub: 'Pár perces adagokban, amikor épp ráérsz.', btn: due.voc ? '🧠 Szókártyák' : '🎯 Mumusok', go: () => due.voc ? plGo('szavak', () => $('vStartAll').click()) : plGo('nehez') });
+  if (newTarget > 0 && Number(plan.after) > 0) tasks.push({ id: 'new', time: '🕒 Délután · ' + plan.after + ' perc', title: `${newTarget} új mondat`, sub: `Ma eddig: ${t.new || 0}. Nyisd meg a soron következő szigetet „Esedékes ismétlés + új mondatok” módban.`, btn: '🏝️ Szigetek', auto: (t.new || 0) >= newTarget, go: () => plGo('konyvtar') });
+  if (Number(plan.evening) > 0) tasks.push({ id: 'reviews', time: '🌙 Este · ' + Math.max(10, Number(plan.evening) - (plan.speak ? 10 : 0)) + ' perc', title: due.isl ? `Esedékes ismétlések (${due.isl})` : 'Esedékes ismétlések', sub: 'Hangosan kimondva, értékeléssel (kézmentes módban: „vár, amíg koppintok”).', btn: '▶ Indítás', auto: due.isl === 0 && (t.reviews || 0) > 0, go: () => plGo('ma', () => $('dailyAll').click()) });
+  if (plan.speak && Number(plan.evening) > 0) {
+    const tut = plan.tutor && String(wd) === String(plan.tutorDay);
+    const sp = tut ? ['Beszélgetés a tanárral', 'Mondd el előre, melyik sziget témájáról beszéljetek.']
+      : wd === 0 ? ['Heti monológ', '2 perc a hét egyik témájáról, telefonnal felvéve – havonta hallgasd vissza.']
+      : [1, 3, 5].includes(wd) ? ['3 saját mondat a szókincsnaplóba', 'A nap nehéz szavaival, a saját életedről – a Claude kijavítja.']
+      : lvl <= 1 ? ['Hangos utánamondás', '5 perc: a mai mondatokat mondd fel hangosan, a felvétellel összevetve.'] : ['Szerepjáték a Claude-dal', '5 perc: pincér, recepciós, benzinkutas – a végén kérd a javítást.'];
+    tasks.push({ id: 'speak', time: '🌙 Este · ' + (tut ? 30 : 10) + ' perc', title: sp[0], sub: sp[1], btn: tut ? '' : '🧠 Napló', go: tut ? null : () => window.open('https://claude.ai/artifact/HTf9yrmmwD11AAsbywg7ou', '_blank') });
+  }
+  if (plan.read) tasks.push({ id: 'read', time: '📖 Amikor ráérsz · 10 perc', title: lvl <= 1 ? 'Könnyített olvasmány vagy kezdő podcast' : lvl <= 3 ? 'Egy rövid cikk (LingQ) – 2–3 kifejezés kigyűjtése' : 'Cikk, podcast vagy sorozatrész eredeti nyelven', sub: 'Olyan anyag, aminek kb. 80–90%-át érted.', btn: '' });
+  if (Number(plan.morning) > 0) tasks.push({ id: 'mix', time: '🌙 Este, a végén · 1 perc', title: 'A holnap reggeli hanganyag elkészítése', sub: '„A ma tanult új mondatok”, lépcsőzetes, 3 visszatérés.', btn: '🎧 Elkészítem', go: () => plGo('hallgatas', () => { $('mixSrc').value = 'new_today'; $('mixOrder').value = 'pim3'; syncMixSrc(); mixOrderInfo(); saveSettings(); $('mixBuild').scrollIntoView({ behavior: 'smooth', block: 'center' }); }) });
+  return { tasks, c, sunday };
+}
+function renderPlan() {
+  if (!$('planList')) return;
+  const { tasks, c, sunday } = plTasks(), done = plDone(), host = $('planList'); host.innerHTML = '';
+  const names = ['vasárnap', 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat'], d = new Date(dayStart() + 12 * 36e5);
+  $('planDay').textContent = `${d.getMonth() + 1}. ${d.getDate()}., ${names[d.getDay()]}` + (sunday ? ' – pihenőnap: nincs új mondat' : '');
+  let n = 0;
+  for (const tk of tasks) {
+    const ok = !!(tk.auto || done[tk.id]); if (ok) n++;
+    const row = document.createElement('div'); row.className = 'ptask' + (ok ? ' done' : '');
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = ok; cb.disabled = !!tk.auto; cb.title = tk.auto ? 'Magától kipipálódott' : 'Kész';
+    cb.onchange = () => { plMark(tk.id, cb.checked); renderPlan(); };
+    const box = document.createElement('div');
+    box.innerHTML = `<div class="pt-time"></div><div class="pt-title"></div><div class="pt-sub"></div>`;
+    box.children[0].textContent = tk.time; box.children[1].textContent = tk.title; box.children[2].textContent = tk.sub;
+    row.append(cb, box);
+    if (tk.btn && tk.go) { const b = document.createElement('button'); b.className = ok ? 'alt' : ''; b.textContent = tk.btn; b.onclick = tk.go; row.append(b); }
+    host.append(row);
+  }
+  const pct = tasks.length ? Math.round(n / tasks.length * 100) : 0;
+  $('planBar').style.width = pct + '%';
+  $('planSum').textContent = n === tasks.length && tasks.length ? '🎉 Minden kész mára!' : `${n}/${tasks.length} kész · kb. ${(Number(plan.morning) || 0) + c.active} perc`;
+  { const tb = document.getElementById('tbPlan'); if (tb) tb.textContent = tasks.length ? `ma ${n}/${tasks.length}` : 'a mai terv'; }
+  const fmt = dt => `${dt.getFullYear()}. ${dt.getMonth() + 1}. ${dt.getDate()}.`;
+  $('planNote').textContent = c.remaining > 0 ? `Cél: ${plan.goal} (kb. ${c.target} mondatpár). Eddig gyakorolt: ${c.learned}, hátra kb. ${c.remaining}.` : `${plAz(plan.goal) === 'az' ? 'Az' : 'A'} ${plan.goal} szinthez szükséges mondatmennyiség megvan (${c.learned}). Állíts be magasabb célt, vagy csiszold a beszédet.`;
+  let res = `Javasolt: <b>${c.perDay} új mondat naponta</b> (most beállítva: ${newLimit()}). ` + (c.perDay > 30 ? 'Napi 30 fölött az ismétlések nagyon felszaporodnak – inkább több időt vagy későbbi határidőt javaslok. ' : '');
+  if (plan.mode === 'date' && plan.date) res += c.needMin > c.active ? `A határidőhöz napi kb. <b>${c.needMin} perc</b> aktív tanulás kell (ennyi van: ${c.active} perc) – növeld az időt, vagy tolj a határidőn.` : `Ehhez napi kb. ${c.needMin} perc aktív tanulás kell – belefér a ${c.active} percbe.`;
+  else res += c.remaining > 0 ? `Ezzel ${plAz(plan.goal)} ${plan.goal} szint anyaga kb. <b>${fmt(c.finish)}</b>-ra lesz meg.` : '';
+  $('planRes').innerHTML = res;
+}
+function plLoadForm() {
+  const m = { plLevel: 'level', plGoal: 'goal', plMode: 'mode', plDate: 'date', plDays: 'days', plMorning: 'morning', plMicro: 'micro', plAfter: 'after', plEvening: 'evening', plTutorDay: 'tutorDay' };
+  for (const [id, k] of Object.entries(m)) $(id).value = plan[k];
+  $('plRead').checked = !!plan.read; $('plSpeak').checked = !!plan.speak; $('plTutor').checked = !!plan.tutor;
+  $('plDateL').style.display = plan.mode === 'date' ? '' : 'none';
+  for (const [id, k] of Object.entries(m)) $(id).onchange = $(id).oninput = () => { plan[k] = $(id).value; if (k === 'level' && PL_LEVELS.indexOf(plan.goal) <= PL_LEVELS.indexOf(plan.level)) { plan.goal = PL_LEVELS[Math.min(6, PL_LEVELS.indexOf(plan.level) + 1)]; $('plGoal').value = plan.goal; } $('plDateL').style.display = plan.mode === 'date' ? '' : 'none'; plSave(); renderPlan(); };
+  for (const [id, k] of [['plRead', 'read'], ['plSpeak', 'speak'], ['plTutor', 'tutor']]) $(id).onchange = () => { plan[k] = $(id).checked; plSave(); renderPlan(); };
+  $('plApply').onclick = () => { const c = plCalc(); $('newLimit').value = c.perDay; saveSettings(); renderStats(); renderPlan(); $('planRes').insertAdjacentHTML('beforeend', '<br>✓ Beállítva.'); };
 }
 
 // ============================================================
@@ -2900,18 +3050,19 @@ function setMixSession() {
 (() => {
   const btns = [...document.querySelectorAll('#tabs [data-tab]')];
   window.showTab = t => {
-    if (!btns.some(b => b.dataset.tab === t)) t = 'ma';
+    if (!btns.some(b => b.dataset.tab === t)) t = 'terv';
     btns.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
     document.querySelectorAll('main section[data-tab]').forEach(sec => sec.classList.toggle('tabhide', sec.dataset.tab !== t));
     try { localStorage.setItem('angolsziget-tab', t); } catch {}
     if (t === 'szavak') try { brFillDecks(); } catch {}
+    if (t === 'terv') try { renderPlan(); } catch {}
   };
   // gyakorlás közben a menü félreteszi a gyakorlást (nem veszik el), és egy sávval folytatható
   const st = $('study');
   const sync = () => {
     const open = !st.classList.contains('hidden'), parked = st.classList.contains('parked');
     document.body.classList.toggle('studying', open && !parked);
-    btns.forEach(b => b.setAttribute('aria-selected', String(!(open && !parked) && b.dataset.tab === (localStorage.getItem('angolsziget-tab') || 'ma'))));
+    btns.forEach(b => b.setAttribute('aria-selected', String(!(open && !parked) && b.dataset.tab === (localStorage.getItem('angolsziget-tab') || 'terv'))));
     $('resumeBar').classList.toggle('hidden', !(open && parked && sess));
     if (open && parked && sess) $('resumeTxt').textContent = `Félbehagyott gyakorlás: ${sess.title} · ${sess.pos + 1} / ${sess.items.length}`;
   };
@@ -2923,9 +3074,10 @@ function setMixSession() {
   $('resumeBtn').onclick = () => { st.classList.remove('parked'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   $('resumeEnd').onclick = () => { try { stopHandsFree(); } catch {} st.classList.remove('parked'); st.classList.add('hidden'); sess = null; $('status').textContent = 'Gyakorlás befejezve. A haladás mentve.'; try { renderStats(); loadDailyReview(); renderHard(); } catch {} };
   sync();
-  let t = 'ma'; try { t = localStorage.getItem('angolsziget-tab') || 'ma'; } catch {}
+  let t = 'terv'; try { t = localStorage.getItem('angolsziget-tab') || 'terv'; if (localStorage.getItem('angolsziget-planday') !== studyDay()) { t = 'terv'; localStorage.setItem('angolsziget-planday', studyDay()); } } catch {}
   showTab(t);
 })();
+try { plLoadForm(); } catch (e) { console.warn(e); }
 loadSettings(); updateSpeedLabels(); updateMixLabels(); syncMixSrc(); mixOrderInfo(); updateNet(); renderMixSaved(); { const last = localStorage.getItem('angolsziget-mixlast'); if (last) loadMix(last, false); } renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender();
 const configured = SUPABASE_URL.startsWith('https://') && SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
 if (configured && window.supabase) {
