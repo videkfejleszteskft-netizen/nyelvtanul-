@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V23</title>
+<title>Nyelvi sziget – V24</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -19,6 +19,18 @@ header h2{margin:0 0 4px}
 main{max-width:850px;margin:20px auto;padding:0 14px 40px}
 .box{background:#fff;border:1px solid #d8e1e8;border-radius:14px;padding:18px;margin:12px 0}
 .box h3{margin-top:0}
+.tabs{position:sticky;top:0;z-index:20;display:flex;gap:6px;overflow-x:auto;padding:8px 14px;background:#f2f5f7;border-bottom:1px solid #d8e1e8;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:0 0 auto;margin:0;background:#fff;color:#243b53;border:1px solid #cbd5df;padding:8px 12px;border-radius:999px;font-weight:600;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:#1d6b8a;color:#fff;border-color:#1d6b8a}
+.tabs button .badge{display:inline-block;min-width:18px;padding:0 5px;margin-left:5px;border-radius:9px;background:#e0ecf2;color:#1d4f73;font-size:.78rem;line-height:18px;text-align:center}
+.tabs button[aria-selected="true"] .badge{background:#fff}
+.tabhide{display:none!important}
+.tabs .badge:empty{display:none}
+@media (max-width:600px){.tabs{flex-wrap:wrap;justify-content:center;gap:5px;padding:6px 8px}.tabs button{padding:6px 10px;font-size:.9rem}}
+#status{margin:10px 2px 0;min-height:1.2em}
+.mnisl{margin:6px auto 10px;max-width:680px;background:#fff6d6;border:1px solid #ecd27f;color:#4f3b00;border-radius:10px;padding:8px 12px;text-align:left}
+.bridgeOut{width:100%;box-sizing:border-box;min-height:110px;padding:8px;border:1px solid #cbd5df;border-radius:8px;font:14px/1.4 ui-monospace,monospace}
 .row{display:flex;gap:12px;flex-wrap:wrap}.row label{flex:1;min-width:190px}
 input,select,button{font:inherit}input{max-width:100%}
 button{border:0;border-radius:9px;background:#176b87;color:#fff;padding:10px 14px;cursor:pointer;margin:4px}
@@ -93,10 +105,44 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V23 · hanganyag a ma / tegnap tanult új mondatokból</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V24 · menü, emlékeztetők a szigetekben, átjárás a szótanulóba</div></header>
+<nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
+ <button type="button" role="tab" data-tab="ma">📅 Ma</button>
+ <button type="button" role="tab" data-tab="hallgatas">🎧 Hallgatás</button>
+ <button type="button" role="tab" data-tab="nehez">⚠️ Nehéz<span class="badge" id="tbHard"></span></button>
+ <button type="button" role="tab" data-tab="szavak">🔤 Szavak<span class="badge" id="tbWords"></span></button>
+ <button type="button" role="tab" data-tab="konyvtar">📚 Könyvtár</button>
+ <button type="button" role="tab" data-tab="beallitas">⚙️ Beállítások</button>
+</nav>
 <main>
+<p id="status" class="muted">Válassz tananyagot.</p>
+<section id="study" class="box hidden">
+ <div class="muted"><span id="island"></span> · <span id="count"></span></div>
+ <div class="prompt" id="question"></div>
+ <div id="typeBox" class="hidden center"><input id="typeInput" placeholder="Írd be a választ…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"><button id="typeCheck">Ellenőrzés</button><div id="typeResult"></div></div>
+ <div class="center"><button class="alt" id="qAudio">🔊 Kérdés hangja</button><button id="show">Válasz felfedése</button></div>
+ <div id="answrap" class="hidden">
+  <div id="answer" class="answer"></div>
+  <div id="mnIsland" class="mnisl hidden"></div>
+  <div class="center"><button class="alt" id="aAudio">🔊 Válasz hangja</button><button class="alt hidden" id="hideAnswer">Válasz elrejtése</button>
+   <div id="ratingArea"><p class="muted">Mennyire sikerült felidézni?</p>
+    <button class="rate" style="background:#a74343" data-rate="again">Nem ment<small></small></button>
+    <button class="rate alt" data-rate="hard">Nehéz<small></small></button>
+    <button class="rate" style="background:#237a52" data-rate="good">Jól ment<small></small></button>
+    <button class="rate" style="background:#1d6346" data-rate="easy">Könnyű<small></small></button>
+   </div>
+  </div>
+ </div>
+ <div class="center"><button class="alt" id="prev">← Előző</button><button class="alt" id="next">Következő →</button><button class="alt" id="shuffle">Keverés</button></div>
+ <div class="tools2"><button class="alt" id="toVocab" title="A mondat a szigetben is megmarad">🧠 Szótanulóba (emlékeztetőhöz)</button><span id="toVocabInfo" class="muted"></span></div>
+ <div class="tools2"><button class="alt" id="recBtn">🎙 Felvétel</button><button class="alt hidden" id="recPlay">▶ Saját hang</button><button class="alt hidden" id="recCompare">⇄ Saját + eredeti</button><span id="recInfo" class="muted"></span></div>
+ <div class="tools2"><button class="alt" id="hfBtn">🎧 Kézmentes mód</button>
+  <label class="muted">Szünet <select id="hfPause"><option value="auto">automatikus</option><option value="3">3 mp</option><option value="5">5 mp</option><option value="8">8 mp</option><option value="12">12 mp</option></select></label>
+  <label class="muted"><input type="checkbox" id="hfRepeat"> a választ kétszer mondja</label>
+  <label class="muted">Értékelés <select id="hfRate"><option value="wait">a válasz után vár, amíg koppintok (ajánlott)</option><option value="auto">5 mp-ig vár, utána magától „Jól ment”</option><option value="none">nincs – csak hallgatás, a haladás NEM mentődik</option></select></label></div>
+</section>
 
-<section class="box"><h3>Statisztika</h3>
+<section data-tab="ma" class="box"><h3>Statisztika</h3>
  <div class="stats">
   <div class="stat"><b id="stStreak">0</b>napos sorozat</div>
   <div class="stat"><b id="stToday">0</b>ismétlés ma</div>
@@ -116,7 +162,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
  </details>
 </section>
 
-<section class="box"><h3>Felhőszinkronizálás</h3>
+<section data-tab="beallitas" class="box"><h3>Felhőszinkronizálás</h3>
  <p class="muted">Jelentkezz be ugyanazzal az e-mail-címmel a számítógépen és az iPhone-on.</p>
  <div class="authrow"><input id="email" type="email" autocomplete="email" placeholder="E-mail-cím"><input id="password" type="password" autocomplete="current-password" placeholder="Jelszó"></div>
  <div class="authrow"><button id="signup">Fiók létrehozása</button><button id="signin">Bejelentkezés</button><button id="signout" class="alt hidden">Kijelentkezés</button></div>
@@ -124,13 +170,13 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
  <p id="netStatus" class="muted"></p>
 </section>
 
-<section class="box"><h3>Mai ismétlések</h3>
+<section data-tab="ma" class="box"><h3>Mai ismétlések</h3>
  <p class="muted">Esedékes ismétlések és a napi limitig új mondatok az összes szigetből. A nap hajnali 4-kor fordul.</p>
  <button id="loadDailyReview">Lista frissítése</button><button id="dailyAll" class="alt">Minden esedékes egyben</button>
  <p id="dailyStatus" class="muted"></p><div id="dailyList"></div>
 </section>
 
-<section class="box" id="mixBox"><h3>🎧 Hallgatható összeállítás</h3>
+<section data-tab="hallgatas" class="box" id="mixBox"><h3>🎧 Hallgatható összeállítás</h3>
  <p class="muted">A kiválasztott mondatok hangfájljaiból egyetlen folyamatos MP3 készül: magyar mondat → szünet (ilyenkor mondd ki olaszul) → olasz mondat, beállítható ismétléssel. Lezárt képernyővel is szól, és le is töltheted.</p>
  <div class="row">
   <label>Miből?<br><select id="mixSrc" class="move" style="margin:0;width:100%" data-v18="1"><option value="new_today">A ma tanult új mondatok (este, a másnap reggeli hallgatáshoz)</option><option value="new_yesterday">A tegnap tanult új mondatok</option><option value="daily_all">Mai ismétlések: a ma már átvettek + a még esedékesek</option><option value="today_done">Csak a ma már átvett mondatok</option><option value="daily">Csak a még esedékes mondatok</option><option value="hard_today">Nehéz mondataim + a ma nehéznek jelöltek</option><option value="hard">Nehéz mondataim (a jelenlegi lista)</option><option value="current">A megnyitott sziget</option><option value="multi">Több sziget / mappa – én választom ki</option></select></label>
@@ -175,13 +221,13 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
  </div>
 </section>
 
-<section class="box"><h3>Nehéz mondataim</h3>
+<section data-tab="nehez" class="box"><h3>Nehéz mondataim</h3>
  <p class="muted">Amiket a legutóbbi ismétléseknél többször „Nem ment” vagy „Nehéz” értékeléssel jelöltél, az összes szigetből.</p>
- <button id="hardRefresh" class="alt">Lista frissítése</button><button id="hardPractice">Nehéz mondatok gyakorlása</button>
+ <button id="hardRefresh" class="alt">Lista frissítése</button><button id="hardPractice">Nehéz mondatok gyakorlása</button><button id="hardToVocab" class="alt">🧠 Mind a szótanulóba</button>
  <p id="hardStatus" class="muted"></p><div id="hardList"></div>
 </section>
 
-<section class="box" id="vocabBox"><h3>Szótanulás</h3>
+<section data-tab="szavak" class="box" id="vocabBox"><h3>Szótanulás</h3>
  <p class="muted">Szókártyák FSRS-ütemezéssel: minden kártyát pont akkor kérdez, amikor már kezdenéd elfelejteni. Forrás: a letöltött szigetek szókincsbővítő mondatai és a saját szólistáid.</p>
  <div class="stats">
   <div class="stat"><b id="vStDue">0</b>esedékes most</div>
@@ -237,6 +283,18 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
   <p class="muted">Egy szó magyar → olasz és hiányos mondatos kártyája csak a megértéses kártya első ismétlése utáni napon jön elő először, így nem kapod meg ugyanazt egy nap háromszor.</p>
  </details>
 
+ <details style="margin-top:6px" id="bridgeBox"><summary>🧠 Emlékeztetők a Mnemonika-műhelyből (vágólappal)</summary>
+  <p class="muted">A nehezen megjegyezhető szigetmondatokat a gyakorlás közben vagy a Nehéz fülön a <b>„🧠 Szótanulóba”</b> gombbal ide gyűjtheted (a „Szigetből átvett mondatok” listába – a szigetben is megmaradnak). Utána:</p>
+  <div class="row"><label>1. Melyik listából?<br><select id="brDeck" class="move" style="margin:0;width:100%"></select></label></div>
+  <label class="muted"><input type="checkbox" id="brOnlyNew" checked> csak az emlékeztető nélküliek</label><br>
+  <button id="brCopy">1. Lista másolása</button><a id="brOpen" href="https://claude.ai/artifact/HTf9yrmmwD11AAsbywg7ou" target="_blank" rel="noopener"><button type="button" class="alt">2. Mnemonika-műhely megnyitása ↗</button></a>
+  <p class="muted" style="margin:6px 0">A műhelyben: <b>✍️ Beírás kézzel → Több sor beillesztése → Hozzáadás új listaként</b>, kérj emlékeztetőket, majd nyomd meg a <b>Másolás</b> gombot, és gyere vissza ide.</p>
+  <textarea id="brOut" class="bridgeOut hidden" readonly></textarea>
+  <label class="muted" style="display:block;margin-top:6px">3. Illeszd be ide a műhelyből kimásolt szöveget:</label>
+  <textarea id="brIn" class="bridgeOut" placeholder="Holnap bevásárolok. - Domani faccio la spesa.&#10;# 🧠 spesa ≈ „szép-sza”: …"></textarea>
+  <button id="brSave">4. Emlékeztetők mentése</button>
+  <p id="brStatus" class="muted"></p>
+ </details>
  <details style="margin-top:6px"><summary>🧠 Emlékeztetők betöltése</summary>
   <p class="muted">Töltsd be a <b>B1_Szokincsbovites_osszes_sziget.txt</b> és a <b>B2_Szokincsbovites_osszes_sziget.txt</b> fájlt (egyszerre többet is kijelölhetsz). A program a mondatok alapján párosítja az emlékeztetőket a szókártyákhoz, akárhogy nevezted el vagy bontottad a szigeteket. Elég egyszer betölteni, a felhőn át a másik készülékre is átkerül.</p>
   <input id="vMnFile" type="file" accept=".txt" multiple><button id="vMnLoad">Betöltés</button>
@@ -261,7 +319,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
  </details>
 </section>
 
-<section class="box"><h3>Nyelvi sziget-könyvtár (felhő)</h3>
+<section data-tab="konyvtar" class="box"><h3>Nyelvi sziget-könyvtár (felhő)</h3>
  <p class="muted">Az egyszer megnyitott sziget a készüléken marad, és internet nélkül is használható.</p>
  <button id="refreshLibrary">Könyvtár frissítése</button><button id="downloadAll" class="alt">Összes letöltése offline használatra</button>
  <div class="newfolder"><input id="newFolderName" placeholder="Új mappa neve (pl. Utazás)"><button id="newFolderBtn" class="alt">Új mappa</button></div>
@@ -274,7 +332,8 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
  </details>
 </section>
 
-<section class="box"><h3>Tananyag és beállítások</h3>
+<section data-tab="beallitas" class="box"><h3>Tananyag és beállítások</h3>
+ <p class="muted"><b>Fontos:</b> az itt beállított irány, mód és napi új mondat a Könyvtárból megnyitott szigetekre is érvényes.</p>
  <p class="muted">Saját fájlokból: TXT soronként „magyar mondat - olasz mondat”, hangfájlok 01.mp3, 02.mp3… (a hanganyag-program output/gyakorlo mappájából).</p>
  <div class="row"><label>TXT<br><input id="txt" type="file" accept=".txt"></label><label>L1 magyar MP3-ak<br><input id="l1" type="file" accept="audio/*" multiple></label><label>L2 olasz MP3-ak<br><input id="l2" type="file" accept="audio/*" multiple></label></div>
  <div class="row"><label>Magyar hang sebessége: <strong id="l1Val">100%</strong><br><input id="l1Speed" type="range" min="0.6" max="1.25" step="0.05" value="1"></label><label>Olasz hang sebessége: <strong id="l2Val">80%</strong><br><input id="l2Speed" type="range" min="0.6" max="1.25" step="0.05" value="0.8"></label></div>
@@ -287,34 +346,11 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
  <label class="muted"><input type="checkbox" id="typeMode"> Gépelős mód – begépelem a választ, és a program ellenőrzi (minden módban működik)</label><br>
  <label class="muted"><input type="checkbox" id="dictMode"> Diktálás – az olasz mondatot csak hallom, és leírom (a szöveg rejtve marad)</label><br>
  <button id="load">Betöltés fájlból</button><button class="alt" id="clear">Haladás törlése (ez a sziget)</button>
- <p id="status" class="muted">Válassz tananyagot.</p>
 </section>
 
-<section id="study" class="box hidden">
- <div class="muted"><span id="island"></span> · <span id="count"></span></div>
- <div class="prompt" id="question"></div>
- <div id="typeBox" class="hidden center"><input id="typeInput" placeholder="Írd be a választ…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"><button id="typeCheck">Ellenőrzés</button><div id="typeResult"></div></div>
- <div class="center"><button class="alt" id="qAudio">🔊 Kérdés hangja</button><button id="show">Válasz felfedése</button></div>
- <div id="answrap" class="hidden">
-  <div id="answer" class="answer"></div>
-  <div class="center"><button class="alt" id="aAudio">🔊 Válasz hangja</button><button class="alt hidden" id="hideAnswer">Válasz elrejtése</button>
-   <div id="ratingArea"><p class="muted">Mennyire sikerült felidézni?</p>
-    <button class="rate" style="background:#a74343" data-rate="again">Nem ment<small></small></button>
-    <button class="rate alt" data-rate="hard">Nehéz<small></small></button>
-    <button class="rate" style="background:#237a52" data-rate="good">Jól ment<small></small></button>
-    <button class="rate" style="background:#1d6346" data-rate="easy">Könnyű<small></small></button>
-   </div>
-  </div>
- </div>
- <div class="center"><button class="alt" id="prev">← Előző</button><button class="alt" id="next">Következő →</button><button class="alt" id="shuffle">Keverés</button></div>
- <div class="tools2"><button class="alt" id="recBtn">🎙 Felvétel</button><button class="alt hidden" id="recPlay">▶ Saját hang</button><button class="alt hidden" id="recCompare">⇄ Saját + eredeti</button><span id="recInfo" class="muted"></span></div>
- <div class="tools2"><button class="alt" id="hfBtn">🎧 Kézmentes mód</button>
-  <label class="muted">Szünet <select id="hfPause"><option value="auto">automatikus</option><option value="3">3 mp</option><option value="5">5 mp</option><option value="8">8 mp</option><option value="12">12 mp</option></select></label>
-  <label class="muted"><input type="checkbox" id="hfRepeat"> a választ kétszer mondja</label>
-  <label class="muted">Értékelés <select id="hfRate"><option value="wait">a válasz után vár, amíg koppintok (ajánlott)</option><option value="auto">5 mp-ig vár, utána magától „Jól ment”</option><option value="none">nincs – csak hallgatás, a haladás NEM mentődik</option></select></label></div>
-</section>
 
-<section class="box"><h3>Mentés</h3>
+
+<section data-tab="beallitas" class="box"><h3>Mentés</h3>
  <p class="muted">A haladás a készüléken azonnal mentődik, a felhőbe néhány másodpercenként (internet nélkül később pótolja). A JSON export/import tartaléknak használható.</p>
  <button class="alt" id="export">Haladás exportálása</button><label class="muted">JSON visszatöltése <input id="import" type="file" accept=".json"></label>
 </section>
@@ -1150,6 +1186,8 @@ function render() {
   const dict = $('dictMode').checked;
   $('question').textContent = dict ? '🎧 Hallgasd meg, és írd le olaszul' : (it.dir === 'hu-it' ? it.hu : it.it);
   $('answer').textContent = dict ? it.it : (it.dir === 'hu-it' ? it.it : it.hu);
+  { const mn = typeof brMnFor === 'function' ? brMnFor(it.hu, it.it) : ''; $('mnIsland').textContent = mn ? '🧠 ' + mn : ''; $('mnIsland').classList.toggle('hidden', !mn); }
+  $('toVocabInfo').textContent = '';
   $('answrap').classList.add('hidden'); $('show').classList.remove('hidden');
   $('ratingArea').classList.toggle('hidden', !sess.rated);
   $('hideAnswer').classList.toggle('hidden', sess.rated);
@@ -1650,13 +1688,16 @@ function hardRow(h) {
     $('hardStatus').textContent = 'A mondat eltávolítva a nehéz mondatok listájából. Az ismétlési ütemezése megmaradt.';
     flush();
   };
-  d.append(a, b, dismiss);
+  const tv = document.createElement('button'); tv.className = 'alt'; tv.textContent = '🧠 Szótanulóba';
+  tv.onclick = () => { const r = brAdd([h]); tv.textContent = r.added ? '✓ A szótanulóban' : '✓ Már ott van'; tv.disabled = true; };
+  d.append(a, b, dismiss, tv);
   return d;
 }
 // A nehéz mondatok összecsukható mappákban: mappa → sziget → mondatok
 function renderHard() {
   const list = hardItems(), host = $('hardList'); host.innerHTML = '';
   $('hardStatus').textContent = list.length ? `${list.length} nehéz mondat. Nyisd le a mappát vagy a szigetet a mondatokhoz.` : 'Jelenleg nincs nehéz mondat. 👍';
+  { const tb = document.getElementById('tbHard'); if (tb) tb.textContent = list.length || ''; }
   if (!list.length) return;
   const groups = new Map(); // mappa-id ('' = mappa nélkül) -> Map(slug -> [mondatok])
   for (const h of list) {
@@ -1995,7 +2036,7 @@ function vBuild(deckIds) {
 function vRenderStats() {
   const t = vToday(); let due = 0, total = 0, learned = 0;
   for (const d of vDecks) { const c = vDeckCounts(d.id); due += c.due; total += c.total; learned += c.learned; }
-  $('vStDue').textContent = due; $('vStToday').textContent = t.reviews || 0; $('vStGood').textContent = t.good || 0; $('vStNew').textContent = t.new || 0;
+  $('vStDue').textContent = due; { const tb = document.getElementById('tbWords'); if (tb) tb.textContent = due || ''; } try { brFillDecks(); $('tbWords').textContent = due || ''; } catch {} $('vStToday').textContent = t.reviews || 0; $('vStGood').textContent = t.good || 0; $('vStNew').textContent = t.new || 0;
   try { renderCalendar(); } catch {}
   $('vStInfo').textContent = `Ma még ${vNewLeft()} új kártya vehető fel. Kártyák összesen: ${total}, ebből jól rögzült (3+ hét): ${learned}. Szólisták: ${vDecks.length}. Betöltött emlékeztetők: ${Object.keys(vMeta.mn).length}.`;
 }
@@ -2210,6 +2251,73 @@ function vAddWord() {
   $('vStatus').textContent = 'Hozzáadva a „Saját szavaim” listához: ' + hu + ' – ' + it;
   rememberOpen('voc:own:Saját szólisták', true); vRefreshAndRender(); $('vAddHu').focus();
 }
+
+// ---- ÁTJÁRÓ: szigetmondat → szótanuló, emlékeztetők a Mnemonika-műhelyből
+const BR_DECK = 'sziget_atvett';
+const brNorm = t => String(t || '').replace(/\s+/g, ' ').replace(/\s+[-–]\s+/g, ' – ').replace(/\s*\|\|\s*/g, ' ').trim();
+function brAdd(list) {
+  const d = vMeta.decks[BR_DECK] && !vMeta.decks[BR_DECK].deleted ? vMeta.decks[BR_DECK] : { name: 'Szigetből átvett mondatok', group: 'Saját szólisták', txt: '' };
+  const have = new Set(parseVocabList(d.txt || '').map(n => n.nk));
+  const lines = []; let dup = 0;
+  for (const x of list) {
+    const hu = brNorm(x.hu), it = brNorm(x.it); if (!hu || !it) continue;
+    const nk = vNoteKey(hu, it); if (have.has(nk)) { dup++; continue; } have.add(nk);
+    lines.push(hu + ' - ' + it);
+  }
+  if (lines.length) {
+    vMeta.decks[BR_DECK] = { ...d, deleted: false, name: d.name || 'Szigetből átvett mondatok', group: d.group || 'Saját szólisták', txt: (d.txt ? d.txt.replace(/\s*$/, '') + '\n' : '') + lines.join('\n'), at: Date.now() };
+    vSaveMeta(); rememberOpen('voc:own:Saját szólisták', true); vRefreshAndRender();
+  }
+  return { added: lines.length, dup };
+}
+function brMnFor(hu, it) {
+  try {
+    for (const k of [vNoteKey(hu, it), vNoteKey(brNorm(hu), brNorm(it))]) {
+      const o = vMeta.own[k]; if (o && !o.deleted && o.t) return o.t;
+      const m = vMeta.mn[k]; if (m && m.t) return m.t;
+    }
+  } catch {}
+  return '';
+}
+function brFillDecks() {
+  const sel = $('brDeck'); if (!sel) return; const cur = sel.value;
+  sel.innerHTML = '';
+  const ds = [...vDecks].sort((a, b) => (a.id === BR_DECK ? -1 : b.id === BR_DECK ? 1 : String(a.name).localeCompare(String(b.name), 'hu', { numeric: true })));
+  for (const d of ds) { const o = document.createElement('option'); o.value = d.id; o.textContent = d.name + ' (' + (vNotes.get(d.id) || []).length + ')'; sel.append(o); }
+  if (cur && [...sel.options].some(o => o.value === cur)) sel.value = cur;
+}
+$('toVocab').onclick = () => {
+  const it = sess && sess.items[sess.pos]; if (!it) return;
+  const r = brAdd([it]);
+  $('toVocabInfo').textContent = r.added ? 'Átvéve a „Szigetből átvett mondatok” listába – a szigetben is megmaradt.' : 'Ez a mondat már a listában van.';
+};
+$('hardToVocab').onclick = () => {
+  const hs = hardItems(); if (!hs.length) { $('hardStatus').textContent = 'Nincs nehéz mondat, amit át lehetne venni.'; return; }
+  const r = brAdd(hs);
+  $('hardStatus').textContent = r.added ? `${r.added} mondat átvéve a szótanulóba („Szigetből átvett mondatok”)` + (r.dup ? `, ${r.dup} már ott volt.` : '.') : 'Mind ott van már a szótanulóban.';
+};
+$('brCopy').onclick = async () => {
+  const id = $('brDeck').value, notes = vNotes.get(id) || [];
+  const list = notes.filter(n => !$('brOnlyNew').checked || !(vMnOwn(n) || vMnOriginal(n)));
+  if (!list.length) { $('brStatus').textContent = notes.length ? 'Ebben a listában már mindegyiknek van emlékeztetője.' : 'Ez a lista üres.'; return; }
+  const text = list.map(n => brNorm(n.hu) + ' - ' + brNorm(n.it)).join('\n') + '\n';
+  let ok = false; try { await navigator.clipboard.writeText(text); ok = true; } catch {}
+  const out = $('brOut'); out.value = text; out.classList.toggle('hidden', ok);
+  if (!ok) { out.focus(); out.select(); }
+  $('brStatus').textContent = ok ? `${list.length} pár a vágólapon. Nyisd meg a Mnemonika-műhelyt, és illeszd be.` : 'A vágólapra másolás itt nem ment: jelöld ki a fenti szöveget, és másold ki kézzel.';
+};
+$('brSave').onclick = () => {
+  const txt = $('brIn').value; let n = 0, matched = 0; const now = Date.now();
+  const known = new Set(); for (const d of vDecks) for (const nt of (vNotes.get(d.id) || [])) known.add(nt.nk);
+  for (const p of parseSections(txt)) if (p.mn) {
+    const k = vNoteKey(brNorm(p.hu), brNorm(p.it)); vMeta.mn[k] = { t: p.mn, at: now };
+    const k2 = vNoteKey(p.hu, p.it); if (k2 !== k) vMeta.mn[k2] = { t: p.mn, at: now };
+    n++; if (known.has(k) || known.has(k2)) matched++;
+  }
+  if (!n) { $('brStatus').textContent = 'Nem találtam „# 🧠” emlékeztetősort a beillesztett szövegben. A műhelyben a „Másolás” gombot használd.'; return; }
+  vSaveMeta(); $('brIn').value = ''; vRenderStats();
+  $('brStatus').textContent = `${n} emlékeztető elmentve` + (matched < n ? ` (${matched} szókártyánál; a többi a szigetek mondatainál jelenik meg, ha ott szerepel).` : '. A szókártyáknál és a sziget-mondatoknál is megjelenik.');
+};
 
 // --- események
 $('vStartAll').onclick = () => vStart(vDecks.map(d => d.id), 'Minden szólista');
@@ -2713,6 +2821,19 @@ function setMixSession() {
 // ============================================================
 // INDÍTÁS
 // ============================================================
+(() => {
+  const btns = [...document.querySelectorAll('#tabs [data-tab]')];
+  window.showTab = t => {
+    if (!btns.some(b => b.dataset.tab === t)) t = 'ma';
+    btns.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+    document.querySelectorAll('main section[data-tab]').forEach(sec => sec.classList.toggle('tabhide', sec.dataset.tab !== t));
+    try { localStorage.setItem('nyelvisziget-tab', t); } catch {}
+    if (t === 'szavak') try { brFillDecks(); } catch {}
+  };
+  btns.forEach(b => b.onclick = () => { showTab(b.dataset.tab); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  let t = 'ma'; try { t = localStorage.getItem('nyelvisziget-tab') || 'ma'; } catch {}
+  showTab(t);
+})();
 loadSettings(); updateSpeedLabels(); updateMixLabels(); syncMixSrc(); mixOrderInfo(); updateNet(); renderMixSaved(); { const last = localStorage.getItem('nyelvisziget-mixlast'); if (last) loadMix(last, false); } renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender();
 const configured = SUPABASE_URL.startsWith('https://') && SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
 if (configured && window.supabase) {
