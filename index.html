@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Nyelvi sziget – V24</title>
+<title>Nyelvi sziget – V25</title>
 <meta name="theme-color" content="#243b53">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -27,6 +27,10 @@ main{max-width:850px;margin:20px auto;padding:0 14px 40px}
 .tabs button[aria-selected="true"] .badge{background:#fff}
 .tabhide{display:none!important}
 .tabs .badge:empty{display:none}
+#study.parked{display:none!important}
+body.studying main section[data-tab]{display:none!important}
+#resumeBar{margin:10px 0 0;padding:10px 12px;background:#e3f0f6;border:1px solid #b9d6e4;border-radius:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between}
+#resumeBar span{font-weight:600;color:#1d4f73}
 @media (max-width:600px){.tabs{flex-wrap:wrap;justify-content:center;gap:5px;padding:6px 8px}.tabs button{padding:6px 10px;font-size:.9rem}}
 #status{margin:10px 2px 0;min-height:1.2em}
 .mnisl{margin:6px auto 10px;max-width:680px;background:#fff6d6;border:1px solid #ecd27f;color:#4f3b00;border-radius:10px;padding:8px 12px;text-align:left}
@@ -105,7 +109,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V24 · menü, emlékeztetők a szigetekben, átjárás a szótanulóba</div></header>
+<header><h2>Nyelvi sziget – Olasz gyakorló</h2><div>Aktív felidézés, ismétlésütemezés, offline is · V25 · menü, emlékeztetők a szigetekben, átjárás a szótanulóba</div></header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="ma">📅 Ma</button>
  <button type="button" role="tab" data-tab="hallgatas">🎧 Hallgatás</button>
@@ -116,6 +120,7 @@ select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100
 </nav>
 <main>
 <p id="status" class="muted">Válassz tananyagot.</p>
+<div id="resumeBar" class="hidden"><span id="resumeTxt"></span><span><button id="resumeBtn">▶ Gyakorlás folytatása</button><button id="resumeEnd" class="alt">Befejezés</button></span></div>
 <section id="study" class="box hidden">
  <div class="muted"><span id="island"></span> · <span id="count"></span></div>
  <div class="prompt" id="question"></div>
@@ -1181,7 +1186,7 @@ async function startMulti(title, builder, hard) {
 
 function render() {
   if (!sess || !sess.items.length) { $('study').classList.add('hidden'); return; }
-  $('study').classList.remove('hidden');
+  $('study').classList.remove('hidden', 'parked');
   const it = sess.items[sess.pos];
   const dict = $('dictMode').checked;
   $('question').textContent = dict ? '🎧 Hallgasd meg, és írd le olaszul' : (it.dir === 'hu-it' ? it.hu : it.it);
@@ -2830,7 +2835,23 @@ function setMixSession() {
     try { localStorage.setItem('nyelvisziget-tab', t); } catch {}
     if (t === 'szavak') try { brFillDecks(); } catch {}
   };
-  btns.forEach(b => b.onclick = () => { showTab(b.dataset.tab); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  // gyakorlás közben a menü félreteszi a gyakorlást (nem veszik el), és egy sávval folytatható
+  const st = $('study');
+  const sync = () => {
+    const open = !st.classList.contains('hidden'), parked = st.classList.contains('parked');
+    document.body.classList.toggle('studying', open && !parked);
+    btns.forEach(b => b.setAttribute('aria-selected', String(!(open && !parked) && b.dataset.tab === (localStorage.getItem('nyelvisziget-tab') || 'ma'))));
+    $('resumeBar').classList.toggle('hidden', !(open && parked && sess));
+    if (open && parked && sess) $('resumeTxt').textContent = `Félbehagyott gyakorlás: ${sess.title} · ${sess.pos + 1} / ${sess.items.length}`;
+  };
+  new MutationObserver(sync).observe(st, { attributes: true, attributeFilter: ['class'] });
+  btns.forEach(b => b.onclick = () => {
+    if (!st.classList.contains('hidden') && !st.classList.contains('parked')) { try { stopHandsFree(); } catch {} try { stopActiveAudio(); } catch {} st.classList.add('parked'); }
+    showTab(b.dataset.tab); sync(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  $('resumeBtn').onclick = () => { st.classList.remove('parked'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  $('resumeEnd').onclick = () => { try { stopHandsFree(); } catch {} st.classList.remove('parked'); st.classList.add('hidden'); sess = null; $('status').textContent = 'Gyakorlás befejezve. A haladás mentve.'; try { renderStats(); loadDailyReview(); renderHard(); } catch {} };
+  sync();
   let t = 'ma'; try { t = localStorage.getItem('nyelvisziget-tab') || 'ma'; } catch {}
   showTab(t);
 })();
