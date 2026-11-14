@@ -1,6 +1,6 @@
 // Nyelvi sziget V9 – service worker (offline működés)
-// V24: menü, emlékeztetők a szigetekben, átjárás a szótanulóba.
-const CACHE = 'nyelvisziget-v24-1';
+// V25: a menü gyakorlás közben is működik.
+const CACHE = 'nyelvisziget-v25-1';
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
