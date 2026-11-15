@@ -171,6 +171,12 @@ details.folder{border-radius:14px}
 .plan-grid input,.plan-grid select{padding:9px;border:1px solid #cbd5df;border-radius:10px;background:#fff;width:100%;box-sizing:border-box}
 .plan-res{background:linear-gradient(135deg,#fff7ea,#ffeede);border:1px solid #ffd7b8;border-radius:14px;padding:12px 14px;margin:10px 0}
 .plan-res b{color:#b4472b}
+.plc-row{display:grid;grid-template-columns:110px 70px 1fr 34px;gap:6px;margin:6px 0}.plc-row select,.plc-row input{padding:8px;border:1px solid #cbd5df;border-radius:10px;width:100%;box-sizing:border-box}.plc-row button{margin:0;padding:6px}
+@media (max-width:600px){.plc-row{grid-template-columns:1fr 70px 34px}.plc-row input.plc-t{grid-column:1/-1;grid-row:2}}
+.cg{margin:8px 0;border:1px solid #e1eaef;border-radius:12px;padding:6px 10px;background:#fafcfd}.cg summary{font-weight:800}
+.ci{display:flex;gap:8px;align-items:baseline;padding:3px 0;font-size:.9rem;border-bottom:1px dashed #e6eef2}.ci:last-child{border:0}.ci b{min-width:42px;color:var(--sea)}.ci .st{margin-left:auto;white-space:nowrap;font-size:.8rem;color:#5d6e7a}
+.ptask .pt-actions{display:flex;flex-wrap:wrap;gap:6px}
+.claudebox{width:100%;box-sizing:border-box;min-height:120px;margin-top:6px;padding:8px;border:1px solid #cbd5df;border-radius:10px;font:13px/1.4 ui-monospace,monospace}
 @media (max-width:600px){.ptask{grid-template-columns:30px 1fr}.ptask button{grid-column:2;justify-self:start}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -179,7 +185,7 @@ details.folder{border-radius:14px}
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>IT</b> Italiano</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">V29</span>
+ <span class="ver" title="Programverzió">V30</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">IL PIANO</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -230,7 +236,7 @@ details.folder{border-radius:14px}
    <label>Ezt a szintet akarom elérni<select id="plGoal"><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></label>
    <label>Tervezés módja<select id="plMode"><option value="time">a napi időmből számoljon</option><option value="date">határidőre akarom elérni</option></select></label>
    <label id="plDateL">Határidő<input id="plDate" type="date"></label>
-   <label>Tanulós napok hetente<select id="plDays"><option>5</option><option selected>6</option><option>7</option></select></label>
+   <label>Tanulós napok hetente<select id="plDays"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option selected>6</option><option>7</option></select></label>
   </div>
   <div class="muted" style="margin-top:4px">Napi időkereteim (perc):</div>
   <div class="plan-grid">
@@ -239,12 +245,24 @@ details.folder{border-radius:14px}
    <label>🕒 Délután – új mondatok<input id="plAfter" type="number" min="0" max="180"></label>
    <label>🌙 Este – ismétlés, beszéd<input id="plEvening" type="number" min="0" max="240"></label>
   </div>
+  <div class="muted" style="margin-top:4px">Időigény mondatonként (perc) – a saját tapasztalatod szerint állítsd:</div>
+  <div class="plan-grid">
+   <label>Egy új mondat első megtanulása<input id="plFirst" type="number" min="0.5" max="15" step="0.5"></label>
+   <label>Ismétlések terhe (perc/nap minden napi új mondatra)<input id="plRev" type="number" min="0.5" max="10" step="0.5"></label>
+  </div>
+  <div class="muted" style="margin-top:6px">Saját feladataim (pl. podcast, sorozat, tanári óra) – a napi tervbe kerülnek:</div>
+  <div id="plCustom"></div>
+  <button type="button" class="alt" id="plCustomAdd">➕ Új saját feladat</button><br>
   <label class="muted"><input type="checkbox" id="plRead"> napi olvasás (LingQ, könnyített olvasmány)</label><br>
   <label class="muted"><input type="checkbox" id="plSpeak" checked> beszédgyakorlat este (saját mondatok, szerepjáték, monológ)</label><br>
   <label class="muted"><input type="checkbox" id="plTutor"> tanárral beszélek hetente – nap: <select id="plTutorDay"><option value="1">hétfő</option><option value="2">kedd</option><option value="3" selected>szerda</option><option value="4">csütörtök</option><option value="5">péntek</option><option value="6">szombat</option><option value="0">vasárnap</option></select></label>
   <div class="plan-res" id="planRes"></div>
+  <details id="plCurrBox" style="margin:8px 0"><summary>📚 A szigetek javasolt sorrendje és mappái</summary>
+   <p class="muted" style="margin:6px 0">Ebben a sorrendben töltsd fel és tanuld a szigeteket. A Könyvtárban hozz létre ilyen nevű mappákat, és a szigeteket ezekbe töltsd. A program a fájlnév elején lévő kódból (pl. <b>T15</b>, <b>03a</b>, <b>B07</b>) ismeri fel, melyik sziget az.</p>
+   <div id="plCurr"></div>
+  </details>
   <button id="plApply">A javasolt napi új mondatszámot beállítom</button>
-  <p class="muted" style="margin:6px 0 0">A számítás tapasztalati becslés: egy új mondat az első napon kb. ½ perc, és utána a rendszeres ismétléseivel együtt naponta kb. 1,3 percet visz el. A szintenként szükséges mondatpár-szám: A1 ≈ 750, A2 ≈ 1700, B1 ≈ 2800, B2 ≈ 4000, C1 ≈ 5500, C2 ≈ 7500.</p>
+  <p class="muted" style="margin:6px 0 0">A számítás: napi új mondat = a mondatokra jutó idő ÷ (első megtanulás + ismétlések terhe). A hátralévő mennyiséget a szigetsorrendből számolja (a még meg nem írt csoportoknál a tervezett mondatszámmal).</p>
  </details>
 </section>
 
@@ -1844,28 +1862,46 @@ function renderHard() {
 // ============================================================
 // IL PIANO – cél, időbeosztás és napi terv
 // ============================================================
+/*CURR_START*/const CURRICULUM = [{"lv": "B1", "f": "B1 · 1. Túlélés, ismerkedés", "ready": true, "i": [{"c": "TA", "n": "Ha nem ertek", "s": 40}, {"c": "TB", "n": "Hidak", "s": 40}, {"c": "T15", "n": "Bemutatkozas", "s": 40}, {"c": "01", "n": "Beszelgetes olaszokkal", "s": 80}, {"c": "03a", "n": "Etterem foglalas es rendeles", "s": 70}, {"c": "03b", "n": "Etterem allergia panasz fizetes", "s": 50}, {"c": "T29", "n": "Al bar", "s": 40}, {"c": "08c", "n": "Fagyizo es pizzaszelet", "s": 40}, {"c": "06a", "n": "Turista utbaigazitas", "s": 40}, {"c": "09b", "n": "Apartman erkezes", "s": 50}, {"c": "09c", "n": "Apartman problemak", "s": 40}, {"c": "07a", "n": "Utazas autopalya es benzinkut", "s": 50}, {"c": "07d", "n": "Utazas parkolas es ZTL", "s": 40}, {"c": "06d", "n": "Turista orvosnal es gyogyszertarban", "s": 50}]}, {"lv": "B1", "f": "B1 · 2. Magamról beszélek", "ready": true, "i": [{"c": "02", "n": "Egy napom", "s": 80}, {"c": "T16", "n": "A csaladom", "s": 40}, {"c": "T17", "n": "A munkam", "s": 40}, {"c": "T19", "n": "Ahol lakom", "s": 40}, {"c": "T20", "n": "Allataink", "s": 40}, {"c": "T24", "n": "Olaszorszagi nyaralasaink", "s": 40}, {"c": "T26", "n": "Terveink nyarra", "s": 40}, {"c": "T05", "n": "Helyiekkel", "s": 40}, {"c": "T09", "n": "Barati meghivas", "s": 40}, {"c": "T14", "n": "Velemeny es dontes", "s": 40}, {"c": "T36", "n": "Come mi sento", "s": 40}, {"c": "T18", "n": "Miert tanulok olaszul", "s": 40}, {"c": "T21", "n": "Magyar konyha", "s": 40}, {"c": "T23", "n": "Gyere Magyarorszagra", "s": 40}]}, {"lv": "B1", "f": "B1 · 3. Az egész utazás", "ready": true, "i": [{"c": "05", "n": "Tengerpart es strand", "s": 80}, {"c": "08a", "n": "Pekseg csemege gyumolcs", "s": 50}, {"c": "08b", "n": "Etteremben negyen", "s": 50}, {"c": "06b", "n": "Turista boltban es ajandekvasarlas", "s": 50}, {"c": "06c", "n": "Turista ruhavasarlas", "s": 30}, {"c": "06e", "n": "Turista muzeum es veszhelyzet", "s": 40}, {"c": "07b", "n": "Utazas piheno es repuloter", "s": 50}, {"c": "07c", "n": "Utazas busz vonat komp", "s": 40}, {"c": "07e", "n": "Utazas utkozbeni gondok", "s": 40}, {"c": "09a", "n": "Apartman foglalas", "s": 50}, {"c": "09d", "n": "Apartman kornyek es tavozas", "s": 40}, {"c": "10", "n": "Varatlan helyzetek", "s": 50}, {"c": "T30", "n": "Farmacia medico", "s": 40}, {"c": "T31", "n": "Autoberles", "s": 40}, {"c": "T32", "n": "In treno", "s": 40}, {"c": "T33", "n": "In albergo", "s": 40}, {"c": "T34", "n": "Banca bancomat", "s": 40}, {"c": "T01", "n": "Piac", "s": 40}, {"c": "T02", "n": "Vasarlas uzletekben", "s": 40}, {"c": "T04", "n": "Varosnezes", "s": 40}]}, {"lv": "B1", "f": "B1 · 4. Ráadás-témák", "ready": true, "i": [{"c": "04", "n": "Telefonalas es uzenetvaltas", "s": 80}, {"c": "T03", "n": "Kirandulas", "s": 40}, {"c": "T06", "n": "Napi program", "s": 40}, {"c": "T07", "n": "Muzeum", "s": 40}, {"c": "T08", "n": "Szabadido", "s": 40}, {"c": "T10", "n": "Autos kirandulas", "s": 40}, {"c": "T11", "n": "Fesztivalok", "s": 40}, {"c": "T12", "n": "Haz es kert", "s": 40}, {"c": "T13", "n": "Fozes otthon", "s": 40}, {"c": "T22", "n": "Magyar unnepek", "s": 40}, {"c": "T25", "n": "Gyerekkoromban", "s": 40}, {"c": "T27", "n": "Hetvegem", "s": 40}, {"c": "T28", "n": "Ha lehetne", "s": 40}, {"c": "T35", "n": "Tecnologia", "s": 40}]}, {"lv": "B2", "f": "B2 · 1. Vita, élmények, munka", "ready": true, "i": [{"c": "B01", "n": "Vita es erveles", "s": 40}, {"c": "B02", "n": "Hivatalos panasz", "s": 40}, {"c": "B03", "n": "Vita a szallasadoval", "s": 40}, {"c": "B04", "n": "Egy utazas elmesele", "s": 40}, {"c": "B05", "n": "Egy kellemetlen elmeny", "s": 40}, {"c": "B06", "n": "Hirek", "s": 40}, {"c": "B07", "n": "Tavmunka", "s": 40}, {"c": "B08", "n": "Technologia es MI", "s": 40}, {"c": "B09", "n": "Kornyezetvedelem", "s": 40}, {"c": "B10", "n": "Egeszseges eletmod", "s": 40}, {"c": "B11", "n": "Olasz magyar szokasok", "s": 40}, {"c": "B12", "n": "Regionalis konyha", "s": 40}, {"c": "B13", "n": "Borkostolo agriturismo", "s": 40}, {"c": "B14", "n": "Film konyv ajanlas", "s": 40}, {"c": "B15", "n": "Olasz zene", "s": 40}]}, {"lv": "B2", "f": "B2 · 2. Kultúra, élet, ügyintézés", "ready": true, "i": [{"c": "B16", "n": "Tortenelem kultura", "s": 40}, {"c": "B17", "n": "Generaciok", "s": 40}, {"c": "B18", "n": "Baratsag", "s": 40}, {"c": "B19", "n": "Nyelvtanulas felnottkent", "s": 40}, {"c": "B20", "n": "Auto szerviz biztosito", "s": 40}, {"c": "B21", "n": "Burokracia", "s": 40}, {"c": "B22", "n": "Haz Olaszorszagban", "s": 40}, {"c": "B23", "n": "Varos vagy videk", "s": 40}, {"c": "B24", "n": "Tomegturizmus", "s": 40}, {"c": "B25", "n": "Penz es sporolas", "s": 40}, {"c": "B26", "n": "Small talk es humor", "s": 40}, {"c": "B27", "n": "Almok es tervek", "s": 40}, {"c": "B28", "n": "Olasz unnepek", "s": 40}, {"c": "B29", "n": "Sport", "s": 40}, {"c": "B30", "n": "Ugyfelszolgalat telefonon", "s": 40}]}, {"lv": "C1", "f": "C1 · 1. Szakmai és közéleti nyelv", "ready": false, "i": [{"c": "C101", "n": "Árnyalt vélemény, egyetértés és ellentmondás", "s": 40}, {"c": "C102", "n": "Tárgyalás és alkudozás", "s": 40}, {"c": "C103", "n": "Szakmai megbeszélés: mérnöki projekt", "s": 40}, {"c": "C104", "n": "Prezentáció tartása", "s": 40}, {"c": "C105", "n": "Hivatalos levelek és e-mailek", "s": 40}, {"c": "C106", "n": "Fogyasztói jogok és panaszok", "s": 40}, {"c": "C107", "n": "Orvosi konzultáció részletesen", "s": 40}, {"c": "C108", "n": "Politika és közélet (semlegesen)", "s": 40}, {"c": "C109", "n": "Gazdaság és munkaerőpiac", "s": 40}, {"c": "C110", "n": "Oktatási rendszerek", "s": 40}, {"c": "C111", "n": "Bevándorlás és beilleszkedés", "s": 40}, {"c": "C112", "n": "Média és álhírek", "s": 40}, {"c": "C113", "n": "Tudomány és kutatás", "s": 40}]}, {"lv": "C1", "f": "C1 · 2. Kultúra és árnyalt kifejezés", "ready": false, "i": [{"c": "C114", "n": "Klímaváltozás – vita", "s": 40}, {"c": "C115", "n": "Művészet és építészet", "s": 40}, {"c": "C116", "n": "Olasz irodalmi klasszikusok", "s": 40}, {"c": "C117", "n": "Filmkritika", "s": 40}, {"c": "C118", "n": "Borok, régiók, slow food", "s": 40}, {"c": "C119", "n": "Ingatlanvásárlás Olaszországban", "s": 40}, {"c": "C120", "n": "Adók, codice fiscale, residenza", "s": 40}, {"c": "C121", "n": "Konfliktuskezelés", "s": 40}, {"c": "C122", "n": "Érzelmek árnyaltan", "s": 40}, {"c": "C123", "n": "Szólások és idiómák", "s": 40}, {"c": "C124", "n": "Történetmesélés (passato remoto)", "s": 40}, {"c": "C125", "n": "Feltételes mondatok a gyakorlatban", "s": 40}]}, {"lv": "C2", "f": "C2 · Mesterszint", "ready": false, "i": [{"c": "C201", "n": "Retorika és meggyőzés", "s": 40}, {"c": "C202", "n": "Irónia, szarkazmus, humor", "s": 40}, {"c": "C203", "n": "Nyelvjárások és regionális beszéd", "s": 40}, {"c": "C204", "n": "Filozófiai kérdések", "s": 40}, {"c": "C205", "n": "Etika és mesterséges intelligencia", "s": 40}, {"c": "C206", "n": "Szerződések és jogi nyelv", "s": 40}, {"c": "C207", "n": "Pénzügy és befektetés", "s": 40}, {"c": "C208", "n": "Diplomáciai nyelv", "s": 40}, {"c": "C209", "n": "Irodalmi stílus, választékos szókincs", "s": 40}, {"c": "C210", "n": "Történelem mélyebben", "s": 40}, {"c": "C211", "n": "Vallás és kultúra", "s": 40}, {"c": "C212", "n": "Publicisztika, sajtónyelv", "s": 40}, {"c": "C213", "n": "Tudományos ismeretterjesztés", "s": 40}, {"c": "C214", "n": "Szakmai vita mérnöki témában", "s": 40}, {"c": "C215", "n": "Ünnepi beszéd, pohárköszöntő", "s": 40}, {"c": "C216", "n": "Részvét és együttérzés", "s": 40}, {"c": "C217", "n": "Haladó tárgyalás", "s": 40}, {"c": "C218", "n": "Szleng és fiatalos nyelv", "s": 40}, {"c": "C219", "n": "Hamis barátok, árnyalatok", "s": 40}, {"c": "C220", "n": "Szabad előadás: az életem története", "s": 40}]}];/*CURR_END*/
 const PL_KEY = 'nyelvisziget-plan', PL_DONE = 'nyelvisziget-plandone';
 const PL_LEVELS = ['A0', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'], PL_TARGET = { A0: 0, A1: 750, A2: 1700, B1: 2800, B2: 4000, C1: 5500, C2: 7500 };
-const PL_DEF = { level: 'A2', goal: 'B1', mode: 'time', date: '', days: '6', morning: 25, micro: 10, after: 10, evening: 35, read: false, speak: true, tutor: false, tutorDay: '3' };
+const PL_DEF = { level: 'A2', goal: 'B1', mode: 'time', date: '', days: '6', morning: 25, micro: 10, after: 10, evening: 35, read: false, speak: true, tutor: false, tutorDay: '3', first: 4.5, rev: 2.5, custom: [] };
 let plan = { ...PL_DEF, ...loadJSON(PL_KEY, {}) };
 const PL_MIN_PER_NEW = 1.33;
 function plLearned() { let n = 0; for (const slug of allProgSlugs()) for (const c of Object.values(getProg(slug).cards)) if (c && c.reps) n++; return n; }
+// --- tanterv: a szigetek felismerése a fájlnév elején lévő kódból
+function plSlugMap() {
+  const m = new Map(), all = uniqueSlugs([...librarySlugs(), ...((lastLibrary && lastLibrary.cached) || []), ...allProgSlugs()]);
+  for (const sl of all) { const k = String(sl).split(/[-_ ]/)[0].toLowerCase(); if (k && !m.has(k)) m.set(k, sl); }
+  return m;
+}
+function plGroups() { const a = PL_LEVELS.indexOf(plan.level), b = PL_LEVELS.indexOf(plan.goal); return CURRICULUM.filter(g => { const l = PL_LEVELS.indexOf(g.lv); return l > a && l <= b; }); }
+function plIslandState(it, map) {
+  const slug = map.get(it.c.toLowerCase()); const lib = new Set(librarySlugs());
+  if (!slug) return { slug: null, seen: 0, total: it.s, up: false };
+  const cd = countDue(slug), total = cd.total || it.s;
+  return { slug, seen: Math.min(cd.seen, total), total, up: lib.has(slug) || cd.total > 0 || cd.seen > 0 };
+}
+function plRemaining() {
+  const map = plSlugMap(); let rem = 0, plannedOnly = 0;
+  for (const g of plGroups()) for (const it of g.i) { const st = plIslandState(it, map); const r = Math.max(0, st.total - st.seen); rem += r; if (!g.ready) plannedOnly += r; }
+  return { rem, plannedOnly, map };
+}
 function plCalc() {
-  const learned = plLearned(), target = PL_TARGET[plan.goal] || 0, remaining = Math.max(0, target - learned);
+  const learned = plLearned(), R = plRemaining(), remaining = R.rem, target = learned + remaining;
   const active = (Number(plan.micro) || 0) + (Number(plan.after) || 0) + (Number(plan.evening) || 0);
-  const forSentences = Math.max(5, (Number(plan.micro) || 0) / 2 + (Number(plan.after) || 0) + (Number(plan.evening) || 0) - (plan.speak ? 10 : 0)); // a szókártyák és a beszéd ideje nem a mondatoké
+  const forSentences = Math.max(5, (Number(plan.micro) || 0) / 2 + (Number(plan.after) || 0) + (Number(plan.evening) || 0) - (plan.speak ? 10 : 0));
+  const per = Math.max(0.5, (Number(plan.first) || 4.5) + (Number(plan.rev) || 2.5));
   const days = Number(plan.days) || 6;
-  let perDay, finish, needMin = null;
+  const finishFor = n => n > 0 ? new Date(dayStart() + Math.ceil(Math.ceil(remaining / n) * 7 / days) * 864e5) : null;
+  let perDay, needMin = null;
   if (plan.mode === 'date' && plan.date) {
-    const ms = Date.parse(plan.date) - dayStart(); const studyDays = Math.max(1, Math.floor(ms / 864e5 * days / 7));
-    perDay = Math.ceil(remaining / studyDays); needMin = Math.round(perDay * PL_MIN_PER_NEW + (Number(plan.micro) || 0) / 2 + (plan.speak ? 10 : 0));
-    finish = new Date(Date.parse(plan.date));
-  } else {
-    perDay = Math.max(3, Math.min(30, Math.floor(forSentences / PL_MIN_PER_NEW)));
-    const studyDays = Math.ceil(remaining / perDay); finish = new Date(dayStart() + Math.ceil(studyDays * 7 / days) * 864e5);
-  }
+    const studyDays = Math.max(1, Math.floor((Date.parse(plan.date) - dayStart()) / 864e5 * days / 7));
+    perDay = Math.ceil(remaining / studyDays); needMin = Math.round(perDay * per + (Number(plan.micro) || 0) / 2 + (plan.speak ? 10 : 0));
+  } else perDay = Math.max(1, Math.floor(forSentences / per));
   perDay = Math.max(0, Math.min(60, perDay || 0));
-  return { learned, target, remaining, active, perDay, finish, needMin, capped: perDay > 30 };
+  const cur = newLimit();
+  return { learned, target, remaining, active, perDay, needMin, per, finish: finishFor(perDay), curFinish: finishFor(cur), cur, plannedOnly: R.plannedOnly, map: R.map };
 }
 const plAz = g => /^A/.test(g) ? 'az' : 'a';
 function plSave() { saveJSON(PL_KEY, plan); }
@@ -1879,11 +1915,27 @@ function plDue() {
 function plGo(tab, after) { showTab(tab); window.scrollTo({ top: 0, behavior: 'smooth' }); if (after) setTimeout(after, 120); }
 function plTasks() {
   const c = plCalc(), t = todayStats(), due = plDue(), wd = new Date(dayStart() + 12 * 36e5).getDay();
-  const sunday = Number(plan.days) < 7 && wd === 0, lvl = PL_LEVELS.indexOf(plan.level), newTarget = sunday ? 0 : Math.min(c.perDay, newLimit() || c.perDay);
+  const sunday = Number(plan.days) < 7 && wd === 0, lvl = PL_LEVELS.indexOf(plan.level), newTarget = sunday ? 0 : newLimit();
   const tasks = [];
   if (Number(plan.morning) > 0) tasks.push({ id: 'morning', time: '🌅 Reggel · ' + plan.morning + ' perc', title: 'Hallgatás: a tegnap tanult új mondatok', sub: 'Lépcsőzetes hanganyag, magyar → idegen nyelv. A szünetben előbb mondd ki, csak utána halld.', btn: '🎧 Megnyitom', go: () => plGo('hallgatas', () => { const last = (loadJSON('nyelvisziget-mixes', [])[0]); if (last && last.title && /Ma tanult/.test(last.title)) loadMix(last.id, false); else { $('mixSrc').value = 'new_yesterday'; syncMixSrc(); } $('mixBox').scrollIntoView({ behavior: 'smooth' }); }) });
   if (Number(plan.micro) > 0) tasks.push({ id: 'micro', time: '☕ Napközben · ' + plan.micro + ' perc, több részletben', title: due.voc ? `Szókártyák (${due.voc} esedékes) és a mumusok` : 'A mumusok (nehéz mondatok) átnézése', sub: 'Pár perces adagokban, amikor épp ráérsz.', btn: due.voc ? '🧠 Szókártyák' : '🎯 Mumusok', go: () => due.voc ? plGo('szavak', () => $('vStartAll').click()) : plGo('nehez') });
-  if (newTarget > 0 && Number(plan.after) > 0) tasks.push({ id: 'new', time: '🕒 Délután · ' + plan.after + ' perc', title: `${newTarget} új mondat`, sub: `Ma eddig: ${t.new || 0}. Nyisd meg a soron következő szigetet „Esedékes ismétlés + új mondatok” módban.`, btn: '🏝️ Szigetek', auto: (t.new || 0) >= newTarget, go: () => plGo('konyvtar') });
+  if (newTarget > 0 && Number(plan.after) > 0) {
+    const map = c.map, todo = []; let need = Math.max(0, newTarget - (t.new || 0)); const upload = [];
+    for (const g of plGroups()) for (const it of g.i) {
+      const st = plIslandState(it, map), left = st.total - st.seen; if (left <= 0) continue;
+      if (!st.up) { if (todo.length === 0 && need > 0) todo.push({ it, g, st, take: 0, missing: true }); continue; }
+      if (need > 0) { const take = Math.min(left, need); todo.push({ it, g, st, take }); need -= take; }
+      if (need <= 0) break;
+    }
+    for (const g of plGroups()) { for (const it of g.i) { const st = plIslandState(it, map); if (!st.up && st.total - st.seen > 0 && upload.length < 3) upload.push({ it, g }); } if (upload.length >= 3) break; }
+    const first = todo.find(x => !x.missing);
+    const isl = todo.filter(x => !x.missing).map(x => `${x.it.c} ${x.it.n} (${x.st.seen + 1}–${x.st.seen + x.take}. mondat)`).join(', ');
+    tasks.push({ id: 'new', time: '🕒 Délután · ' + plan.after + ' perc', title: `${newTarget} új mondat` + (first ? ` – ${first.it.c} ${first.it.n}` : ''), sub: (isl ? `Ma: ${isl}. ` : todo.length ? `A következő sziget (${todo[0].it.c} ${todo[0].it.n}) még nincs feltöltve. ` : '') + `Ma eddig: ${t.new || 0}.`, btn: first ? '▶ Megnyitom' : '🏝️ Szigetek', auto: (t.new || 0) >= newTarget,
+      go: first ? async () => { try { $('mode').value = 'due'; saveSettings(); showTab('beallitas'); await openIsland(first.st.slug); startSession('due'); } catch (e) { $('status').textContent = 'Nem sikerült megnyitni: ' + e.message; plGo('konyvtar'); } } : () => plGo('konyvtar') });
+    const soon = upload.filter(u => u.g.ready);
+    if (soon.length) tasks.push({ id: 'upload', time: '📤 Ha időd engedi', title: 'Feltöltésre vár: ' + soon.map(u => u.it.c + ' ' + u.it.n).join(', '), sub: `Python-programmal hang, majd Szigetek → Új sziget feltöltése, a „${soon[0].g.f}” mappába.`, btn: '🏝️ Szigetek', go: () => plGo('konyvtar') });
+    else if (upload.length && !upload[0].g.ready) tasks.push({ id: 'upload', time: '📤 Tananyag', title: `A következő csoport (${upload[0].g.f}) tananyaga még készül`, sub: 'Kérd el a Claude-tól a szigeteket, utána töltsd fel őket.', btn: '' });
+  }
   if (Number(plan.evening) > 0) tasks.push({ id: 'reviews', time: '🌙 Este · ' + Math.max(10, Number(plan.evening) - (plan.speak ? 10 : 0)) + ' perc', title: due.isl ? `Esedékes ismétlések (${due.isl})` : 'Esedékes ismétlések', sub: 'Hangosan kimondva, értékeléssel (kézmentes módban: „vár, amíg koppintok”).', btn: '▶ Indítás', auto: due.isl === 0 && (t.reviews || 0) > 0, go: () => plGo('ma', () => $('dailyAll').click()) });
   if (plan.speak && Number(plan.evening) > 0) {
     const tut = plan.tutor && String(wd) === String(plan.tutorDay);
@@ -1891,11 +1943,35 @@ function plTasks() {
       : wd === 0 ? ['Heti monológ', '2 perc a hét egyik témájáról, telefonnal felvéve – havonta hallgasd vissza.']
       : [1, 3, 5].includes(wd) ? ['3 saját mondat a szókincsnaplóba', 'A nap nehéz szavaival, a saját életedről – a Claude kijavítja.']
       : lvl <= 1 ? ['Hangos utánamondás', '5 perc: a mai mondatokat mondd fel hangosan, a felvétellel összevetve.'] : ['Szerepjáték a Claude-dal', '5 perc: pincér, recepciós, benzinkutas – a végén kérd a javítást.'];
-    tasks.push({ id: 'speak', time: '🌙 Este · ' + (tut ? 30 : 10) + ' perc', title: sp[0], sub: sp[1], btn: tut ? '' : '🧠 Napló', go: tut ? null : () => window.open('https://claude.ai/artifact/HTf9yrmmwD11AAsbywg7ou', '_blank') });
+    const claude = /Claude/.test(sp[0]) || sp[0] === 'Heti monológ';
+    tasks.push({ id: 'speak', time: '🌙 Este · ' + (tut ? 30 : 10) + ' perc', title: sp[0], sub: sp[1], btn: tut ? '' : claude ? '📋 Utasítás a Claude-nak' : '🧠 Napló', claude: claude ? plClaudePrompt(sp[0] === 'Heti monológ' ? 'mono' : 'role') : null,
+      go: tut ? null : claude ? null : () => window.open('https://claude.ai/artifact/HTf9yrmmwD11AAsbywg7ou', '_blank') });
   }
+  for (const [i, cu] of (plan.custom || []).entries()) if (cu && cu.text) tasks.push({ id: 'custom' + i, time: ({ reggel: '🌅 Reggel', napkozben: '☕ Napközben', delutan: '🕒 Délután', este: '🌙 Este', barmikor: '⭐ Amikor ráérsz' }[cu.slot] || '⭐') + (cu.min ? ' · ' + cu.min + ' perc' : ''), title: cu.text, sub: 'Saját feladat', btn: '', order: ['reggel', 'napkozben', 'delutan', 'este', 'barmikor'].indexOf(cu.slot) });
   if (plan.read) tasks.push({ id: 'read', time: '📖 Amikor ráérsz · 10 perc', title: lvl <= 1 ? 'Könnyített olvasmány vagy kezdő podcast' : lvl <= 3 ? 'Egy rövid cikk (LingQ) – 2–3 kifejezés kigyűjtése' : 'Cikk, podcast vagy sorozatrész eredeti nyelven', sub: 'Olyan anyag, aminek kb. 80–90%-át érted.', btn: '' });
   if (Number(plan.morning) > 0) tasks.push({ id: 'mix', time: '🌙 Este, a végén · 1 perc', title: 'A holnap reggeli hanganyag elkészítése', sub: '„A ma tanult új mondatok”, lépcsőzetes, 3 visszatérés.', btn: '🎧 Elkészítem', go: () => plGo('hallgatas', () => { $('mixSrc').value = 'new_today'; $('mixOrder').value = 'pim3'; syncMixSrc(); mixOrderInfo(); saveSettings(); $('mixBuild').scrollIntoView({ behavior: 'smooth', block: 'center' }); }) });
+  const ord = tk => tk.order !== undefined ? tk.order + 0.5 : /^🌅/.test(tk.time) ? 0 : /^☕/.test(tk.time) ? 1 : /^🕒/.test(tk.time) ? 2 : /^📤/.test(tk.time) ? 2.2 : /^🌙 Este, a végén/.test(tk.time) ? 3.9 : /^🌙/.test(tk.time) ? 3 : 4;
+  tasks.sort((a, b) => ord(a) - ord(b));
   return { tasks, c, sunday };
+}
+function plWeekCards() {
+  const d = new Date(dayStart()); const back = (d.getDay() + 6) % 7; const ws = dayStart() - back * 864e5;
+  const out = []; for (const slug of allProgSlugs()) for (const c of Object.values(getProg(slug).cards)) if (c && c.reps && (Number(c.lastReviewed) || 0) >= ws && c.it) out.push({ slug, c });
+  return out;
+}
+function plClaudePrompt(kind) {
+  const wk = plWeekCards(), bySlug = new Map();
+  for (const x of wk) { if (!bySlug.has(x.slug)) bySlug.set(x.slug, []); bySlug.get(x.slug).push(x.c); }
+  const topics = [...bySlug.keys()].map(niceName).slice(0, 8);
+  const pick = wk.sort((a, b) => (b.c.lastReviewed || 0) - (a.c.lastReviewed || 0)).slice(0, 40).filter((x, i) => i % Math.max(1, Math.floor(wk.length / 12)) === 0).slice(0, 12).map(x => '- ' + x.c.it);
+  const all = topics.join(' ').toLowerCase();
+  const role = /tterem|pizz|bar|fagyi|cafe|kav/.test(all) ? 'egy olasz étterem pincére' : /apartman|szallo|albergo|hotel/.test(all) ? 'egy szálloda recepciósa' : /auto|benzin|parkol|ztl/.test(all) ? 'egy benzinkút dolgozója' : /orvos|gyogyszer|farmacia/.test(all) ? 'egy gyógyszerész' : /vasar|bolt|piac|pekseg/.test(all) ? 'egy bolti eladó' : 'egy barátságos olasz ismerős, akivel most találkozom';
+  const lvl = plan.level === 'A0' ? 'kezdő' : plan.level + '–' + plan.goal;
+  const head = `Olasz nyelvet tanulok (szintem: ${lvl}). Magyar vagyok, István, mérnök, vidéken élek a családommal, macskákkal és tyúkokkal, és nyaranta autóval megyünk Olaszországba.`;
+  const learned = topics.length ? `\nEzen a héten ezeket a témákat (nyelvi szigeteket) tanultam: ${topics.join('; ')}.` : '';
+  const ex = pick.length ? `\nNéhány mondat, amit már tudok – ezekből és hasonlókból építkezz:\n${pick.join('\n')}` : '';
+  if (kind === 'mono') return `${head}${learned}${ex}\n\nMa monológot gyakorlok. Adj egy témát a fenti témákból, és 3 segítő kérdést olaszul. Utána én 2 percig beszélek (beírom vagy lediktálom a szöveget). A végén javítsd ki a hibáimat, magyarázd el magyarul a 3 legfontosabbat, és írd le a javított változatot.`;
+  return `${head}${learned}${ex}\n\nJátsszunk szerepjátékot olaszul! Te legyél ${role}, én pedig a vendég/ügyfél. Szabályok:\n1. Csak olaszul beszélj, rövid és egyszerű mondatokban, a szintemnek megfelelően.\n2. Egyszerre csak egy dolgot kérdezz, és várd meg a válaszomat.\n3. Használd a fenti témák szókincsét, és néha kérdezz rá olyasmire is, amit még nem mondtam.\n4. Ha elakadok és magyarul írok, segíts egy olasz mondattal.\n5. Kb. 10 váltás után állj meg, és magyarul foglald össze: mit csináltam jól, mik voltak a hibáim (javítva), és adj 5 hasznos kifejezést ehhez a helyzethez.\nKezdd te az első mondattal!`;
 }
 function renderPlan() {
   if (!$('planList')) return;
@@ -1912,27 +1988,64 @@ function renderPlan() {
     box.innerHTML = `<div class="pt-time"></div><div class="pt-title"></div><div class="pt-sub"></div>`;
     box.children[0].textContent = tk.time; box.children[1].textContent = tk.title; box.children[2].textContent = tk.sub;
     row.append(cb, box);
-    if (tk.btn && tk.go) { const b = document.createElement('button'); b.className = ok ? 'alt' : ''; b.textContent = tk.btn; b.onclick = tk.go; row.append(b); }
+    if (tk.claude) {
+      const acts = document.createElement('div'); acts.className = 'pt-actions';
+      const cp = document.createElement('button'); cp.textContent = '📋 Utasítás másolása';
+      const op = document.createElement('button'); op.className = 'alt'; op.textContent = 'Claude megnyitása ↗'; op.onclick = () => window.open('https://claude.ai/new', '_blank');
+      const ta = document.createElement('textarea'); ta.className = 'claudebox hidden'; ta.readOnly = true; ta.value = tk.claude;
+      cp.onclick = async () => { let okc = false; try { await navigator.clipboard.writeText(tk.claude); okc = true; } catch {} cp.textContent = okc ? '✓ Kimásolva – illeszd be a Claude-ba' : 'Jelöld ki és másold ki lent'; ta.classList.toggle('hidden', okc); if (!okc) { ta.focus(); ta.select(); } };
+      const sh = document.createElement('button'); sh.className = 'alt'; sh.textContent = 'Megnézem'; sh.onclick = () => ta.classList.toggle('hidden');
+      acts.append(cp, op, sh); box.append(acts, ta);
+    } else if (tk.btn && tk.go) { const b = document.createElement('button'); b.className = ok ? 'alt' : ''; b.textContent = tk.btn; b.onclick = tk.go; row.append(b); }
     host.append(row);
   }
   const pct = tasks.length ? Math.round(n / tasks.length * 100) : 0;
   $('planBar').style.width = pct + '%';
   $('planSum').textContent = n === tasks.length && tasks.length ? '🎉 Minden kész mára!' : `${n}/${tasks.length} kész · kb. ${(Number(plan.morning) || 0) + c.active} perc`;
   { const tb = document.getElementById('tbPlan'); if (tb) tb.textContent = tasks.length ? `ma ${n}/${tasks.length}` : 'a mai terv'; }
-  const fmt = dt => `${dt.getFullYear()}. ${dt.getMonth() + 1}. ${dt.getDate()}.`;
-  $('planNote').textContent = c.remaining > 0 ? `Cél: ${plan.goal} (kb. ${c.target} mondatpár). Eddig gyakorolt: ${c.learned}, hátra kb. ${c.remaining}.` : `${plAz(plan.goal) === 'az' ? 'Az' : 'A'} ${plan.goal} szinthez szükséges mondatmennyiség megvan (${c.learned}). Állíts be magasabb célt, vagy csiszold a beszédet.`;
-  let res = `Javasolt: <b>${c.perDay} új mondat naponta</b> (most beállítva: ${newLimit()}). ` + (c.perDay > 30 ? 'Napi 30 fölött az ismétlések nagyon felszaporodnak – inkább több időt vagy későbbi határidőt javaslok. ' : '');
-  if (plan.mode === 'date' && plan.date) res += c.needMin > c.active ? `A határidőhöz napi kb. <b>${c.needMin} perc</b> aktív tanulás kell (ennyi van: ${c.active} perc) – növeld az időt, vagy tolj a határidőn.` : `Ehhez napi kb. ${c.needMin} perc aktív tanulás kell – belefér a ${c.active} percbe.`;
-  else res += c.remaining > 0 ? `Ezzel ${plAz(plan.goal)} ${plan.goal} szint anyaga kb. <b>${fmt(c.finish)}</b>-ra lesz meg.` : '';
+  const fmt = dt => `${dt.getFullYear()}. ${['január','február','március','április','május','június','július','augusztus','szeptember','október','november','december'][dt.getMonth()]} ${dt.getDate()}.`;
+  $('planNote').textContent = c.remaining > 0 ? `Cél: ${plan.goal}. Eddig gyakorolt mondat: ${c.learned}, a célig hátra kb. ${c.remaining} (a szigetsorrend szerint).` : `${plAz(plan.goal) === 'az' ? 'Az' : 'A'} ${plan.goal} szinthez szükséges mondatmennyiség megvan (${c.learned}). Állíts be magasabb célt, vagy csiszold a beszédet.`;
+  let res = `Javasolt: <b>${c.perDay} új mondat naponta</b> (${c.per} perc/mondat). `;
+  if (plan.mode === 'date' && plan.date) res += c.needMin > c.active ? `A határidőhöz napi kb. <b>${c.needMin} perc</b> aktív tanulás kell (ennyi van: ${c.active} perc) – növeld az időt, vagy tolj a határidőn. ` : `Ehhez napi kb. ${c.needMin} perc aktív tanulás kell – belefér a ${c.active} percbe. `;
+  else if (c.remaining > 0 && c.finish) res += `Ezzel ${plAz(plan.goal)} ${plan.goal} szint anyaga kb. ${fmt(c.finish)} körül lesz meg. `;
+  if (c.remaining > 0) res += c.cur > 0 && c.curFinish ? `<br>A <b>jelenlegi beállításoddal (${c.cur} új mondat/nap)</b> a cél kb. <b>${fmt(c.curFinish)}</b> körül.` : `<br>Most napi 0 új mondat van beállítva – így nem halad a cél felé.`;
+  if (c.plannedOnly > 0) res += `<br><span class="muted">A hátralévő kb. ${c.remaining} mondatból ${c.plannedOnly} olyan csoportban van, amelynek a tananyaga még készül (tervezett mennyiséggel számolva).</span>`;
   $('planRes').innerHTML = res;
 }
+function plRenderCurr() {
+  const host = $('plCurr'); if (!host) return; host.innerHTML = ''; const map = plSlugMap(), inc = new Set(plGroups());
+  for (const g of CURRICULUM) {
+    let done = 0; const det = document.createElement('details'); det.className = 'cg'; if (inc.has(g) && g === [...inc][0]) det.open = true;
+    const rows = g.i.map(it => { const st = plIslandState(it, map); const left = st.total - st.seen; if (st.up && left <= 0) done++;
+      const lab = !g.ready ? '🔜 készül' : !st.slug ? '⏳ fel kell tölteni' : left <= 0 ? '✅ kész' : st.seen > 0 ? `🟡 ${st.seen}/${st.total}` : '⬆️ feltöltve';
+      return `<div class="ci"><b>${it.c}</b><span>${it.n}</span><span class="st">${it.s} mondat · ${lab}</span></div>`; }).join('');
+    det.innerHTML = `<summary>${g.f} ${inc.has(g) ? '🎯' : ''} <span class="muted">(${g.i.length} sziget, ${g.i.reduce((a, x) => a + x.s, 0)} mondat${g.ready ? ', ' + done + ' kész' : ', tananyag készül'})</span></summary>${rows}`;
+    host.append(det);
+  }
+}
+function plRenderCustom() {
+  const host = $('plCustom'); if (!host) return; host.innerHTML = '';
+  (plan.custom || []).forEach((cu, i) => {
+    const row = document.createElement('div'); row.className = 'plc-row';
+    row.innerHTML = `<select><option value="reggel">🌅 reggel</option><option value="napkozben">☕ napközben</option><option value="delutan">🕒 délután</option><option value="este">🌙 este</option><option value="barmikor">⭐ bármikor</option></select><input type="number" min="0" max="240" placeholder="perc"><input class="plc-t" placeholder="pl. olasz podcast hallgatása"><button type="button" class="alt" title="Törlés">✕</button>`;
+    const [sel, min, txt, del] = row.children; sel.value = cu.slot || 'barmikor'; min.value = cu.min || ''; txt.value = cu.text || '';
+    const upd = () => { plan.custom[i] = { slot: sel.value, min: Number(min.value) || 0, text: txt.value.trim() }; plSave(); renderPlan(); };
+    sel.onchange = upd; min.onchange = upd; txt.onchange = upd;
+    del.onclick = () => { plan.custom.splice(i, 1); plSave(); plRenderCustom(); renderPlan(); };
+    host.append(row);
+  });
+}
 function plLoadForm() {
-  const m = { plLevel: 'level', plGoal: 'goal', plMode: 'mode', plDate: 'date', plDays: 'days', plMorning: 'morning', plMicro: 'micro', plAfter: 'after', plEvening: 'evening', plTutorDay: 'tutorDay' };
+  if (!Array.isArray(plan.custom)) plan.custom = [];
+  const m = { plLevel: 'level', plGoal: 'goal', plMode: 'mode', plDate: 'date', plDays: 'days', plMorning: 'morning', plMicro: 'micro', plAfter: 'after', plEvening: 'evening', plTutorDay: 'tutorDay', plFirst: 'first', plRev: 'rev' };
   for (const [id, k] of Object.entries(m)) $(id).value = plan[k];
   $('plRead').checked = !!plan.read; $('plSpeak').checked = !!plan.speak; $('plTutor').checked = !!plan.tutor;
   $('plDateL').style.display = plan.mode === 'date' ? '' : 'none';
-  for (const [id, k] of Object.entries(m)) $(id).onchange = $(id).oninput = () => { plan[k] = $(id).value; if (k === 'level' && PL_LEVELS.indexOf(plan.goal) <= PL_LEVELS.indexOf(plan.level)) { plan.goal = PL_LEVELS[Math.min(6, PL_LEVELS.indexOf(plan.level) + 1)]; $('plGoal').value = plan.goal; } $('plDateL').style.display = plan.mode === 'date' ? '' : 'none'; plSave(); renderPlan(); };
+  for (const [id, k] of Object.entries(m)) $(id).onchange = $(id).oninput = () => { plan[k] = $(id).value; if ($('plCurrBox').open) plRenderCurr(); if (k === 'level' && PL_LEVELS.indexOf(plan.goal) <= PL_LEVELS.indexOf(plan.level)) { plan.goal = PL_LEVELS[Math.min(6, PL_LEVELS.indexOf(plan.level) + 1)]; $('plGoal').value = plan.goal; } $('plDateL').style.display = plan.mode === 'date' ? '' : 'none'; plSave(); renderPlan(); };
   for (const [id, k] of [['plRead', 'read'], ['plSpeak', 'speak'], ['plTutor', 'tutor']]) $(id).onchange = () => { plan[k] = $(id).checked; plSave(); renderPlan(); };
+  $('plCustomAdd').onclick = () => { plan.custom.push({ slot: 'barmikor', min: 15, text: '' }); plSave(); plRenderCustom(); const r = $('plCustom').lastElementChild; if (r) r.querySelector('.plc-t').focus(); };
+  plRenderCustom();
+  $('plCurrBox').addEventListener('toggle', () => { if ($('plCurrBox').open) plRenderCurr(); });
   $('plApply').onclick = () => { const c = plCalc(); $('newLimit').value = c.perDay; saveSettings(); renderStats(); renderPlan(); $('planRes').insertAdjacentHTML('beforeend', '<br>✓ Beállítva.'); };
 }
 
