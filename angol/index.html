@@ -202,7 +202,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>EN</b> English</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">EN V18</span>
+ <span class="ver" title="Programverzió">EN V19</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">GAME PLAN</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -3645,10 +3645,21 @@ function srListen(lang, onInterim) {
     try { if (srActive) srActive.abort(); } catch {}
     let r; try { r = new SRClass(); } catch (e) { e.code = 'start'; return rej(e); }
     srActive = r; r.lang = SR_LANG[lang] || lang; r.interimResults = true; r.continuous = false; r.maxAlternatives = 3;
-    let fin = '', alts = [], err = null, ended = false;
-    r.onresult = e => { let inter = ''; for (let i = e.resultIndex; i < e.results.length; i++) { const x = e.results[i]; if (x.isFinal) { fin += x[0].transcript; alts = Array.from(x).map(a => a.transcript); } else inter += x[0].transcript; } if (onInterim) onInterim((fin + ' ' + inter).trim()); };
+    let fin = '', alts = [], err = null, ended = false, last = '', lastAlts = [], quiet = null;
+    // iPhone (Safari) gyakran nem jelöli „véglegesnek” az eredményt – ilyenkor az utolsó részeredményt használjuk,
+    // és ha 2 mp-ig nem jön új szó, magunk zárjuk le a hallgatást
+    r.onresult = e => {
+      let inter = '', ia = [];
+      for (let i = e.resultIndex; i < e.results.length; i++) { const x = e.results[i]; if (x.isFinal) { fin += x[0].transcript; alts = Array.from(x).map(a => a.transcript); } else { inter += x[0].transcript; ia = Array.from(x).map(a => a.transcript); } }
+      last = (fin + ' ' + inter).trim(); if (inter) lastAlts = ia;
+      if (onInterim) onInterim(last);
+      clearTimeout(quiet); quiet = setTimeout(() => { try { r.stop(); } catch {} }, 2000);
+    };
     r.onerror = e => { err = e.error || 'error'; };
-    r.onend = () => { if (ended) return; ended = true; if (srActive === r) srActive = null; if (!fin.trim() && err) { const ex = new Error(err); ex.code = err; rej(ex); } else if (!fin.trim()) { const ex = new Error('no-speech'); ex.code = 'no-speech'; rej(ex); } else res({ text: fin.trim(), alts }); };
+    r.onend = () => { if (ended) return; ended = true; clearTimeout(quiet); if (srActive === r) srActive = null;
+      const text = (fin.trim() || last).trim();
+      if (text) return res({ text, alts: fin.trim() ? alts : lastAlts });
+      const ex = new Error(err || 'no-speech'); ex.code = err || 'no-speech'; rej(ex); };
     try { r.start(); } catch (e) { e.code = 'start'; srActive = null; return rej(e); }
     setTimeout(() => { try { if (srActive === r) r.stop(); } catch {} }, 15000);
   });
