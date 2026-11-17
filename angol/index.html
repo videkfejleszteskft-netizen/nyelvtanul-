@@ -195,6 +195,9 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 .help-why{background:var(--soft);border-radius:12px;padding:8px 12px}
 #srRes:empty,#srTestRes:empty{display:none}.sr-live{font-style:italic;color:#647482;text-align:center;margin:6px 0}
 .sr-score{font:800 1.4rem 'Nunito',sans-serif}.sr-ok{color:#1d6346}.sr-mid{color:#b7791f}.sr-bad{color:#b42318}
+.bz-q{font:800 1.35rem/1.4 'Nunito',sans-serif;text-align:center;margin:12px 0;color:var(--ink)}.bz-hide{filter:blur(7px);user-select:none}
+.bz-model{background:var(--soft);border-radius:14px;padding:8px 12px;margin:10px 0}.bz-fix{display:flex;gap:10px;align-items:flex-start;border-top:1px solid #e3ecf1;padding:8px 0}.bz-fix input{margin-top:5px}
+#bzPaste{width:100%;box-sizing:border-box;min-height:110px;padding:9px;border:1px solid #cbd5df;border-radius:10px;font-size:.95rem}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -202,7 +205,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>EN</b> English</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">EN V19</span>
+ <span class="ver" title="Programverzió">EN V20</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">GAME PLAN</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -210,6 +213,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
  <button type="button" role="tab" data-tab="hallgatas" title="hallgatás"><i class="ti">🎧</i><span class="tl">AUDIO FLOW</span><span class="ts">hallgatás</span></button>
  <button type="button" role="tab" data-tab="nehez" title="nehéz mondatok"><i class="ti">🎯</i><span class="tl">BOSS MODE</span><span class="ts">nehéz mondatok</span><span class="badge" id="tbHard"></span></button>
  <button type="button" role="tab" data-tab="beves" title="bevésés"><i class="ti">📌</i><span class="tl">LOCK IT IN</span><span class="ts">bevésés</span><span class="badge" id="tbBeves"></span></button>
+ <button type="button" role="tab" data-tab="beszelj" title="beszélj"><i class="ti">🗣️</i><span class="tl">SPEAK UP</span><span class="ts">beszélj</span></button>
  <button type="button" role="tab" data-tab="szavak" title="szókincs"><i class="ti">🧠</i><span class="tl">VOCAB LAB</span><span class="ts">szókincs</span><span class="badge" id="tbWords"></span></button>
  <button type="button" role="tab" data-tab="konyvtar" title="szigetek"><i class="ti">🏝️</i><span class="tl">MY ISLANDS</span><span class="ts">szigetek</span></button>
  <button type="button" role="tab" data-tab="beallitas" title="beállítások"><i class="ti">⚙️</i><span class="tl">CONTROL CENTER</span><span class="ts">beállítások</span></button>
@@ -437,6 +441,24 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
  <li>Ha egy mondat kétszer is kiesik, készíts hozzá új emlékeztetőt: vedd ki (✕), jelöld ki újra, és véstesd be elölről.</li></ul>
 </details></section>
 <section data-tab="beves" class="box"><h3>Bevésendő és folyamatban lévő mondatok</h3><div id="bvList"></div></section>
+<section data-tab="beszelj" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary>
+<p class="help-why"><b>Mi ez?</b> Az app az idegen nyelven kérdez, te <b>szóban válaszolsz</b>, a telefon leírja, az app pedig értékeli. Nem a megtanult mondatot kell visszamondanod, hanem <b>alkalmaznod</b>: „Hatan lennétek – hogyan kérnéd?” <b>Miért?</b> A beszédhez az kell, hogy a mondatokat át tudd alakítani és a saját életedre tudd vonatkoztatni – a bemagolt mondat önmagában ehhez kevés.</p>
+<h4>Kétféle kérdés</h4><ul><li><b>Változat:</b> egy tanult mondatot kell átalakítanod (más szám, idő, személy, helyzet). Ezt az app pontozza: ✅ 85% felett, 🟡 60–85%, ❌ alatta. A 🟡 és ❌ válaszok mintája magától bekerül a 📌 Bevésésbe.</li><li><b>Saját válasz:</b> a saját életedről beszélsz (pl. „Mesélj a családodról”). Ezt a gép nem pontozza – a kör végén a Claude javítja ki.</li></ul>
+<h4>Ajánlott sorrend (este, 5–10 perc)</h4><ol><li>Forrás: <b>„A már tanult szigetekből”</b>, 8 kérdés.</li><li>Minden kérdésnél: hallgasd meg (🔊), gondold végig, aztán <b>🎙️ Válaszolok</b> – egész mondatban. Ha elakadsz: 🇭🇺 magyarul, vagy 💡 kiinduló mondat.</li><li>Ha a gép rosszul írta le, javítsd ki a mezőben, és nyomd meg az „Értékelés” gombot.</li><li>Hallgasd meg a mintát, és a <b>„🗣️ Mondd el a mintát”</b> gombbal mondd utána – ez a kiejtést is ellenőrzi.</li><li>A kör végén: <b>„📋 Kérés másolása a Claude-nak”</b> → illeszd be nekem → a teljes választ másold vissza → <b>„Javítások feldolgozása”</b> → a javított mondatok mehetnek a 📌 Bevésésbe.</li></ol>
+<h4>Haladóknak</h4><ul><li>„Csak hallom a kérdést”: a kérdés szövege elmosódik – így a hallásértést is gyakorolod.</li><li>Ugyanazt a szigetet többször is választhatod: a rosszul sikerült kérdések előbb jönnek vissza.</li></ul></details></section>
+<section data-tab="beszelj" class="box" id="bzBox"><h3>🗣️ Beszélj!</h3>
+ <p class="muted" id="bzInfo"></p>
+ <div class="plan-grid"><label>Miből kérdezzen?<select id="bzSrc"></select></label><label>Hány kérdés?<select id="bzN"><option>5</option><option selected>8</option><option>10</option><option>15</option></select></label></div>
+ <label class="bv-chk"><input type="checkbox" id="bzListen"> Csak hallom a kérdést (a szöveg elmosódik – hallásértés)</label>
+ <div class="center"><button id="bzStart">▶ Indítás</button></div><p id="bzStatus" class="muted center"></p>
+ <div id="bvRunWrap"><div id="bzRun" class="hidden" style="border:2px solid var(--lagoon);border-radius:18px;padding:14px;margin:12px 0;background:#fbfeff"></div></div>
+</section>
+<section data-tab="beszelj" class="box" id="bzFixBox"><h3>📋 Javíttatás a Claude-dal</h3>
+ <p class="muted">A kör végén a válaszaidat a Claude kijavítja, és természetesebb megfogalmazást ad. A javított mondatokat egy gombnyomással a 📌 Bevésésbe teheted.</p>
+ <p id="bzFixInfo" class="muted"></p>
+ <ol><li><button id="bzCopy" class="alt">📋 Kérés másolása a Claude-nak</button> – új lapon megnyílik a Claude; illeszd be.</li><li>A Claude teljes válaszát másold be ide:<br><textarea id="bzPaste" placeholder="JAVÍTVA: … || … || …"></textarea></li><li><button id="bzParse">Javítások feldolgozása</button></li></ol>
+ <p id="bzFixStatus" class="muted"></p><div id="bzFixList"></div>
+</section>
 <section data-tab="szavak" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Szókártyák, amelyeket az app pont akkor kérdez, amikor már kezdenéd elfelejteni (FSRS). Forrás: a szigetek szókincsbővítő mondatai, a szigetből átvett mondatok és a saját szavaid. <b>Miért?</b> Egy mondat gyakran csak egyetlen szón akad el – azt itt célzottan, emlékeztetővel rögzíted.</p>
 <h4>Egyszer kell beállítani</h4><ol><li>„Saját szólista feltöltése”: töltsd be a <b>…Szokincsbovites_osszes_sziget.txt</b> fájlokat (egyszerre többet is).</li><li>„🧠 Emlékeztetők betöltése”: ugyanezeket a fájlokat – így a kártyákhoz emlékeztető is jár.</li><li>Beállítások: célzott emlékezés <b>90%</b> (ajánlott), új kártya naponta 10–20.</li></ol>
 <h4>Minden nap</h4><ol><li><b>„Esedékes szavak gyakorlása”</b> – napközben, pár perces adagokban.</li><li>Ha egy szó nem marad meg: ✏️ saját emlékeztető, vagy a Mnemonika-műhely (a lenti 1–4. lépés).</li></ol></details></section>
@@ -2066,6 +2088,8 @@ function plTasks() {
   for (const [i, cu] of (plan.custom || []).entries()) if (cu && cu.text) tasks.push({ id: 'custom' + i, time: ({ reggel: '🌅 Reggel', napkozben: '☕ Napközben', delutan: '🕒 Délután', este: '🌙 Este', barmikor: '⭐ Amikor ráérsz' }[cu.slot] || '⭐') + (cu.min ? ' · ' + cu.min + ' perc' : ''), title: cu.text, sub: 'Saját feladat', btn: '', order: ['reggel', 'napkozben', 'delutan', 'este', 'barmikor'].indexOf(cu.slot) });
   { const bd = bvDue().length + bvLive().filter(x => x.state === 'kor').length, bn = bvLive().filter(x => x.state === 'new').length, bt = bvLearnedToday();
     if (bd || bn) tasks.push({ id: 'beves', order: 2, time: '📌 Bevésés · ' + (bd ? 'most ' : '') + (bd + Math.min(bn, Math.max(0, BV_DAILY - bt))) * 1 + ' mondat', title: (bd ? `${bd} esedékes bevésés-ismétlés / körkérdezés` : '') + (bd && bn ? ' + ' : '') + (bn ? `${Math.min(bn, Math.max(0, BV_DAILY - bt))} új mondat bevésése (ma eddig: ${bt}/${BV_DAILY})` : ''), sub: 'A kijelölt mondatok a pontos menetrend szerint: 7 lépés, körkérdezés, majd 10 perc, este, másnap reggel, 3, 7, 16 nap.', btn: '📌 Megnyitom', go: () => plGo('beves') }); }
+  { const lc = bzLearnedCodes(), nq = BESZ.filter(q => lc.has(q.c)).length;
+    if (nq && Number(plan.evening) > 0) tasks.push({ id: 'beszelj', order: 3, time: '🌙 Este · 5–10 perc', title: '🗣️ Beszélj! – 8 kérdés a tanult szigetekből', sub: 'Szóban válaszolsz, a telefon leírja és értékeli; a kör végén a Claude kijavítja a saját mondataidat.', btn: '🗣️ Megnyitom', go: () => plGo('beszelj') }); }
   if (plan.read) tasks.push({ id: 'read', time: '📖 Amikor ráérsz · 10 perc', title: lvl <= 1 ? 'Könnyített olvasmány vagy kezdő podcast' : lvl <= 3 ? 'Egy rövid cikk (LingQ) – 2–3 kifejezés kigyűjtése' : 'Cikk, podcast vagy sorozatrész eredeti nyelven', sub: 'Olyan anyag, aminek kb. 80–90%-át érted.', btn: '' });
   if (Number(plan.morning) > 0) tasks.push({ id: 'mix', time: '🌙 Este, a végén · 1 perc', title: 'A holnap reggeli hanganyag elkészítése', sub: '„A ma tanult új mondatok”, lépcsőzetes, 3 visszatérés.', btn: '🎧 Elkészítem', go: () => plGo('hallgatas', () => { $('mixSrc').value = 'new_today'; $('mixOrder').value = 'pim3'; syncMixSrc(); mixOrderInfo(); saveSettings(); $('mixBuild').scrollIntoView({ behavior: 'smooth', block: 'center' }); }) });
   const ord = tk => tk.order !== undefined ? tk.order + 0.5 : /^🌅/.test(tk.time) ? 0 : /^☕/.test(tk.time) ? 1 : /^🕒/.test(tk.time) ? 2 : /^📤/.test(tk.time) ? 2.2 : /^🌙 Este, a végén/.test(tk.time) ? 3.9 : /^🌙/.test(tk.time) ? 3 : 4;
@@ -3718,6 +3742,172 @@ $('srBtn').onclick = async () => {
 })();
 
 // ============================================================
+// BESZÉLJ! – alkalmazási kérdések szóbeli megválaszolása (beszédfelismeréssel)
+// ============================================================
+const BESZ = /*BESZ_START*/[]/*BESZ_END*/;
+const BZ_KEY = 'angolsziget-beszelj', BZ_LAST = 'angolsziget-beszelj-last';
+let bzStat = loadJSON(BZ_KEY, {}); if (!bzStat || typeof bzStat !== 'object') bzStat = {};
+let bzRun = null;
+const bzEsc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function bzLearnedCodes() {
+  const out = new Map();
+  try { for (const slug of allProgSlugs()) { const p = getProg(slug); if (p && p.cards && Object.keys(p.cards).length) out.set(String(slug).split(/[-_ ]/)[0].toLowerCase(), slug); } } catch {}
+  return out;
+}
+function bzCodes() { const m = new Map(); for (const q of BESZ) m.set(q.c, (m.get(q.c) || 0) + 1); return m; }
+function bzName(c) { try { const sl = plSlugMap().get(c); if (sl) return niceName(sl); } catch {} return c.toUpperCase(); }
+function bzFill() {
+  const sel = $('bzSrc'); if (!sel) return; const cur = sel.value, learned = bzLearnedCodes(), codes = bzCodes();
+  const nL = BESZ.filter(q => learned.has(q.c)).length;
+  sel.innerHTML = `<option value="learned">A már tanult szigetekből, vegyesen (${nL} kérdés)</option><option value="all">Az összes kérdésből, vegyesen (${BESZ.length})</option>` +
+    [...codes.entries()].map(([c, n]) => `<option value="${bzEsc(c)}">${learned.has(c) ? '✓ ' : ''}${bzEsc(c.toUpperCase())} – ${bzEsc(bzName(c))} (${n})</option>`).join('');
+  if (cur && [...sel.options].some(o => o.value === cur)) sel.value = cur; else sel.value = nL ? 'learned' : 'all';
+  $('bzInfo').textContent = BESZ.length ? `${BESZ.length} kérdés ${codes.size} szigethez. A ✓ jelű szigeteket már tanultad.` : 'Ehhez a nyelvhez még nincsenek kérdések – kérd el a Claude-tól.';
+  $('bzStart').disabled = !BESZ.length;
+  bzRenderFix();
+}
+function bzPick(src, n) {
+  const learned = bzLearnedCodes();
+  let pool = src === 'learned' ? BESZ.filter(q => learned.has(q.c)) : src === 'all' ? [...BESZ] : BESZ.filter(q => q.c === src);
+  const w = q => { const s = bzStat[q.id]; if (!s) return Math.random(); if (s.ok === false) return 1 + Math.random(); return 2 + (s.last || 0) / 1e13 + Math.random() * 0.5; };
+  return pool.map(q => [w(q), q]).sort((a, b) => a[0] - b[0]).slice(0, n).map(x => x[1]);
+}
+function bzStart() {
+  const qs = bzPick($('bzSrc').value, Number($('bzN').value) || 8);
+  if (!qs.length) { $('bzStatus').textContent = 'Ebből a forrásból nincs kérdés. Válassz egy szigetet a listából, vagy az „összes kérdés” lehetőséget.'; return; }
+  bzRun = { qs, i: 0, log: [] }; $('bzStatus').textContent = ''; $('bzRun').classList.remove('hidden'); bzItem(); $('bzRun').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function bzSpeak(t) { return bvSpeakOnce(t, 'it'); }
+function bzItem() {
+  const st = bzRun, R = $('bzRun'); if (!st) return; try { srStop(); } catch {} bvStopAudio();
+  if (st.i >= st.qs.length) return bzEnd();
+  const q = st.qs[st.i], hideTxt = $('bzListen').checked;
+  R.innerHTML = `<div class="bv-head"><b>🗣️ Beszélj!</b> · ${st.i + 1} / ${st.qs.length} · ${bzEsc(q.c.toUpperCase())}<button class="alt bv-x" id="bzQuit">Befejezés</button></div>
+    <div class="bz-q${hideTxt ? ' bz-hide' : ''}" id="bzQ">${bzEsc(q.q)}</div>${hideTxt ? '<div class="center"><button class="alt" id="bzShowQ">👁 Kérdés szövege</button></div>' : ''}
+    <div class="center"><button class="alt" id="bzSay">🔊 Kérdés</button><button class="alt" id="bzHuBtn">🇭🇺 Magyarul</button>${q.b ? '<button class="alt" id="bzHintBtn">💡 Kiinduló mondat</button>' : ''}</div>
+    <p class="center muted hidden" id="bzHu">${bzEsc(q.h)}</p>${q.b ? `<div class="bv-hint hidden" id="bzHint">${bzEsc(q.b)}</div>` : ''}
+    <p class="center muted">${q.t === 'v' ? 'Alkalmazd, amit tanultál: mondd ki a választ egy teljes mondatban.' : 'Saját válasz: mondj 1–2 teljes mondatot, a saját életedről.'}</p>
+    <div class="center"><button id="bzRec">🎙️ Válaszolok</button><button class="alt" id="bzTypeBtn">⌨️ Inkább beírom</button></div>
+    <div id="bzLive" class="sr-live"></div>
+    <div id="bzAns" class="hidden"><label class="bv-lab">A válaszod (ha a gép rosszul írta le, javítsd ki): <input id="bzText" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></label><div class="center"><button id="bzEval">Értékelés →</button></div></div>
+    <div id="bzRes"></div>`;
+  bzSpeak(q.q);
+  $('bzQuit').onclick = () => bzEnd();
+  $('bzSay').onclick = () => bzSpeak(q.q);
+  if ($('bzShowQ')) $('bzShowQ').onclick = () => { $('bzQ').classList.remove('bz-hide'); $('bzShowQ').remove(); };
+  $('bzHuBtn').onclick = () => $('bzHu').classList.toggle('hidden');
+  if ($('bzHintBtn')) $('bzHintBtn').onclick = () => $('bzHint').classList.toggle('hidden');
+  const showAns = t => { $('bzAns').classList.remove('hidden'); $('bzText').value = t || ''; if (!t) $('bzText').focus(); };
+  $('bzTypeBtn').onclick = () => showAns('');
+  $('bzRec').onclick = async () => {
+    if (srActive) { srStop(); return; }
+    bvStopAudio(); $('bzRec').textContent = '⏹ Kész'; $('bzLive').textContent = 'Hallgatlak…';
+    try { const r = await srListen('it', t => { $('bzLive').textContent = '„' + t + '”'; }); $('bzLive').textContent = ''; showAns(r.text); bzEval(q, r.text); }
+    catch (e) { $('bzLive').textContent = srErrText(e.code || e.message) + ' – próbáld újra, vagy írd be.'; }
+    if ($('bzRec')) $('bzRec').textContent = '🎙️ Újra mondom';
+  };
+  $('bzEval').onclick = () => bzEval(q, $('bzText').value);
+  $('bzText').onkeydown = e => { if (e.key === 'Enter') bzEval(q, $('bzText').value); };
+}
+function bzBest(q, text) {
+  let best = null;
+  for (const a of q.a) { const r = compareAnswer(a, text); const ok = r.eState.filter(v => v !== 'miss').length; const pct = Math.round(ok / Math.max(1, r.E.length, r.T.length) * 100); if (!best || pct > best.pct) best = { r, pct, a }; }
+  return best;
+}
+function bzToBeves(q) {
+  const r = bvAdd([{ slug: 'beszelj', n: q.id, hu: q.m, it: q.a[0] }]);
+  const x = bv.items['beszelj|' + q.id]; if (x && x.src !== '🗣️ Beszélj!') { x.src = '🗣️ Beszélj!'; bvTouch(x); bvSave(); }
+  return r.added;
+}
+function bzEval(q, text) {
+  text = String(text || '').trim(); if (!text) { $('bzText').focus(); return; }
+  const st = bzRun, R = $('bzRes'); const prev = st.log.find(l => l.id === q.id);
+  const line = (label, toks, states) => `<div><span class="muted">${label} </span>` + toks.map((t, k) => `<span class="w ${states[k]}">${bzEsc(t.raw)}</span>`).join(' ') + '</div>';
+  const model = `<div class="bz-model"><div class="muted">Mintaválasz:</div><div class="bv-a">${bzEsc(q.a[0])}</div><div class="muted center">${bzEsc(q.m)}</div>${q.a.length > 1 ? `<div class="muted center">Így is jó: ${q.a.slice(1).map(bzEsc).join(' · ')}</div>` : ''}</div>`;
+  const tail = `<div class="center"><button class="alt" id="bzModelSnd">🔊 Minta</button><button class="alt" id="bzPronBtn">🗣️ Mondd el a mintát</button></div><div id="bzPron" class="tres"></div><div class="center"><button id="bzNext">Következő →</button></div>`;
+  let entry;
+  if (q.t === 'v') {
+    const b = bzBest(q, text), verdict = b.pct >= 85 ? 'ok' : b.pct >= 60 ? 'mid' : 'bad';
+    const msg = { ok: '✅ Kiváló – ezt alkalmazni is tudod!', mid: '🟡 Majdnem – nézd meg az eltérést.', bad: '❌ Ez még nem megy – a mintát betettem a Bevésésbe.' }[verdict];
+    let added = false; if (verdict !== 'ok') added = bzToBeves(q);
+    R.innerHTML = `<div class="tres"><div class="verdict"><span class="sr-score ${verdict === 'ok' ? 'sr-ok' : verdict === 'mid' ? 'sr-mid' : 'sr-bad'}">${b.pct}%</span> ${msg}</div>${line('Minta:', b.r.E, b.r.eState)}${line('Te:', b.r.T, b.r.tState)}</div>` + model + (verdict === 'mid' ? `<p class="center muted">${added ? '📌 A minta bekerült a Bevésésbe.' : 'A minta már a Bevésésben van.'}</p>` : '') + tail;
+    entry = { id: q.id, c: q.c, t: q.t, q: q.q, ans: text, pct: b.pct, v: verdict };
+    bzStat[q.id] = { ok: verdict === 'ok', last: Date.now(), n: ((bzStat[q.id] || {}).n || 0) + 1 };
+  } else {
+    R.innerHTML = `<div class="tres"><div class="verdict">A válaszod: „${bzEsc(text)}”</div><p class="muted">Ez saját válasz, ezért a gép nem pontozza – a kör végén a Claude kijavítja. Vesd össze a mintával:</p></div>` + model +
+      `<p class="center"><b>Hogy érzed?</b></p><div class="center bv-rate"><button class="bv-good" id="bzSelfOk">✅ Helyes, érthető mondat volt</button><button class="bv-mid" id="bzSelfMid">🟡 Bizonytalan voltam<small>a minta a Bevésésbe kerül</small></button></div><p class="center muted" id="bzSelfInfo"></p>` + tail;
+    entry = { id: q.id, c: q.c, t: q.t, q: q.q, ans: text, pct: null, v: 'open' };
+    const self = ok => { entry.v = ok ? 'open-ok' : 'open-mid'; bzStat[q.id] = { ok, last: Date.now(), n: ((bzStat[q.id] || {}).n || 0) + 1 }; saveJSON(BZ_KEY, bzStat);
+      $('bzSelfInfo').textContent = ok ? 'Rendben – a kör végén a Claude-dal ellenőriztetheted.' : (bzToBeves(q) ? '📌 A minta bekerült a Bevésésbe.' : 'A minta már a Bevésésben van.'); };
+    $('bzSelfOk').onclick = () => self(true); $('bzSelfMid').onclick = () => self(false);
+  }
+  saveJSON(BZ_KEY, bzStat);
+  if (prev) Object.assign(prev, entry); else st.log.push(entry);
+  saveJSON(BZ_LAST, { at: Date.now(), log: st.log });
+  bzSpeak(q.a[0]);
+  $('bzModelSnd').onclick = () => bzSpeak(q.a[0]);
+  $('bzPronBtn').onclick = async () => {
+    if (srActive) { srStop(); return; }
+    bvStopAudio(); $('bzPronBtn').textContent = '⏹ Kész'; $('bzPron').innerHTML = '<div class="sr-live">Hallgatlak… mondd el a mintamondatot.</div>';
+    try { const r = await srListen('it', t => { $('bzPron').innerHTML = `<div class="sr-live">„${bzEsc(t)}”</div>`; }); srShow($('bzPron'), q.a[0], r); }
+    catch (e) { $('bzPron').innerHTML = `<div class="verdict sr-bad">${srErrText(e.code || e.message)}</div>`; }
+    if ($('bzPronBtn')) $('bzPronBtn').textContent = '🗣️ Mondd el a mintát';
+  };
+  $('bzNext').onclick = () => { st.i++; bzItem(); };
+}
+function bzEnd() {
+  const st = bzRun; try { srStop(); } catch {} bvStopAudio(); if (!st) return;
+  const done = st.log.length, ok = st.log.filter(l => l.v === 'ok' || l.v === 'open-ok').length, bad = st.log.filter(l => l.v === 'bad' || l.v === 'mid' || l.v === 'open-mid').length;
+  $('bzRun').innerHTML = `<h4>✅ A kör vége</h4><p>Megválaszolt kérdés: <b>${done}</b> · jól ment: <b>${ok}</b> · javítandó: <b>${bad}</b>.</p>${bad ? '<p class="muted">A javítandók mintái a 📌 Bevésésbe kerültek.</p>' : ''}<p>Most jön a legfontosabb: a <b>Claude-dal kijavíttatod a válaszaidat</b> (lent, a „Javíttatás” résznél) – így a saját mondataidból is helyes, természetes mondat lesz.</p><div class="center"><button class="alt" id="bzClose">Bezárás</button></div>`;
+  $('bzClose').onclick = () => { $('bzRun').classList.add('hidden'); $('bzRun').innerHTML = ''; };
+  bzRun = null; bzRenderFix(); $('bzFixBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+// ---------- javíttatás a Claude-dal (vágólapon át) ----------
+function bzRenderFix() {
+  const last = loadJSON(BZ_LAST, null), has = last && last.log && last.log.length;
+  $('bzFixInfo').textContent = has ? `Az utolsó kör: ${new Date(last.at).toLocaleString('hu-HU', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}, ${last.log.length} válasz.` : 'Még nincs befejezett kör.';
+  $('bzCopy').disabled = !has;
+}
+function bzPrompt(log) {
+  return `Angolul tanulok (kb. B1 szint). Az alábbi kérdésekre szóban válaszoltam angolul; a válaszaimat a telefon beszédfelismerője írta le, ezért apró felismerési hibák lehetnek benne (pl. hiányzó írásjel, ékezet).
+
+Kérlek, minden válaszomat:
+1. javítsd ki nyelvtanilag,
+2. és ha lehet, adj egy természetesebb, gyakoribb angol megfogalmazást.
+
+FONTOS – a válaszod formátuma: minden válaszomhoz pontosan EGY sor, így:
+JAVÍTVA: <a javított, természetes angol mondat> || <magyar jelentése> || <rövid magyarázat magyarul: mi volt a hiba, vagy „Hibátlan volt.”>
+Ne írj semmi mást ezeken a sorokon kívül.
+
+` + log.map((l, i) => `${i + 1}. Kérdés: ${l.q}\n   Válaszom: ${l.ans}`).join('\n');
+}
+function bzParse(txt) {
+  const out = [];
+  for (const raw of String(txt).split(/\r?\n/)) {
+    const m = raw.replace(/^[\s>*\-\d.)]+/, '').match(/^\**\s*JAVÍTVA\s*:\**\s*(.+)$/i); if (!m) continue;
+    const p = m[1].split('||').map(s => s.trim().replace(/^\*+|\*+$/g, '').trim());
+    if (p[0]) out.push({ it: p[0], hu: p[1] || '', why: p[2] || '' });
+  }
+  return out;
+}
+(() => {
+  $('bzStart').onclick = bzStart;
+  $('bzCopy').onclick = async () => { const last = loadJSON(BZ_LAST, null); if (!last || !last.log || !last.log.length) return; const ok = await bvCopy(bzPrompt(last.log)); $('bzFixStatus').textContent = ok ? '📋 A kérés a vágólapon van. Illeszd be egy új Claude-beszélgetésbe, aztán a teljes választ másold vissza ide.' : 'Nem sikerült a másolás.'; try { window.open('https://claude.ai/new', '_blank'); } catch {} };
+  $('bzParse').onclick = () => {
+    const list = bzParse($('bzPaste').value); const host = $('bzFixList');
+    if (!list.length) { host.innerHTML = '<p class="muted">Nem találtam „JAVÍTVA:” kezdetű sort. Az egész választ másold be, ahogy a Claude adta.</p>'; return; }
+    host.innerHTML = list.map((x, i) => `<label class="bz-fix"><input type="checkbox" data-i="${i}" checked><div><div class="bv-it"><b>${bzEsc(x.it)}</b></div><div>${bzEsc(x.hu)}</div><div class="muted">${bzEsc(x.why)}</div></div></label>`).join('') +
+      '<div class="center"><button id="bzFixAdd">📌 A kijelöltek a Bevésésbe</button></div><p class="center muted" id="bzFixDone"></p>';
+    $('bzFixAdd').onclick = () => {
+      const pick = [...host.querySelectorAll('input[data-i]')].filter(c => c.checked).map(c => list[Number(c.dataset.i)]);
+      const t = Date.now(); let added = 0;
+      pick.forEach((x, k) => { const id = 'fix-' + t + '-' + k; added += bvAdd([{ slug: 'beszelj', n: id, hu: x.hu || x.it, it: x.it }]).added; const it = bv.items['beszelj|' + id]; if (it) { it.src = '🗣️ Beszélj! – javítás'; bvTouch(it); } });
+      bvSave(); $('bzFixDone').textContent = `📌 ${added} mondat bekerült a Bevésésbe – ott lépésenként rögzíted őket.`;
+    };
+  };
+})();
+
+// ============================================================
 // INDÍTÁS
 // ============================================================
 (() => {
@@ -3731,6 +3921,8 @@ $('srBtn').onclick = async () => {
     if (t === 'terv') try { renderPlan(); } catch {}
     if (t !== 'beves') try { if (bvRunState) bvStopAudio(); } catch {}
     if (t === 'beves') try { bvRender(); } catch {}
+    if (t !== 'beszelj') try { if (srActive) srStop(); } catch {}
+    if (t === 'beszelj') try { bzFill(); } catch {}
   };
   // gyakorlás közben a menü félreteszi a gyakorlást (nem veszik el), és egy sávval folytatható
   const st = $('study');
