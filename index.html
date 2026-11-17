@@ -188,6 +188,13 @@ details.folder{border-radius:14px}
 .bv-hint{font:700 1.2rem/1.5 ui-monospace,Menlo,monospace;text-align:center;letter-spacing:.5px;color:#7a5200;background:#fff7e0;border-radius:12px;padding:8px;margin:8px 0}
 .bv-rate button{display:inline-flex;flex-direction:column;align-items:center;min-width:120px}.bv-rate small{font-weight:500;font-size:.72rem;opacity:.9}.bv-good{background:#1d6346!important;color:#fff!important}.bv-mid{background:#b7791f!important;color:#fff!important}.bv-bad{background:#b42318!important;color:#fff!important}
 #bvRules ol,#bvRules ul{line-height:1.55;padding-left:22px}#bvRules li{margin:3px 0}#bvRules h4{margin:14px 0 4px}
+.helpbox{padding:12px 18px}.helpbox+.box{margin-top:6px}
+details.help>summary{cursor:pointer;font-weight:800;color:var(--sea);list-style:none}details.help>summary::-webkit-details-marker{display:none}
+details.help>summary::before{content:"❓ "}details.help[open]>summary{margin-bottom:6px}
+details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul{padding-left:22px;line-height:1.55;margin:4px 0}details.help li{margin:3px 0}details.help p{margin:6px 0;line-height:1.5}
+.help-why{background:var(--soft);border-radius:12px;padding:8px 12px}
+#srRes:empty,#srTestRes:empty{display:none}.sr-live{font-style:italic;color:#647482;text-align:center;margin:6px 0}
+.sr-score{font:800 1.4rem 'Nunito',sans-serif}.sr-ok{color:#1d6346}.sr-mid{color:#b7791f}.sr-bad{color:#b42318}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -195,7 +202,7 @@ details.folder{border-radius:14px}
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>IT</b> Italiano</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">V36</span>
+ <span class="ver" title="Programverzió">V37</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">IL PIANO</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -229,13 +236,21 @@ details.folder{border-radius:14px}
  </div>
  <div class="center"><button class="alt" id="prev">← Előző</button><button class="alt" id="next">Következő →</button><button class="alt" id="shuffle">Keverés</button></div>
  <div class="tools2"><button class="alt" id="toBeves" title="A mondat a szigetben is megmarad">📌 Bevésésre</button><button class="alt" id="toVocab" title="A mondat a szigetben is megmarad">🧠 Szótanulóba (emlékeztetőhöz)</button><span id="toVocabInfo" class="muted"></span></div>
- <div class="tools2"><button class="alt" id="recBtn">🎙 Felvétel</button><button class="alt hidden" id="recPlay">▶ Saját hang</button><button class="alt hidden" id="recCompare">⇄ Saját + eredeti</button><span id="recInfo" class="muted"></span></div>
+ <div class="tools2"><button class="alt" id="recBtn">🎙 Felvétel</button><button class="alt hidden" id="recPlay">▶ Saját hang</button><button class="alt hidden" id="recCompare">⇄ Saját + eredeti</button><button class="alt" id="srBtn" title="Mondd ki – a telefon leírja, mit értett belőle">🗣️ Kiejtés-ellenőrzés</button><span id="recInfo" class="muted"></span></div>
+ <div id="srRes" class="tres"></div>
  <div class="tools2"><button class="alt" id="hfBtn">🎧 Kézmentes mód</button>
   <label class="muted">Szünet <select id="hfPause"><option value="auto">automatikus</option><option value="3">3 mp</option><option value="5">5 mp</option><option value="8">8 mp</option><option value="12">12 mp</option></select></label>
   <label class="muted"><input type="checkbox" id="hfRepeat"> a választ kétszer mondja (kézmentesen és felfedéskor is)</label>
   <label class="muted">Értékelés <select id="hfRate"><option value="wait">a válasz után vár, amíg koppintok (ajánlott)</option><option value="auto">5 mp-ig vár, utána magától „Jól ment”</option><option value="none">nincs – csak hallgatás, a haladás NEM mentődik</option></select></label></div>
+<details class="help" style="margin-top:10px"><summary>A gyakorlóképernyő használata</summary>
+<ol><li>Nézd meg a kérdést, és <b>mondd ki hangosan</b> a választ – csak utána nyomd meg a „Válasz felfedése” gombot.</li><li>Hasonlítsd össze, és <b>értékelj őszintén</b>: ha gondolkodni kellett, az „Nehéz”.</li></ol>
+<h4>Eszközök – mikor melyiket?</h4><ul><li>🔊 <b>Hangok:</b> a kérdés és a válasz meghallgatása.</li><li>📌 <b>Bevésésre:</b> fontos vagy makacs mondat – a 📌 fülön lépésenként rögzíted (a szigetben is megmarad).</li><li>🧠 <b>Szótanulóba:</b> ha csak egy-egy szó nem megy – ott emlékeztetőt kaphat.</li><li>🎙 <b>Felvétel → Saját + eredeti:</b> egymás után hallod a saját hangodat és az eredetit; a dallamot és a tempót így tudod összevetni.</li><li>🗣️ <b>Kiejtés-ellenőrzés:</b> mondd ki az idegen nyelvű mondatot – a telefon leírja, mit értett belőle. A zöld szavakat felismerte, a pirosakat nem: azokat hallgasd meg újra, és mondd utána. Ez érthetőséget mér, nem hangonkénti kiejtést.</li><li>🎧 <b>Kézmentes mód:</b> autóban, kertben – kérdés, szünet (mondd ki), válasz; a „kétszer mondja” a beívódást segíti.</li></ul></details>
 </section>
 
+<section data-tab="terv" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> A mai teendőid a beállított szinted, célod és időkereted alapján – abban a sorrendben, ahogy a memória a legjobban rögzít. <b>Miért?</b> Nem kell gondolkodnod, mit csinálj: csak haladj fentről lefelé.</p>
+<h4>Első alkalommal</h4><ol><li>Lent, a „Tananyag és beállítások” résznél add meg a jelenlegi szintedet, a célodat, hány napot tanulsz egy héten, és mennyi időd van reggel, napközben, délután és este.</li><li>Nézd meg a tananyag-listát: ebből látod, melyik szigetet kell legközelebb feltölteni.</li></ol>
+<h4>Minden nap</h4><ol><li>🌅 <b>Reggel:</b> hallgatás – a tegnap tanult mondatok hanganyaga (autóban is). A szünetben előbb mondd ki, csak utána halld.</li><li>☕ <b>Napközben:</b> pár perces adagokban szókártyák és a nehéz mondatok.</li><li>🕒 <b>Délután:</b> új mondatok a következő szigetből, utána 📌 Bevésés (új mondatok + körkérdezés).</li><li>🌙 <b>Este:</b> az esedékes ismétlések, a 📌 esti ismétlés lefekvés előtt, és egy rövid beszédfeladat (szerepjáték a Claude-dal, monológ, saját mondatok).</li><li>🌙 <b>A nap végén:</b> 1 perc – elkészül a holnap reggeli hanganyag.</li></ol>
+<h4>Ha kevés az időd</h4><p>Ebben a sorrendben hagyd el a feladatokat: először az olvasást, aztán az új mondatokat. <b>Az esedékes ismétléseket és a Bevésés ismétléseit ne hagyd ki</b> – ezek nélkül a korábbi munka elvész.</p><p>A legtöbb feladat magától kipipálódik; amit máshol csináltál, kézzel is kipipálhatod.</p></details></section>
 <section data-tab="terv" class="box" id="planBox"><h3>A mai terv</h3>
  <div class="plan-head"><div class="plan-day" id="planDay"></div><div class="muted" id="planSum"></div></div>
  <div class="plan-prog"><i id="planBar"></i></div>
@@ -277,6 +292,9 @@ details.folder{border-radius:14px}
  </details>
 </section>
 
+<section data-tab="ma" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> A napi számaid (sorozat, ismétlések, új mondatok), a naptár, a következő 7 nap előrejelzése, és lent az összes sziget <b>mai esedékes ismétlése egy helyen</b>. <b>Miért?</b> Az esedékes ismétlés a nap legfontosabb feladata: ekkor vagy a felejtés határán, ilyenkor rögzít a legtöbbet.</p>
+<h4>Ajánlott sorrend</h4><ol><li>Este nyomd meg: <b>„Minden esedékes egyben”</b> – az összes szigetből egyetlen körben.</li><li>Minden mondatnál <b>előbb hangosan mondd ki</b> a választ, csak utána fedd fel.</li><li>Értékelj őszintén: <b>Nem ment</b> (holnap újra jön), <b>Nehéz</b>, <b>Jól ment</b>, <b>Könnyű</b> (sokáig nem jön). Ha gondolkodni kellett, az „Nehéz”.</li><li>Nézd meg az előrejelzést: ha a következő napokra nagyon sok ismétlés jön, a ⚙️ fülön csökkentsd a napi új mondatok számát.</li></ol>
+<p>A napi célt a „Naptár, előrejelzés, napi cél” résznél állíthatod. A legsötétebb négyzet a naptárban: megvolt a napi cél.</p></details></section>
 <section data-tab="ma" class="box"><h3>Statisztika</h3>
  <div class="stats">
   <div class="stat"><b id="stStreak">0</b>napos sorozat</div>
@@ -297,6 +315,9 @@ details.folder{border-radius:14px}
  </details>
 </section>
 
+<section data-tab="beallitas" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Bejelentkezés és felhőmentés, a gyakorlás beállításai, a beszédfelismerés próbája és a mentés. <b>Miért?</b> Itt dől el, hogyan kérdez az app – ezeket egyszer kell jól beállítani.</p>
+<h4>Ajánlott beállítások</h4><ul><li><b>Mód:</b> „Esedékes ismétlés + új mondatok” a napi munkához; „Tanulás” csak egy sziget első átnézéséhez.</li><li><b>Irány:</b> magyar → idegen (ez fejleszti a beszédet). Hetente egyszer a fordított irány a megértéshez.</li><li><b>Új mondat naponta:</b> amennyit a 🗺️ terv javasol. Ha túl sok az ismétlés, csökkentsd.</li><li><b>Idegen hang sebessége:</b> eleinte 80–90%, később 100%.</li><li><b>Gépelős mód / diktálás:</b> hetente 1–2× a helyesíráshoz és a hallásértéshez.</li></ul>
+<h4>Biztonság</h4><ul><li>Jelentkezz be, hogy a haladás a felhőbe is mentődjön.</li><li>Havonta egyszer: „Haladás exportálása” (tartalék JSON-fájl).</li></ul></details></section>
 <section data-tab="beallitas" class="box"><h3>Felhőszinkronizálás</h3>
  <p class="muted">Jelentkezz be ugyanazzal az e-mail-címmel a számítógépen és az iPhone-on.</p>
  <div class="authrow"><input id="email" type="email" autocomplete="email" placeholder="E-mail-cím"><input id="password" type="password" autocomplete="current-password" placeholder="Jelszó"></div>
@@ -316,6 +337,9 @@ details.folder{border-radius:14px}
  <p id="dailyStatus" class="muted"></p><div id="dailyList"></div>
 </section>
 
+<section data-tab="hallgatas" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> A kiválasztott mondatokból egyetlen folyamatos MP3 készül: magyar mondat → szünet → idegen nyelvű mondat. Lezárt képernyővel, autóban, kertben is szól. <b>Miért?</b> A holt időt tanulássá alakítja, és a szünetben kimondott válasz valódi előhívás – ettől marad meg.</p>
+<h4>Ajánlott használat</h4><ol><li><b>Este:</b> „A ma tanult új mondatok” → irány magyar → idegen → sorrend: <b>lépcsőzetes (Pimsleur), 3 visszatérés</b> → Hanganyag elkészítése.</li><li><b>Másnap reggel</b> hallgasd meg (a 🗺️ terv is ezt kéri).</li><li>A szünetben <b>mindig mondd ki hangosan</b> a választ, mielőtt megszólal. Ha csak hallgatod, sokkal kevesebbet ér.</li><li>Hosszú mondatoknál kapcsold be a „felépítés a végükről” beállítást.</li></ol>
+<h4>Haladóknak</h4><ul><li>Hallásértéshez: irány <b>idegen → magyar</b>, gyorsabb idegen hanggal.</li><li>Egy egész sziget átismétléséhez: pipáld ki a szigetet, és keverd a mondatokat.</li><li>Az utolsó 3 hanganyag a készüléken marad, MP3-ként le is töltheted.</li></ul></details></section>
 <section data-tab="hallgatas" class="box" id="mixBox"><h3>🎧 Hallgatható összeállítás</h3>
  <p class="muted">A kiválasztott mondatok hangfájljaiból egyetlen folyamatos MP3 készül: magyar mondat → szünet (ilyenkor mondd ki olaszul) → olasz mondat, beállítható ismétléssel. Lezárt képernyővel is szól, és le is töltheted.</p>
  <div class="row">
@@ -361,12 +385,16 @@ details.folder{border-radius:14px}
  </div>
 </section>
 
+<section data-tab="nehez" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Azok a mondatok az összes szigetből, amiket az utóbbi időben többször „Nem ment” vagy „Nehéz” értékeléssel jelöltél. <b>Miért?</b> Ez a kevés mondat okozza a legtöbb felejtést – célzott munkával gyorsan rendbe jön.</p>
+<h4>Ajánlott sorrend</h4><ol><li>Hetente 1–2× <b>„Nehéz mondatok gyakorlása”</b>.</li><li>Ha egy mondat egész szerkezete nem megy: <b>„📌 Mind bevésésre”</b> – a Bevésés a legerősebb módszer.</li><li>Ha csak egy-egy szó a gond: <b>„🧠 Mind a szótanulóba”</b>, és ott kérj hozzá emlékeztetőt.</li></ol><p>A mondatok mindkét esetben a szigetükben is megmaradnak.</p></details></section>
 <section data-tab="nehez" class="box"><h3>Nehéz mondataim</h3>
  <p class="muted">Amiket a legutóbbi ismétléseknél többször „Nem ment” vagy „Nehéz” értékeléssel jelöltél, az összes szigetből.</p>
  <button id="hardRefresh" class="alt">Lista frissítése</button><button id="hardPractice">Nehéz mondatok gyakorlása</button><button id="hardToVocab" class="alt">🧠 Mind a szótanulóba</button><button id="hardToBeves" class="alt">📌 Mind bevésésre</button>
  <p id="hardStatus" class="muted"></p><div id="hardList"></div>
 </section>
 
+<section data-tab="beves" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> A kijelölt, fontos vagy makacs mondatok lépésenkénti rögzítése, utána pontos menetrend szerinti ismétlése. <b>Miért?</b> Ez a legerősebb módszer: többféle előhívás, leírás, emlékeztető és körkérdezés – ettől marad meg másnap is.</p>
+<h4>Ajánlott sorrend</h4><ol><li>Gyakorlás közben jelölj ki mondatot a <b>„📌 Bevésésre”</b> gombbal (napi 5–7 elég).</li><li>Délután itt: <b>„Következő új mondat bevésése”</b> – végigvezet a 7 lépésen.</li><li>2–3 mondatonként és a végén: <b>„🔁 Körkérdezés”</b>.</li><li>Ha a 📌 fülön szám jelenik meg, esedékes ismétlés van – főleg az <b>esti (lefekvés előtt)</b> és a <b>másnap reggeli</b> fontos.</li></ol><p>A részletes menetrend lent, a „📋 A pontos menetrend” résznél van.</p></details></section>
 <section data-tab="beves" class="box" id="bvBox"><h3>📌 Bevésés</h3>
  <p class="muted">Ide kerülnek a szigetekből kijelölt mondatok (a szigetben is megmaradnak). Itt lépésről lépésre bevésed őket, utána az app a menetrend szerint visszahozza.</p>
  <div id="bvSum"></div>
@@ -409,6 +437,9 @@ details.folder{border-radius:14px}
  <li>Ha egy mondat kétszer is kiesik, készíts hozzá új emlékeztetőt: vedd ki (✕), jelöld ki újra, és véstesd be elölről.</li></ul>
 </details></section>
 <section data-tab="beves" class="box"><h3>Bevésendő és folyamatban lévő mondatok</h3><div id="bvList"></div></section>
+<section data-tab="szavak" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Szókártyák, amelyeket az app pont akkor kérdez, amikor már kezdenéd elfelejteni (FSRS). Forrás: a szigetek szókincsbővítő mondatai, a szigetből átvett mondatok és a saját szavaid. <b>Miért?</b> Egy mondat gyakran csak egyetlen szón akad el – azt itt célzottan, emlékeztetővel rögzíted.</p>
+<h4>Egyszer kell beállítani</h4><ol><li>„Saját szólista feltöltése”: töltsd be a <b>…Szokincsbovites_osszes_sziget.txt</b> fájlokat (egyszerre többet is).</li><li>„🧠 Emlékeztetők betöltése”: ugyanezeket a fájlokat – így a kártyákhoz emlékeztető is jár.</li><li>Beállítások: célzott emlékezés <b>90%</b> (ajánlott), új kártya naponta 10–20.</li></ol>
+<h4>Minden nap</h4><ol><li><b>„Esedékes szavak gyakorlása”</b> – napközben, pár perces adagokban.</li><li>Ha egy szó nem marad meg: ✏️ saját emlékeztető, vagy a Mnemonika-műhely (a lenti 1–4. lépés).</li></ol></details></section>
 <section data-tab="szavak" class="box" id="vocabBox"><h3>Szótanulás</h3>
  <p class="muted">Szókártyák FSRS-ütemezéssel: minden kártyát pont akkor kérdez, amikor már kezdenéd elfelejteni. Forrás: a letöltött szigetek szókincsbővítő mondatai és a saját szólistáid.</p>
  <div class="stats">
@@ -501,6 +532,9 @@ details.folder{border-radius:14px}
  </details>
 </section>
 
+<section data-tab="konyvtar" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Az összes szigeted a felhőben, mappákba rendezve. Az egyszer megnyitott sziget a készüléken marad, internet nélkül is működik. <b>Miért?</b> Telefonon és gépen ugyanaz a tananyag és ugyanaz a haladás.</p>
+<h4>Új sziget</h4><ol><li>A Claude-tól kapott TXT-ből a Python-program elkészíti a hangfájlokat.</li><li>„Új sziget feltöltése”: név, <b>mappa</b> (a 🗺️ terv mutatja, melyik a következő és melyik mappába való), TXT, magyar és idegen nyelvű hangfájlok.</li></ol>
+<h4>Gyakorlás</h4><ol><li>Koppints egy szigetre: a ⚙️ fülön beállított móddal indul (ajánlott: „Esedékes ismétlés + új mondatok”).</li><li>Utazás előtt: <b>„Összes letöltése offline használatra”</b>.</li></ol></details></section>
 <section data-tab="konyvtar" class="box"><h3>Nyelvi sziget-könyvtár (felhő)</h3>
  <p class="muted">Az egyszer megnyitott sziget a készüléken marad, és internet nélkül is használható.</p>
  <button id="refreshLibrary">Könyvtár frissítése</button><button id="downloadAll" class="alt">Összes letöltése offline használatra</button>
@@ -514,6 +548,14 @@ details.folder{border-radius:14px}
  </details>
 </section>
 
+<section data-tab="beallitas" class="box" id="srTestBox"><h3>🗣️ Beszédfelismerés-próba</h3>
+ <p class="muted">Ezzel kipróbálhatod, hogy a készülékeden működik-e a beszédfelismerés – erre épül a kiejtés-ellenőrzés és a későbbi „🗣️ Beszélj!” mód. iPhone-on Safariban és a főképernyőre tett appban is próbáld ki.</p>
+ <p id="srEnv" class="muted"></p>
+ <label class="bv-lab">Ezt a mondatot mondd ki: <input id="srTestText"></label>
+ <label class="muted">Nyelv: <select id="srTestLang"><option value="it">az idegen nyelv</option><option value="hu">magyar</option></select></label>
+ <div class="center"><button id="srTestBtn">🎙️ Indítás – mondd ki a mondatot</button></div>
+ <div id="srTestLive" class="sr-live"></div><div id="srTestRes" class="tres"></div>
+</section>
 <section data-tab="beallitas" class="box"><h3>Tananyag és beállítások</h3>
  <p class="muted"><b>Fontos:</b> az itt beállított irány, mód és napi új mondat a Könyvtárból megnyitott szigetekre is érvényes.</p>
  <p class="muted">Saját fájlokból: TXT soronként „magyar mondat - olasz mondat”, hangfájlok 01.mp3, 02.mp3… (a hanganyag-program output/gyakorlo mappájából).</p>
@@ -1609,6 +1651,7 @@ function resetRecording() {
   try { recEl.pause(); } catch {}
   $('recBtn').textContent = '🎙 Felvétel'; $('recBtn').classList.remove('on');
   $('recPlay').classList.add('hidden'); $('recCompare').classList.add('hidden'); $('recInfo').textContent = '';
+  try { srStop(); const h = $('srRes'); if (h) h.innerHTML = ''; } catch {}
 }
 function stopRecStream() { if (recState.stream) { recState.stream.getTracks().forEach(t => t.stop()); recState.stream = null; } }
 async function toggleRecording() {
@@ -3585,6 +3628,81 @@ $('bvDueBtn').onclick = bvStartDue;
 $('bvKorBtn').onclick = bvStartKor;
 $('bvWrite').onchange = () => { try { localStorage.setItem(BV_WKEY, $('bvWrite').value); } catch {} };
 $('bvNewBtn').onclick = () => bvStartNew(bvNextNew());
+
+// ============================================================
+// BESZÉDFELISMERÉS – a telefon/böngésző beépített felismerője (ingyenes)
+// ============================================================
+const SR_LANG = { it: 'it-IT', hu: 'hu-HU' };
+const SR_SAMPLE = 'Buongiorno, vorrei un caffè, per favore.';
+const SRClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+let srActive = null;
+const srStandalone = () => { try { return !!(navigator.standalone || window.matchMedia('(display-mode: standalone)').matches); } catch { return false; } };
+function srListen(lang, onInterim) {
+  return new Promise((res, rej) => {
+    if (!SRClass) { const e = new Error('unsupported'); e.code = 'unsupported'; return rej(e); }
+    try { if (srActive) srActive.abort(); } catch {}
+    let r; try { r = new SRClass(); } catch (e) { e.code = 'start'; return rej(e); }
+    srActive = r; r.lang = SR_LANG[lang] || lang; r.interimResults = true; r.continuous = false; r.maxAlternatives = 3;
+    let fin = '', alts = [], err = null, ended = false;
+    r.onresult = e => { let inter = ''; for (let i = e.resultIndex; i < e.results.length; i++) { const x = e.results[i]; if (x.isFinal) { fin += x[0].transcript; alts = Array.from(x).map(a => a.transcript); } else inter += x[0].transcript; } if (onInterim) onInterim((fin + ' ' + inter).trim()); };
+    r.onerror = e => { err = e.error || 'error'; };
+    r.onend = () => { if (ended) return; ended = true; if (srActive === r) srActive = null; if (!fin.trim() && err) { const ex = new Error(err); ex.code = err; rej(ex); } else if (!fin.trim()) { const ex = new Error('no-speech'); ex.code = 'no-speech'; rej(ex); } else res({ text: fin.trim(), alts }); };
+    try { r.start(); } catch (e) { e.code = 'start'; srActive = null; return rej(e); }
+    setTimeout(() => { try { if (srActive === r) r.stop(); } catch {} }, 15000);
+  });
+}
+function srStop() { try { if (srActive) srActive.stop(); } catch {} }
+function srErrText(code) {
+  return ({ 'not-allowed': 'A mikrofon vagy a beszédfelismerés nincs engedélyezve. iPhone-on: Beállítások → Safari → Mikrofon → Engedélyezés, és a Beállítások → Siri → „Diktálás” legyen bekapcsolva.',
+    'service-not-allowed': 'A beszédfelismerés ebben a módban nincs engedélyezve. iPhone-on a főképernyőről indított appban ez előfordulhat – próbáld ki Safariban megnyitva is, és ellenőrizd, hogy a Diktálás be van-e kapcsolva (Beállítások → Általános → Billentyűzet).',
+    'no-speech': 'Nem hallottam beszédet. Beszélj közelebb a telefonhoz, és kezdd el pár másodpercen belül.',
+    'audio-capture': 'Nem érem el a mikrofont (lehet, hogy egy másik app használja).',
+    'network': 'A felismeréshez internetkapcsolat kell.', 'aborted': 'A felismerés megszakadt.', 'language-not-supported': 'Ezt a nyelvet a készülék felismerője nem támogatja.',
+    'unsupported': 'Ez a böngésző nem támogatja a beszédfelismerést. iPhone-on Safari, gépen Chrome vagy Edge kell.' })[code] || ('Hiba: ' + code);
+}
+function srCompare(expected, heard, alts) {
+  let best = null;
+  for (const h of [heard, ...(alts || [])]) { if (!h) continue; const r = compareAnswer(expected, h); const ok = r.eState.filter(v => v !== 'miss').length; const pct = Math.round(ok / Math.max(1, r.E.length, r.T.length) * 100); if (!best || pct > best.pct) best = { r, pct, heard: h }; }
+  return best;
+}
+function srShow(host, expected, res) {
+  const b = srCompare(expected, res.text, res.alts), cls = b.pct >= 90 ? 'sr-ok' : b.pct >= 60 ? 'sr-mid' : 'sr-bad';
+  const msg = b.pct >= 90 ? 'Érthető – a felismerő mindent jól értett.' : b.pct >= 60 ? 'Nagyrészt érthető – a piros szavakat hallgasd meg, mondd utána, és próbáld újra.' : 'Sok szót nem értett – hallgasd meg lassabban (🔊), mondd utána darabonként, és próbáld újra.';
+  const esc = t => String(t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  const line = (label, toks, states) => `<div><span class="muted">${label} </span>` + toks.map((t, k) => `<span class="w ${states[k]}">${esc(t.raw)}</span>`).join(' ') + '</div>';
+  host.innerHTML = `<div class="verdict"><span class="sr-score ${cls}">${b.pct}%</span> érthetőség – ${msg}</div>` + line('A mondat:', b.r.E, b.r.eState) + line('Ezt értette:', b.r.T, b.r.tState) + '<p class="muted">Ez azt méri, mennyit ért belőle egy gépi „hallgató” – nem hangonkénti kiejtésértékelés.</p>';
+  return b.pct;
+}
+// gyakorlóképernyő
+$('srBtn').onclick = async () => {
+  if (!sess) return; const it = sess.items[sess.pos], target = it.it;
+  if (srActive) { srStop(); return; }
+  try { stopActiveAudio(); } catch {}
+  const btn = $('srBtn'), host = $('srRes'); btn.textContent = '⏹ Kész, értékeld'; btn.classList.add('on');
+  host.innerHTML = '<div class="sr-live">Hallgatlak… mondd ki az idegen nyelvű mondatot.</div>';
+  try {
+    const res = await srListen('it', t => { host.innerHTML = `<div class="sr-live">„${t.replace(/[&<>]/g, '')}”</div>`; });
+    if (sess && sess.items[sess.pos] === it) { srShow(host, target, res); revealAnswer(false); }
+  } catch (e) { host.innerHTML = `<div class="verdict sr-bad">${srErrText(e.code || e.message)}</div>`; }
+  btn.textContent = '🗣️ Kiejtés-ellenőrzés'; btn.classList.remove('on');
+};
+// próba a beállításokban
+(() => {
+  $('srTestText').value = SR_SAMPLE;
+  $('srEnv').textContent = (SRClass ? '✓ A böngésző ismeri a beszédfelismerést.' : '✗ Ez a böngésző nem ismeri a beszédfelismerést.') + (srStandalone() ? ' Most a főképernyőre tett appként fut.' : ' Most böngészőben fut.');
+  $('srTestBtn').onclick = async () => {
+    if (srActive) { srStop(); return; }
+    const lang = $('srTestLang').value, target = $('srTestText').value.trim() || SR_SAMPLE, btn = $('srTestBtn');
+    btn.textContent = '⏹ Kész'; $('srTestLive').textContent = 'Hallgatlak…'; $('srTestRes').innerHTML = '';
+    try {
+      const res = await srListen(lang, t => { $('srTestLive').textContent = '„' + t + '”'; });
+      $('srTestLive').textContent = '';
+      const pct = srShow($('srTestRes'), target, res);
+      $('srTestRes').insertAdjacentHTML('beforeend', `<p><b>✓ A beszédfelismerés működik ${srStandalone() ? 'a főképernyőre tett appban' : 'a böngészőben'}.</b> (${pct}%)</p>`);
+    } catch (e) { $('srTestLive').textContent = ''; $('srTestRes').innerHTML = `<div class="verdict sr-bad">✗ ${srErrText(e.code || e.message)}</div><p class="muted">Hibakód: ${e.code || e.message} · ${srStandalone() ? 'főképernyős app' : 'böngésző'}</p>`; }
+    btn.textContent = '🎙️ Indítás – mondd ki a mondatot';
+  };
+})();
 
 // ============================================================
 // INDÍTÁS
