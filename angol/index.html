@@ -185,6 +185,7 @@ details.folder{border-radius:14px}
 .bv-chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 10px}.bv-chips span{font-size:.78rem;padding:3px 8px;border-radius:10px;background:#e8edf1;color:#52606d}.bv-chips span.on{background:var(--coral);color:#fff;font-weight:800}.bv-chips span.ok{background:#d6f3e6;color:#1d6346}
 .bv-q{font:800 1.35rem/1.35 'Nunito',sans-serif;text-align:center;margin:12px 0}.bv-a{font:800 1.3rem/1.35 'Nunito',sans-serif;text-align:center;color:var(--sea);margin:10px 0}
 .bv-do{margin:6px 0 10px 0;padding-left:22px;line-height:1.5}.bv-lab{display:grid;gap:4px;font-weight:700;color:#4b5d6a;margin:8px 0}.bv-lab input{font-size:1rem;padding:9px;border:1px solid #cbd5df;border-radius:10px}.bv-chk{display:block;margin:10px 0;font-weight:700}
+.bv-hint{font:700 1.2rem/1.5 ui-monospace,Menlo,monospace;text-align:center;letter-spacing:.5px;color:#7a5200;background:#fff7e0;border-radius:12px;padding:8px;margin:8px 0}
 .bv-rate button{display:inline-flex;flex-direction:column;align-items:center;min-width:120px}.bv-rate small{font-weight:500;font-size:.72rem;opacity:.9}.bv-good{background:#1d6346!important;color:#fff!important}.bv-mid{background:#b7791f!important;color:#fff!important}.bv-bad{background:#b42318!important;color:#fff!important}
 #bvRules ol,#bvRules ul{line-height:1.55;padding-left:22px}#bvRules li{margin:3px 0}#bvRules h4{margin:14px 0 4px}
 </style>
@@ -194,7 +195,7 @@ details.folder{border-radius:14px}
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>EN</b> English</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">EN V16</span>
+ <span class="ver" title="Programverzió">EN V17</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">GAME PLAN</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -369,7 +370,8 @@ details.folder{border-radius:14px}
 <section data-tab="beves" class="box" id="bvBox"><h3>📌 Bevésés</h3>
  <p class="muted">Ide kerülnek a szigetekből kijelölt mondatok (a szigetben is megmaradnak). Itt lépésről lépésre bevésed őket, utána az app a menetrend szerint visszahozza.</p>
  <div id="bvSum"></div>
- <div class="center"><button id="bvDueBtn">▶ Esedékes ismétlések</button><button id="bvNewBtn" class="alt">▶ Következő új mondat bevésése</button></div>
+ <div class="center"><button id="bvDueBtn">▶ Esedékes ismétlések</button><button id="bvKorBtn">🔁 Körkérdezés</button><button id="bvNewBtn" class="alt">▶ Következő új mondat bevésése</button></div>
+ <p class="center muted"><label>Leírás az ismétléseknél: <select id="bvWrite"><option value="reggel">a másnap reggelinél + ha akadozott / nem jött (ajánlott)</option><option value="hiba">csak ha akadozott / nem jött</option><option value="mindig">minden ismétlésnél</option></select></label></p>
  <div id="bvRun" class="hidden"></div><p id="bvStatus" class="muted"></p>
 </section>
 <section data-tab="beves" class="box"><details id="bvRules" open><summary><b>📋 A pontos menetrend – hogy semmi ne maradjon ki</b></summary>
@@ -377,25 +379,34 @@ details.folder{border-radius:14px}
  <ul><li>Gyakorlás közben a „📌 Bevésésre” gombbal jelöld ki azt a mondatot, amit biztosan tudni akarsz (a „🎯 Nehéz mondataim” listából egyben is átteheted).</li>
  <li>A mondat a szigetben is megmarad, ott a megszokott módon ismétlődik tovább.</li>
  <li>Naponta <b>5–7 új mondatot</b> vés be, ne többet. Egy 5-ös blokkot végigvinni többet ér, mint 30-at átfutni.</li></ul>
- <h4>B) Az első bevésés – 6 lépés, mindig ebben a sorrendben (egy mondat kb. 3–4 perc)</h4>
+ <h4>B) Az első bevésés – 7 lépés, mindig ebben a sorrendben (egy mondat kb. 4–5 perc)</h4>
  <ol><li><b>Megértés és darabolás (20 mp):</b> hallgasd meg kétszer; nézd meg, mi minek felel meg; írd be azt az 1–2 elemet, ami miatt nehéz.</li>
  <li><b>Árnyékolás (30 mp):</b> a hang háromszor szól – mondd vele <b>együtt</b>, hangosan, ugyanazzal a dallammal; utána egyszer egyedül, hang nélkül.</li>
- <li><b>1. előhívás:</b> csak a magyart látod – mondd ki hangosan, fejből, és <b>csak utána</b> fedd fel. Ha nem ment: olvasd el, az app 10-ig számol, aztán újra fejből, amíg sikerül.</li>
+ <li><b>Felépítés hátulról (40 mp):</b> a mondat végéből indulsz, és darabonként hosszabbodik. Minden darabot kétszer olvass fel hangosan, aztán nézz fel, és mondd el fejből.</li>
+ <li><b>Előhívás – előbb segítséggel, aztán anélkül:</b> először csak a kezdőbetűket látod, utána csak a magyart. Mindig <b>előbb mondd ki</b>, csak utána fedd fel. Ha nem ment: olvasd el, az app 10-ig számol, és újra.</li>
+ <li><b>Emlékeztető a nehéz elemhez (1 perc):</b> hasonló hangzású magyar szó + bizarr, mozgó kép, amelyben te is benne vagy. Írd le, és képzeld el 5 másodpercig. Ha nem jut eszedbe semmi, kérj ötletet a Claude-tól (a gomb a vágólapra másolja a kérést).</li>
  <li><b>Átalakítás (30 mp):</b> mondj és írj be egy saját változatot – más személy, más idő, kérdés vagy tagadás, vagy egy szó csere.</li>
- <li><b>Kép és kötődés (10 mp):</b> képzelj el egy 2 másodperces jelenetet a saját életedből, és írd le 3–5 szóban. A makacs szót tedd a Szótanulóba is.</li>
- <li><b>2. előhívás:</b> újra csak a magyar, fejből, hangosan. A 4–5. lépéssel közben eltelt egy kis idő – két sikeres előhívás, köztük más feladattal: ettől vésődik be.</li></ol>
+ <li><b>Leírás fejből:</b> csak a magyart látod, és leírod az idegen nyelvű mondatot. Ha hiba van, megnézed, a mező 5 mp múlva kiürül, és újra leírod – amíg hibátlan nem lesz.</li></ol>
  <p class="muted">Ha közben félbe kell hagynod, a „Szünet” gombbal később pontosan ott folytatod.</p>
- <h4>C) Ismétlések – az app magától hozza (a 📌 fülön a szám jelzi)</h4>
- <ol><li>10 perc múlva</li><li>aznap este (19 óra után, de legalább 1 órával később) – lehetőleg lefekvés előtt, mert az alvás rögzít</li><li>másnap reggel</li><li>3 nap múlva</li><li>1 hét múlva</li><li>16 nap múlva → utána a mondat „rögzült” ✓</li></ol>
- <p><b>Minden ismétlésnél:</b> magyar → hangosan, fejből → csak utána felfedés → őszinte értékelés:</p>
- <ul><li>✅ <b>Folyékonyan</b> (3 mp-en belül, akadás nélkül) → a következő lépcsőre lép.</li>
- <li>🟡 <b>Akadozva</b> → ugyanez a lépcső még egyszer: az első három lépcsőnél 10 perc múlva, később másnap reggel.</li>
- <li>❌ <b>Nem jött</b> → azonnal mini-javítás (3× árnyékolás, majd fejből, amíg sikerül), és visszalép: az első három lépcsőnél a 10 perces ismétlésre, később a másnap reggelire.</li></ul>
- <h4>D) Napi szabályok</h4>
+ <h4>C) Körkérdezés – a blokk zárása (ez a legfontosabb erősítő!)</h4>
+ <ul><li>2–3 új mondatonként, és a blokk végén mindig: a „🔁 Körkérdezés” gombbal.</li>
+ <li>Az app összekeveri a mondatokat; mindegyiket magyarból, fejből, hangosan kell visszamondani.</li>
+ <li>Egy mondat akkor kész, ha <b>két különböző körben</b> is hibátlanul ment. Ami nem ment, a kör végén újra jön.</li>
+ <li>Ha csak egy mondat maradt, a következő kör előtt 1 perc szünet jön, hogy a két siker ne közvetlenül egymás után legyen.</li></ul>
+ <h4>D) Ismétlések – az app magától hozza (a 📌 fülön a szám jelzi)</h4>
+ <ol><li>10 perccel a körkérdezés után</li><li>aznap este (19 óra után, de legalább 1 órával később) – <b>lefekvés előtt</b>, mert az alvás rögzít</li><li>másnap reggel – <b>kimondva és leírva</b></li><li>3 nap múlva</li><li>1 hét múlva</li><li>16 nap múlva → utána a mondat „rögzült” ✓</li></ol>
+ <p><b>Minden ismétlésnél:</b> magyar → hangosan, fejből → csak utána felfedés → őszinte értékelés. Ha elakadsz, a „💡 kezdőbetűk” gomb segít, de akkor legfeljebb „Akadozva” adható.</p>
+ <ul><li>✅ <b>Folyékonyan</b> (3 mp-en belül, segítség nélkül) → a következő lépcsőre lép.</li>
+ <li>🟡 <b>Akadozva</b> → leírás fejből hibátlanig, és ugyanez a lépcső még egyszer: az első három lépcsőnél 10 perc múlva, később másnap reggel.</li>
+ <li>❌ <b>Nem jött</b> → mini-javítás (3× árnyékolás, előhívás, leírás), és visszalép: az első három lépcsőnél a 10 perces ismétlésre, később a másnap reggelire.</li>
+ <li>Ha a reggeli leírásban hiba van, a „Folyékonyan” is „Akadozva” lesz.</li></ul>
+<h4>E) Napi szabályok</h4>
  <ul><li>Mindig <b>hangosan</b> – a motyogás is jó, a csak fejben mondás sokkal kevésbé.</li>
  <li>Az esti ismétlést ne hagyd ki, lehetőleg lefekvés előtt csináld.</li>
  <li>Napközben egyszer mondd ki <b>élesben</b> a nap mondatát (etetés, vezetés közben).</li>
- <li>Szigorú értékelés: ha gondolkodni kellett, az „akadozva”, nem „folyékonyan”.</li></ul>
+ <li>Szigorú értékelés: ha gondolkodni kellett, az „akadozva”, nem „folyékonyan”.</li>
+ <li>Hosszú (12 szónál hosszabb) mondatnál a felépítés hátulról lépést vedd különösen komolyan, vagy jelölj ki inkább egy rövidebbet.</li>
+ <li>Ha egy mondat kétszer is kiesik, készíts hozzá új emlékeztetőt: vedd ki (✕), jelöld ki újra, és véstesd be elölről.</li></ul>
 </details></section>
 <section data-tab="beves" class="box"><h3>Bevésendő és folyamatban lévő mondatok</h3><div id="bvList"></div></section>
 <section data-tab="szavak" class="box" id="vocabBox"><h3>Szótanulás</h3>
@@ -2010,8 +2021,8 @@ function plTasks() {
       go: tut ? null : claude ? null : () => window.open('https://claude.ai/artifact/HTf9yrmmwD11AAsbywg7ou', '_blank') });
   }
   for (const [i, cu] of (plan.custom || []).entries()) if (cu && cu.text) tasks.push({ id: 'custom' + i, time: ({ reggel: '🌅 Reggel', napkozben: '☕ Napközben', delutan: '🕒 Délután', este: '🌙 Este', barmikor: '⭐ Amikor ráérsz' }[cu.slot] || '⭐') + (cu.min ? ' · ' + cu.min + ' perc' : ''), title: cu.text, sub: 'Saját feladat', btn: '', order: ['reggel', 'napkozben', 'delutan', 'este', 'barmikor'].indexOf(cu.slot) });
-  { const bd = bvDue().length, bn = bvLive().filter(x => x.state === 'new').length, bt = bvLearnedToday();
-    if (bd || bn) tasks.push({ id: 'beves', order: 2, time: '📌 Bevésés · ' + (bd ? 'most ' : '') + (bd + Math.min(bn, Math.max(0, BV_DAILY - bt))) * 1 + ' mondat', title: (bd ? `${bd} esedékes bevésés-ismétlés` : '') + (bd && bn ? ' + ' : '') + (bn ? `${Math.min(bn, Math.max(0, BV_DAILY - bt))} új mondat bevésése (ma eddig: ${bt}/${BV_DAILY})` : ''), sub: 'A kijelölt mondatok a pontos menetrend szerint: 6 lépés, majd 10 perc, este, másnap reggel, 3, 7, 16 nap.', btn: '📌 Megnyitom', go: () => plGo('beves') }); }
+  { const bd = bvDue().length + bvLive().filter(x => x.state === 'kor').length, bn = bvLive().filter(x => x.state === 'new').length, bt = bvLearnedToday();
+    if (bd || bn) tasks.push({ id: 'beves', order: 2, time: '📌 Bevésés · ' + (bd ? 'most ' : '') + (bd + Math.min(bn, Math.max(0, BV_DAILY - bt))) * 1 + ' mondat', title: (bd ? `${bd} esedékes bevésés-ismétlés / körkérdezés` : '') + (bd && bn ? ' + ' : '') + (bn ? `${Math.min(bn, Math.max(0, BV_DAILY - bt))} új mondat bevésése (ma eddig: ${bt}/${BV_DAILY})` : ''), sub: 'A kijelölt mondatok a pontos menetrend szerint: 7 lépés, körkérdezés, majd 10 perc, este, másnap reggel, 3, 7, 16 nap.', btn: '📌 Megnyitom', go: () => plGo('beves') }); }
   if (plan.read) tasks.push({ id: 'read', time: '📖 Amikor ráérsz · 10 perc', title: lvl <= 1 ? 'Könnyített olvasmány vagy kezdő podcast' : lvl <= 3 ? 'Egy rövid cikk (LingQ) – 2–3 kifejezés kigyűjtése' : 'Cikk, podcast vagy sorozatrész eredeti nyelven', sub: 'Olyan anyag, aminek kb. 80–90%-át érted.', btn: '' });
   if (Number(plan.morning) > 0) tasks.push({ id: 'mix', time: '🌙 Este, a végén · 1 perc', title: 'A holnap reggeli hanganyag elkészítése', sub: '„A ma tanult új mondatok”, lépcsőzetes, 3 visszatérés.', btn: '🎧 Elkészítem', go: () => plGo('hallgatas', () => { $('mixSrc').value = 'new_today'; $('mixOrder').value = 'pim3'; syncMixSrc(); mixOrderInfo(); saveSettings(); $('mixBuild').scrollIntoView({ behavior: 'smooth', block: 'center' }); }) });
   const ord = tk => tk.order !== undefined ? tk.order + 0.5 : /^🌅/.test(tk.time) ? 0 : /^☕/.test(tk.time) ? 1 : /^🕒/.test(tk.time) ? 2 : /^📤/.test(tk.time) ? 2.2 : /^🌙 Este, a végén/.test(tk.time) ? 3.9 : /^🌙/.test(tk.time) ? 3 : 4;
@@ -3224,7 +3235,14 @@ const BV_KEY = 'angolsziget-beves', BEVES_ID = '__beves__', BV_DAILY = 7;
 const BV_LANG = { it: 'en-US', hu: 'hu-HU' };
 let bv = loadJSON(BV_KEY, { v: 1, items: {} }); if (!bv || !bv.items) bv = { v: 1, items: {} };
 const BV_STAGE = ['10 perces ismétlés', 'esti ismétlés', 'másnap reggeli ismétlés', '3 napos ismétlés', '1 hetes ismétlés', '16 napos ismétlés'];
-const BV_STEPS = ['Megértés', 'Árnyékolás', '1. előhívás', 'Átalakítás', 'Kép', '2. előhívás'];
+const BV_STEPS = ['Megértés', 'Árnyékolás', 'Felépítés', 'Előhívás', 'Emlékeztető', 'Átalakítás', 'Leírás'];
+const BV_WKEY = 'angolsziget-beveswrite';
+// a régi (6 lépéses) félbehagyott bevésések az új menetrend elejéről indulnak
+{ let mig = false; for (const x of Object.values(bv.items)) if (x && x.state === 'new' && !x.pv) { x.pv = 2; x.step = 0; x.updated = Date.now(); mig = true; } if (mig) saveJSON(BV_KEY, bv); }
+const bvShuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const bvHint = t => String(t).replace(/(\p{L})(\p{L}*)/gu, (m, a, b) => a + (b ? '…' : ''));
+function bvLevels(t) { const w = String(t).trim().split(/\s+/), n = w.length; if (n <= 3) return [w.join(' ')]; if (n <= 6) return ['… ' + w.slice(n - Math.ceil(n / 2)).join(' '), w.join(' ')]; const k1 = Math.ceil(n / 3), k2 = Math.ceil(2 * n / 3); return ['… ' + w.slice(n - k1).join(' '), '… ' + w.slice(n - k2).join(' '), w.join(' ')]; }
+function bvWriteMode() { try { return localStorage.getItem(BV_WKEY) || 'reggel'; } catch { return 'reggel'; } }
 let bvRunState = null, bvEl = null, bvTimer = null, bvPlayTok = 0;
 const bvEsc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const bvLive = () => Object.values(bv.items).filter(x => x && !x.del);
@@ -3243,7 +3261,7 @@ function bvAdd(list) {
     if (!it || !it.slug || !(it.n || it.k)) continue;
     const id = it.slug + '|' + (it.n || it.k), ex = bv.items[id];
     if (ex && !ex.del) { dup++; continue; }
-    bv.items[id] = { id, slug: it.slug, n: it.n || it.k, hu: it.hu, it: it.it, src: niceName(it.slug), added: Date.now(), state: 'new', step: 0, stage: 0, due: 0, key: '', variant: '', image: '', hist: [], updated: Date.now() };
+    bv.items[id] = { id, slug: it.slug, n: it.n || it.k, hu: it.hu, it: it.it, src: niceName(it.slug), added: Date.now(), state: 'new', step: 0, stage: 0, due: 0, key: '', variant: '', image: '', hist: [], mnemo: '', kor: 0, pv: 2, updated: Date.now() };
     added++;
   }
   if (added) { bvSave(); bvRender(); }
@@ -3296,33 +3314,40 @@ async function bvPlay(x, lang, times = 1, gap = 1500, onEach) {
   return true;
 }
 // ---------- megjelenítés ----------
-function bvBadge() { const b = $('tbBeves'); if (b) b.textContent = bvDue().length || ''; }
+function bvBadge() { const b = $('tbBeves'); if (b) b.textContent = (bvDue().length + bvLive().filter(x => x.state === 'kor').length) || ''; }
 function bvRender() {
   bvBadge(); if (!$('bvBox')) return;
-  const all = bvLive(), due = bvDue(), nw = all.filter(x => x.state === 'new'), lr = all.filter(x => x.state === 'learn'), dn = all.filter(x => x.state === 'done');
+  const all = bvLive(), due = bvDue(), nw = all.filter(x => x.state === 'new'), kr = all.filter(x => x.state === 'kor'), lr = all.filter(x => x.state === 'learn'), dn = all.filter(x => x.state === 'done');
   const today = bvLearnedToday();
-  $('bvSum').innerHTML = `<div class="bv-stats"><span><b>${due.length}</b> esedékes ismétlés</span><span><b>${nw.length}</b> bevésésre vár</span><span><b>${lr.length}</b> folyamatban</span><span><b>${dn.length}</b> rögzült ✓</span></div>`
+  $('bvSum').innerHTML = `<div class="bv-stats"><span><b>${due.length}</b> esedékes ismétlés</span><span><b>${kr.length}</b> körkérdezésre vár</span><span><b>${nw.length}</b> bevésésre vár</span><span><b>${lr.length}</b> folyamatban</span><span><b>${dn.length}</b> rögzült ✓</span></div>`
     + `<p class="muted">Ma bevésett új mondat: <b>${today}</b> / ${BV_DAILY}${today >= BV_DAILY ? ' – a mai adag megvan, az újakat inkább holnap kezdd.' : ''}</p>`;
   $('bvDueBtn').textContent = due.length ? `▶ Esedékes ismétlések (${due.length})` : 'Most nincs esedékes ismétlés';
   $('bvDueBtn').disabled = !due.length;
-  const next = nw.sort((a, b) => (b.step || 0) - (a.step || 0) || a.added - b.added)[0];
+  $('bvKorBtn').textContent = kr.length ? `🔁 Körkérdezés (${kr.length})` : 'Nincs körkérdezésre váró mondat';
+  $('bvKorBtn').disabled = !kr.length; $('bvKorBtn').classList.toggle('alt', kr.length < 2 && nw.length > 0);
+  const next = bvNextNew();
   $('bvNewBtn').textContent = next ? (next.step ? '▶ Félbehagyott bevésés folytatása' : '▶ Következő új mondat bevésése') : 'Nincs bevésésre váró mondat';
   $('bvNewBtn').disabled = !next;
-  const row = (x, extra) => `<div class="bv-row"><div><div class="bv-hu">${bvEsc(x.hu)}</div><div class="bv-it">${bvEsc(x.it)}</div><div class="muted">${bvEsc(x.src)}${extra ? ' · ' + extra : ''}</div></div><div class="bv-act">` +
+  if ($('bvWrite')) $('bvWrite').value = bvWriteMode();
+  const row = (x, extra) => `<div class="bv-row"><div><div class="bv-hu">${bvEsc(x.hu)}</div><div class="bv-it">${bvEsc(x.it)}</div>${x.mnemo ? `<div class="muted">🧠 ${bvEsc(x.mnemo)}</div>` : ''}<div class="muted">${bvEsc(x.src)}${extra ? ' · ' + extra : ''}</div></div><div class="bv-act">` +
     (x.state === 'new' ? `<button class="alt" data-bvgo="${bvEsc(x.id)}">▶ Bevésés</button>` : '') + (x.state === 'done' ? `<button class="alt" data-bvre="${bvEsc(x.id)}">↺ Újra</button>` : '') +
     `<button class="alt" data-bvdel="${bvEsc(x.id)}" title="Eltávolítás a bevésésből (a szigetben megmarad)">✕</button></div></div>`;
+  const wc = x => String(x.it).trim().split(/\s+/).length;
   let h = '';
-  h += `<h4>Bevésésre vár (${nw.length})</h4>` + (nw.length ? nw.map(x => row(x, x.step ? `félbehagyva a(z) ${x.step + 1}. lépésnél` : '')).join('') : '<p class="muted">Gyakorlás közben a „📌 Bevésésre” gombbal jelölhetsz ki mondatot – a szigetben is megmarad.</p>');
+  h += `<h4>Bevésésre vár (${nw.length})</h4>` + (nw.length ? nw.map(x => row(x, (x.step ? `félbehagyva a(z) ${x.step + 1}. lépésnél` : '') + (wc(x) > 12 ? (x.step ? ' · ' : '') + `hosszú mondat (${wc(x)} szó)` : ''))).join('') : '<p class="muted">Gyakorlás közben a „📌 Bevésésre” gombbal jelölhetsz ki mondatot – a szigetben is megmarad.</p>');
+  h += `<h4>Körkérdezésre vár (${kr.length})</h4>` + (kr.length ? kr.map(x => row(x, `${x.kor || 0}/2 sikeres kör`)).join('') : '<p class="muted">Még nincs.</p>');
   h += `<h4>Folyamatban (${lr.length})</h4>` + (lr.length ? lr.sort((a, b) => a.due - b.due).map(x => row(x, `${x.stage + 1}. ${BV_STAGE[x.stage]}: <b>${bvWhen(x.due)}</b>`)).join('') : '<p class="muted">Még nincs.</p>');
   h += `<details${dn.length ? '' : ' open'}><summary><b>Rögzült mondatok (${dn.length})</b></summary>` + (dn.length ? dn.map(x => row(x, 'mind a 6 ismétlés megvolt')).join('') : '<p class="muted">Még nincs.</p>') + '</details>';
   $('bvList').innerHTML = h;
   $('bvList').querySelectorAll('[data-bvgo]').forEach(b => b.onclick = () => bvStartNew(bv.items[b.dataset.bvgo]));
   $('bvList').querySelectorAll('[data-bvdel]').forEach(b => b.onclick = () => { const x = bv.items[b.dataset.bvdel]; if (!x || !confirm('Kiveszed a bevésésből? (A szigetben megmarad.)')) return; x.del = true; bvTouch(x); bvSave(); bvRender(); });
-  $('bvList').querySelectorAll('[data-bvre]').forEach(b => b.onclick = () => { const x = bv.items[b.dataset.bvre]; if (!x) return; Object.assign(x, { state: 'new', step: 0, stage: 0, due: 0 }); bvTouch(x); bvSave(); bvRender(); });
+  $('bvList').querySelectorAll('[data-bvre]').forEach(b => b.onclick = () => { const x = bv.items[b.dataset.bvre]; if (!x) return; Object.assign(x, { state: 'new', step: 0, stage: 0, due: 0, kor: 0 }); bvTouch(x); bvSave(); bvRender(); });
 }
+function bvNextNew() { return bvLive().filter(y => y.state === 'new').sort((a, b) => (b.step || 0) - (a.step || 0) || a.added - b.added)[0]; }
 function bvClose(msg) { bvStopAudio(); bvRunState = null; $('bvRun').classList.add('hidden'); $('bvRun').innerHTML = ''; $('bvStatus').textContent = msg || ''; bvRender(); }
-function bvChips(cur) { return '<div class="bv-chips">' + BV_STEPS.map((s, i) => `<span class="${i < cur ? 'ok' : i === cur ? 'on' : ''}">${i + 1}. ${s}</span>`).join('') + '</div>'; }
-// ---------- új mondat: 6 lépés ----------
+function bvChips(cur) { return '<div class="bv-chips">' + BV_STEPS.map((s, i) => `<span class="${i < cur ? 'ok' : i === cur ? 'on' : ''}">${i + 1}. ${s}</span>`).join('') + '<span class="' + (cur > 7 ? 'ok' : cur === 7 ? 'on' : '') + '">🔁 Körkérdezés</span></div>'; }
+async function bvCopy(text) { try { await navigator.clipboard.writeText(text); return true; } catch { try { const t = document.createElement('textarea'); t.value = text; document.body.append(t); t.select(); document.execCommand('copy'); t.remove(); return true; } catch { return false; } } }
+// ---------- új mondat: 7 lépés ----------
 function bvStartNew(x) {
   if (!x) return; bvStopAudio();
   if (!x.step && bvLearnedToday() >= BV_DAILY && !confirm(`Ma már ${bvLearnedToday()} új mondatot bevéstél. A menetrend szerint napi 5–7 az ideális. Mégis kezdjünk egy újat?`)) return;
@@ -3336,33 +3361,41 @@ function bvStep() {
   const nextBtn = (lbl = 'Következő lépés →') => `<div class="center"><button id="bvNext" disabled>${lbl}</button></div>`;
   let body = '';
   if (s === 0) body = `<h4>1. lépés – Megértés és darabolás (kb. 20 mp)</h4>${hu}${itc}
-    <ol class="bv-do"><li>Nyomd meg a gombot: a mondat <b>kétszer</b> szól.</li><li>Nézd meg, mi felel meg mi minek a két mondatban.</li><li>Keresd meg azt az <b>1–2 elemet</b>, ami miatt nehéz (pl. egy igealak, egy elöljáró), és írd be.</li></ol>
+    <ol class="bv-do"><li>Nyomd meg a gombot: a mondat <b>kétszer</b> szól.</li><li>Nézd meg, mi minek felel meg a két mondatban.</li><li>Írd be azt az <b>1–2 elemet</b>, ami miatt nehéz (igealak, elöljáró, szokatlan szó). Ha nincs ilyen, a legfontosabb szót.</li></ol>
     <div class="center"><button class="alt" id="bvPlay2">🔊 Meghallgatom (2×)</button> <span class="muted" id="bvCnt">0 / 2</span></div>
     <label class="bv-lab">A nehéz elem(ek): <input id="bvKey" value="${bvEsc(x.key)}" placeholder="pl. had I known"></label>${nextBtn()}`;
   if (s === 1) body = `<h4>2. lépés – Árnyékolás (kb. 30 mp)</h4>${itc}
     <ol class="bv-do"><li>Nyomd meg a gombot: a mondat <b>háromszor</b> szól, rövid szünetekkel.</li><li>Mondd <b>EGYÜTT</b> a hanggal, hangosan, ugyanazzal a dallammal és tempóval.</li><li>Utána mondd el <b>egyszer egyedül</b>, hang nélkül, és pipáld ki.</li></ol>
     <div class="center"><button class="alt" id="bvPlay3">🔊 3× lejátszás – mondd vele együtt</button> <span class="muted" id="bvCnt">0 / 3</span></div>
     <label class="bv-chk"><input type="checkbox" id="bvAlone"> Egyszer egyedül, hang nélkül is elmondtam.</label>${nextBtn()}`;
-  if (s === 2 || s === 5) body = `<h4>${s === 2 ? '3' : '6'}. lépés – ${s === 2 ? 'Első' : 'Második'} előhívás fejből</h4>
-    ${s === 5 ? '<p class="muted">A 4–5. lépéssel eltelt egy kis idő – ezért ér most többet az előhívás.</p>' : ''}${hu}
-    <ol class="bv-do"><li>Csak a magyart látod. Mondd ki <b>hangosan, fejből</b> idegen nyelven.</li><li><b>Csak utána</b> fedd fel, és hasonlítsd össze.</li><li>Ha nem sikerült: olvasd el, az app 10-ig számol, aztán újra fejből – addig, amíg sikerül.</li></ol>
+  if (s === 2) body = `<h4>3. lépés – Felépítés hátulról (kb. 40 mp)</h4>${hu}
+    <ol class="bv-do"><li>A mondat végéből indulunk, és darabonként hosszabbodik.</li><li>Minden darabot <b>olvass fel kétszer hangosan</b>, aztán <b>nézz fel</b>, és mondd el fejből.</li><li>Ha megy, nyomd meg a gombot – jön a hosszabb darab.</li></ol>
+    <div class="bv-a" id="bvLvl"></div><div class="center muted" id="bvLvlN"></div>
+    <div class="center"><button class="alt" id="bvPlay1">🔊 Az egész mondat</button> <button id="bvLvlOk">Megvan, fejből is ment →</button></div>`;
+  if (s === 3) body = `<h4>4. lépés – Előhívás: előbb segítséggel, aztán anélkül</h4>${hu}
+    <ol class="bv-do"><li><b>Előbb</b> csak a kezdőbetűket látod: ezek alapján mondd ki hangosan az egész mondatot.</li><li><b>Utána</b> semmi segítség: csak a magyar alapján, fejből.</li><li>Mindig <b>előbb mondd ki</b>, csak utána fedd fel. Ha nem ment: olvasd el, az app 10-ig számol, és újra.</li></ol>
     <div id="bvRet"></div>`;
-  if (s === 3) body = `<h4>4. lépés – Átalakítás (kb. 30 mp)</h4>${itc}
-    <ol class="bv-do"><li>Alkoss egy <b>saját változatot</b>, és mondd ki hangosan.</li><li>Ötletek: más személy (én → a feleségem), más idő (ma → tegnap / holnap), kérdés vagy tagadás, egy szó cseréje.</li><li>Írd is be – a következő ismétléseknél megmutatom.</li></ol>
+  if (s === 4) body = `<h4>5. lépés – Emlékeztető a nehéz elemhez (kb. 1 perc)</h4>${itc}
+    <p>A nehéz elem: <b>${bvEsc(x.key || '–')}</b></p>
+    <ol class="bv-do"><li>Keress hozzá egy <b>hasonló hangzású magyar szót</b> (pl. presento ≈ „prézli”).</li><li>Kösd össze a jelentéssel egy <b>bizarr, túlzó, mozgó képpel</b>, amelyben te is benne vagy (pl. prézlibe forgatva mutatkozom be a vendégeknek).</li><li>Írd le egy mondatban, és képzeld el <b>5 másodpercig</b>, csukott szemmel.</li><li>Ha nem jut eszedbe semmi: kérj ötletet a Claude-tól a gombbal (a kérést a vágólapra másolja).</li></ol>
+    <label class="bv-lab">Az emlékeztetőm: <input id="bvMn" value="${bvEsc(x.mnemo)}" placeholder="pl. presento ≈ prézli: prézlibe forgatva mutatkozom be"></label>
+    <div class="center"><button class="alt" id="bvAskClaude">📋 Ötletet kérek a Claude-tól</button> <button class="alt" id="bvToVocab">🧠 Szótanulóba is</button></div><p class="center muted" id="bvVocInfo"></p>
+    <label class="bv-lab">Nem kötelező – egy jelenet a saját életedből, ahol ezt mondanád: <input id="bvImg" value="${bvEsc(x.image)}" placeholder="pl. a strandon, Marcóval"></label>${nextBtn()}`;
+  if (s === 5) body = `<h4>6. lépés – Átalakítás (kb. 30 mp)</h4>${itc}
+    <ol class="bv-do"><li>Alkoss egy <b>saját változatot</b>, és mondd ki hangosan.</li><li>Ötletek: más személy (én → a feleségem), más idő (ma → tegnap / holnap), kérdés vagy tagadás, egy szó cseréje.</li><li>Írd is be – az ismétléseknél megmutatom.</li></ol>
     <div class="center"><button class="alt" id="bvPlay1">🔊 Még egyszer meghallgatom</button></div>
     <label class="bv-lab">Az én változatom: <input id="bvVar" value="${bvEsc(x.variant)}" placeholder="saját mondat idegen nyelven"></label>${nextBtn()}`;
-  if (s === 4) body = `<h4>5. lépés – Kép és kötődés (kb. 10 mp)</h4>${itc}
-    <ol class="bv-do"><li>Csukd be a szemed: képzelj el egy <b>2 másodperces jelenetet a saját életedből</b>, amelyben ez a mondat elhangzik (hol vagy, kivel, mit látsz).</li><li>Írd le 3–5 szóban.</li><li>Ha van benne makacs szó, tedd a Szótanulóba is – ott emlékeztetőt kaphat.</li></ol>
-    <label class="bv-lab">A képem: <input id="bvImg" value="${bvEsc(x.image)}" placeholder="pl. a kertben, a tyúkok mellett"></label>
-    <div class="center"><button class="alt" id="bvToVocab">🧠 Szótanulóba is</button> <span class="muted" id="bvVocInfo"></span></div>${nextBtn()}`;
+  if (s === 6) body = `<h4>7. lépés – Leírás fejből</h4>${hu}
+    <ol class="bv-do"><li>Írd le az idegen nyelvű mondatot <b>fejből</b> – közben mondd is magadban.</li><li>Ha hiba van, megmutatom a helyeset, a mező 5 mp múlva kiürül, és újra leírod – amíg hibátlan nem lesz.</li><li>Az ékezet-eltérés nem számít hibának.</li></ol>
+    <div id="bvWr"></div>${nextBtn('Kész – jöhet a körkérdezés →')}`;
   R.innerHTML = head + body;
   $('bvQuit').onclick = () => { bvTouch(x); bvSave(); bvClose('A bevésés szünetel – a „Félbehagyott bevésés folytatása” gombbal ott folytatod, ahol abbahagytad.'); };
-  const go = () => { x.step = s + 1; bvTouch(x); bvSave(); if (x.step >= 6) bvFinishNew(x); else bvStep(); };
+  const go = () => { x.step = s + 1; bvTouch(x); bvSave(); if (x.step >= 7) bvToKor(x); else bvStep(); };
   const nb = $('bvNext'); if (nb) nb.onclick = go;
   if (s === 0) {
-    let n = 0; const upd = () => { $('bvCnt').textContent = Math.min(n, 2) + ' / 2'; if (n >= 2) nb.disabled = false; };
+    let n = 0; const upd = () => { $('bvCnt').textContent = Math.min(n, 2) + ' / 2'; nb.disabled = !(n >= 2 && $('bvKey').value.trim().length >= 2); };
     $('bvPlay2').onclick = async () => { $('bvPlay2').disabled = true; await bvPlay(x, 'it', 2, 1200, i => { n = Math.max(n, i); upd(); }); if ($('bvPlay2')) $('bvPlay2').disabled = false; };
-    $('bvKey').oninput = () => { x.key = $('bvKey').value; };
+    $('bvKey').oninput = () => { x.key = $('bvKey').value; upd(); };
     nb.onclick = () => { x.key = $('bvKey').value.trim(); go(); };
   }
   if (s === 1) {
@@ -3370,42 +3403,118 @@ function bvStep() {
     $('bvPlay3').onclick = async () => { $('bvPlay3').disabled = true; await bvPlay(x, 'it', 3, 2200, i => { n = Math.max(n, i); upd(); }); if ($('bvPlay3')) $('bvPlay3').disabled = false; };
     $('bvAlone').onchange = upd;
   }
-  if (s === 2 || s === 5) bvRetrieve(x, () => go(), $('bvRet'));
-  if (s === 3) { $('bvPlay1').onclick = () => bvPlay(x, 'it', 1); const chk = () => { nb.disabled = $('bvVar').value.trim().length < 3; }; $('bvVar').oninput = chk; chk(); nb.onclick = () => { x.variant = $('bvVar').value.trim(); go(); }; }
-  if (s === 4) {
-    const chk = () => { nb.disabled = $('bvImg').value.trim().length < 3; }; $('bvImg').oninput = chk; chk();
-    $('bvToVocab').onclick = () => { const r = brAdd([{ slug: x.slug, n: x.n, hu: x.hu, it: x.it }]); $('bvVocInfo').textContent = r.added ? 'Átvéve a szótanulóba.' : 'Már ott van.'; };
-    nb.onclick = () => { x.image = $('bvImg').value.trim(); go(); };
+  if (s === 2) {
+    const lv = bvLevels(x.it); let k = 0;
+    const show = () => { $('bvLvl').textContent = lv[k]; $('bvLvlN').textContent = `${k + 1}. darab / ${lv.length}`; $('bvLvlOk').textContent = k < lv.length - 1 ? 'Megvan, fejből is ment → hosszabb darab' : 'Megvan, az egész mondat fejből is ment →'; };
+    $('bvPlay1').onclick = () => bvPlay(x, 'it', 1);
+    $('bvLvlOk').onclick = () => { if (k < lv.length - 1) { k++; show(); } else go(); };
+    show();
   }
+  if (s === 3) bvRetrieve(x, () => bvRetrieve(x, () => go(), $('bvRet'), false, 'Most segítség nélkül:'), $('bvRet'), true, 'Előbb a kezdőbetűk segítségével:');
+  if (s === 4) {
+    const chk = () => { nb.disabled = $('bvMn').value.trim().length < 3; }; $('bvMn').oninput = chk; chk();
+    $('bvAskClaude').onclick = async () => {
+      const t = `Kulcsszó-módszerrel (hangzás-alapú emlékeztetővel) szeretném megjegyezni ezt: „${x.key || x.it}”.\nA mondat: ${x.it}\nMagyarul: ${x.hu}\nAdj 3 rövid, bizarr, vizuális emlékeztetőt magyarul: mindegyikben legyen egy hasonló hangzású magyar szó és egy kép, ami összeköti a jelentéssel. Én István vagyok, vidéken élek a családommal, macskákkal és tyúkokkal – ha lehet, ezekből építkezz.`;
+      const ok = await bvCopy(t); $('bvVocInfo').textContent = ok ? 'A kérés a vágólapon van – illeszd be a Claude-nak, a választ írd vissza ide.' : 'Nem sikerült másolni.';
+      try { window.open('https://claude.ai/new', '_blank'); } catch {}
+    };
+    $('bvToVocab').onclick = () => { const r = brAdd([{ slug: x.slug, n: x.n, hu: x.hu, it: x.it }]); $('bvVocInfo').textContent = r.added ? 'Átvéve a szótanulóba.' : 'Már ott van.'; };
+    nb.onclick = () => { x.mnemo = $('bvMn').value.trim(); x.image = $('bvImg').value.trim(); go(); };
+  }
+  if (s === 5) { $('bvPlay1').onclick = () => bvPlay(x, 'it', 1); const chk = () => { nb.disabled = $('bvVar').value.trim().length < 3; }; $('bvVar').oninput = chk; chk(); nb.onclick = () => { x.variant = $('bvVar').value.trim(); go(); }; }
+  if (s === 6) bvWrite(x, $('bvWr'), () => { nb.disabled = false; });
 }
 // előhívás: felfedés → sikerült / nem; hiba esetén 10 mp olvasás, aztán újra fejből
-function bvRetrieve(x, onOk, box) {
+function bvRetrieve(x, onOk, box, hint, title) {
   const q = sel => box.querySelector(sel);
-  const ask = () => { box.innerHTML = '<div class="center"><button data-r="rev">Kimondtam – felfedem</button></div>'; q('[data-r=rev]').onclick = reveal; };
+  const ask = () => { box.innerHTML = (title ? `<p class="center"><b>${title}</b></p>` : '') + (hint ? `<div class="bv-hint">${bvEsc(bvHint(x.it))}</div>` : '') + '<div class="center"><button data-r="rev">Kimondtam – felfedem</button></div>'; q('[data-r=rev]').onclick = reveal; };
   const reveal = () => {
-    box.innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div><div class="center"><button class="alt" data-r="snd">🔊</button></div><p class="center"><b>Fejből, hangosan sikerült?</b></p><div class="center bv-rate"><button data-r="ok" class="bv-good">✅ Sikerült</button><button data-r="no" class="bv-bad">❌ Nem sikerült</button></div>`;
+    box.innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div><div class="center"><button class="alt" data-r="snd">🔊</button></div><p class="center"><b>Hangosan, ${hint ? 'a kezdőbetűkkel' : 'fejből'} sikerült?</b></p><div class="center bv-rate"><button data-r="ok" class="bv-good">✅ Sikerült</button><button data-r="no" class="bv-bad">❌ Nem sikerült</button></div>`;
     bvPlay(x, 'it', 1); q('[data-r=snd]').onclick = () => bvPlay(x, 'it', 1);
     q('[data-r=ok]').onclick = () => { bvStopAudio(); onOk(); };
     q('[data-r=no]').onclick = () => {
       let left = 10; bvStopAudio();
-      box.innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div><p class="center">Olvasd el figyelmesen, mondd el magadban… <b data-r="cd">10</b></p>`;
+      box.innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<p class="center">Olvasd el figyelmesen, mondd el magadban… <b data-r="cd">10</b></p>`;
       bvPlay(x, 'it', 1);
-      clearInterval(bvTimer); bvTimer = setInterval(() => { left--; const c = q('[data-r=cd]'); if (c) c.textContent = left; if (left <= 0) { clearInterval(bvTimer); box.innerHTML = '<p class="center"><b>Most újra fejből!</b></p>'; setTimeout(ask, 400); } }, 1000);
+      clearInterval(bvTimer); bvTimer = setInterval(() => { left--; const c = q('[data-r=cd]'); if (c) c.textContent = left; if (left <= 0) { clearInterval(bvTimer); box.innerHTML = '<p class="center"><b>Most újra!</b></p>'; setTimeout(ask, 400); } }, 1000);
     };
   };
   ask();
 }
-function bvFinishNew(x) {
+// leírás fejből: hibátlanig ismétel; cb(elsőreHibátlan)
+function bvWrite(x, box, cb) {
+  let first = true;
+  box.innerHTML = `<input class="vtype" data-w="in" placeholder="Írd le fejből…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"><div class="center"><button data-w="chk">Ellenőrzés</button></div><div class="tres" data-w="res"></div>`;
+  const inp = box.querySelector('[data-w=in]'), res = box.querySelector('[data-w=res]'), btn = box.querySelector('[data-w=chk]');
+  const check = () => {
+    const typed = inp.value; if (!typed.trim()) { inp.focus(); return; }
+    const r = compareAnswer(x.it, typed), ok = r.eState.filter(v => v === 'ok').length, acc = r.eState.filter(v => v === 'acc').length, extra = r.tState.filter(v => v === 'extra').length;
+    const good = ok + acc === r.E.length && !extra;
+    const line = (label, toks, states) => `<div><span class="muted">${label} </span>` + toks.map((t, k) => `<span class="w ${states[k]}">${bvEsc(t.raw)}</span>`).join(' ') + '</div>';
+    res.innerHTML = `<div class="verdict">${good ? (ok === r.E.length ? '✓ Hibátlan!' : '≈ Jó – csak ékezet tér el.') : `${ok + acc}/${r.E.length} szó stimmel – nézd meg a hibát.`}</div>` + line('Helyesen:', r.E, r.eState) + line('Te írtad:', r.T, r.tState);
+    if (good) { inp.disabled = true; btn.disabled = true; cb(first); return; }
+    first = false; inp.disabled = true; btn.disabled = true; let left = 5;
+    const v = res.querySelector('.verdict'); const t0 = v.textContent;
+    clearInterval(bvTimer); bvTimer = setInterval(() => { left--; v.textContent = `${t0} Újra írhatod: ${left} mp`; if (left <= 0) { clearInterval(bvTimer); inp.value = ''; inp.disabled = false; btn.disabled = false; res.innerHTML = '<div class="verdict">Most írd le újra fejből.</div>'; inp.focus(); } }, 1000);
+  };
+  btn.onclick = check; inp.onkeydown = e => { if (e.key === 'Enter') check(); };
+  setTimeout(() => inp.focus(), 50);
+}
+function bvToKor(x) {
   const now = Date.now();
-  Object.assign(x, { state: 'learn', stage: 0, due: bvDueFor(0, now), learnedAt: now, step: 6 }); x.hist.push({ t: now, s: 'bevésés' }); bvTouch(x); bvSave();
-  const nw = bvLive().filter(y => y.state === 'new').length;
-  $('bvRun').innerHTML = bvChips(6) + `<h4>✅ Bevésve!</h4><div class="bv-a">${bvEsc(x.it)}</div>
-    <p>Következő: <b>${BV_STAGE[0]} – ${bvWhen(x.due)}</b>. Utána az esti ismétlés, majd másnap reggel – az app a fülön jelzi, mikor esedékes.</p>
-    <p class="muted">Tipp: napközben egyszer mondd ki élesben is (etetés, vezetés közben).</p>
-    <div class="center">${nw ? '<button id="bvMore">▶ Következő új mondat</button>' : ''}<button class="alt" id="bvDone">Kész</button></div>`;
-  if ($('bvMore')) $('bvMore').onclick = () => { const n = bvLive().filter(y => y.state === 'new').sort((a, b) => (b.step || 0) - (a.step || 0) || a.added - b.added)[0]; bvStartNew(n); };
-  $('bvDone').onclick = () => bvClose('Szép munka! Az esedékes ismétléseket itt találod.');
+  Object.assign(x, { state: 'kor', kor: 0, korR: 0, learnedAt: now, step: 7 }); x.hist.push({ t: now, s: 'bevésés' }); bvTouch(x); bvSave();
+  const kr = bvLive().filter(y => y.state === 'kor').length, nw = bvLive().filter(y => y.state === 'new').length;
+  const korNow = kr >= 3 || !nw;
+  $('bvRun').innerHTML = bvChips(7) + `<h4>✅ A 7 lépés megvan!</h4><div class="bv-a">${bvEsc(x.it)}</div>
+    <p>Most <b>körkérdezésre vár</b> (${kr} mondat). A körkérdezésben minden mondatot <b>két külön körben</b> kell fejből visszamondanod – ettől lesz tartós.</p>
+    <p class="muted">${korNow ? 'A menetrend szerint most jön a körkérdezés.' : 'A menetrend szerint 2–3 új mondatonként jön a körkérdezés – vehetsz még egy újat, vagy kezdheted most.'}</p>
+    <div class="center"><button id="bvKorNow" ${korNow ? '' : 'class="alt"'}>🔁 Körkérdezés most (${kr})</button>${nw ? `<button id="bvMore" ${korNow ? 'class="alt"' : ''}>▶ Következő új mondat</button>` : ''}<button class="alt" id="bvDone">Később</button></div>`;
+  $('bvKorNow').onclick = bvStartKor;
+  if ($('bvMore')) $('bvMore').onclick = () => bvStartNew(bvNextNew());
+  $('bvDone').onclick = () => bvClose('A körkérdezésre váró mondatokat ne hagyd sokáig – lehetőleg 15 percen belül csináld meg.');
   bvRender();
+}
+// ---------- körkérdezés (egymás után, váltogatva, amíg mindegyik 2 külön körben sikerül) ----------
+function bvStartKor() {
+  const items = bvLive().filter(y => y.state === 'kor'); if (!items.length) return; bvStopAudio();
+  items.forEach(y => { y.korR = 0; });
+  bvRunState = { kind: 'kor', round: 1, q: bvShuffle(items), i: 0, passed: 0 };
+  $('bvRun').classList.remove('hidden'); bvKorItem(); $('bvRun').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function bvKorItem() {
+  const st = bvRunState, R = $('bvRun'); if (!st || st.kind !== 'kor') return;
+  if (st.i >= st.q.length) {
+    const left = bvLive().filter(y => y.state === 'kor');
+    if (!left.length) { R.innerHTML = bvChips(8) + `<h4>✅ Körkérdezés kész</h4><p><b>${st.passed}</b> mondat bevésve. Az első ismétlés <b>10 perc múlva</b>, aztán este (lefekvés előtt!), majd holnap reggel.</p><div class="center">${bvNextNew() ? '<button id="bvMore">▶ Következő új mondat</button>' : ''}<button class="alt" id="bvDone">Kész</button></div>`;
+      if ($('bvMore')) $('bvMore').onclick = () => bvStartNew(bvNextNew()); $('bvDone').onclick = () => bvClose(''); bvRender(); return; }
+    st.round++; st.q = bvShuffle(left); st.i = 0;
+    if (left.length === 1) {
+      let s = 60; R.innerHTML = `<h4>🔁 ${st.round}. kör előtt rövid szünet</h4><p>Csak egy mondat maradt – hogy a második siker ne közvetlenül az első után jöjjön, tarts egy <b>1 perces</b> szünetet (nézz el, igyál egy kortyot, ne ismételgesd).</p><p class="center"><b id="bvPause">60</b> mp</p><div class="center"><button class="alt" id="bvSkip">Kihagyom a szünetet</button></div>`;
+      const fin = () => { clearInterval(bvTimer); bvKorItem(); };
+      clearInterval(bvTimer); bvTimer = setInterval(() => { s--; if ($('bvPause')) $('bvPause').textContent = s; if (s <= 0) fin(); }, 1000); $('bvSkip').onclick = fin; return;
+    }
+  }
+  const x = st.q[st.i];
+  R.innerHTML = `<div class="bv-head"><b>🔁 Körkérdezés</b> · ${st.round}. kör · ${st.i + 1} / ${st.q.length}<button class="alt bv-x" id="bvQuit">Szünet</button></div>
+    <div class="bv-q">${bvEsc(x.hu)}</div><p class="center muted">Mondd ki hangosan, fejből – <b>csak utána</b> fedd fel. (Ez a mondat eddig ${x.kor || 0}/2 kört teljesített.)</p>
+    <div id="bvRet"><div class="center"><button id="bvReveal">Kimondtam – felfedem</button></div></div>`;
+  $('bvQuit').onclick = () => { bvSave(); bvClose('A körkérdezés szünetel – a „🔁 Körkérdezés” gombbal folytathatod.'); };
+  $('bvReveal').onclick = () => {
+    $('bvRet').innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="muted center">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<div class="center"><button class="alt" id="bvAgainSnd">🔊</button></div>
+      <p class="center"><b>Fejből, hangosan, akadás nélkül ment?</b></p><div class="center bv-rate"><button id="bvKOk" class="bv-good">✅ Igen</button><button id="bvKNo" class="bv-bad">❌ Nem / akadozva</button></div>`;
+    bvPlay(x, 'it', 1); $('bvAgainSnd').onclick = () => bvPlay(x, 'it', 1);
+    $('bvKOk').onclick = () => {
+      bvStopAudio(); const now = Date.now();
+      if (x.korR !== st.round) { x.korR = st.round; x.kor = (x.kor || 0) + 1; }
+      if (x.kor >= 2) { Object.assign(x, { state: 'learn', stage: 0, due: bvDueFor(0, now) }); x.hist.push({ t: now, s: 'körkérdezés' }); st.passed++; }
+      bvTouch(x); bvSave(); st.i++; bvKorItem(); bvBadge();
+    };
+    $('bvKNo').onclick = () => {
+      let left = 10; bvStopAudio(); bvPlay(x, 'it', 1);
+      $('bvRet').innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<p class="center">Olvasd el, mondd el magadban kétszer… <b id="bvCd">10</b></p>`;
+      clearInterval(bvTimer); bvTimer = setInterval(() => { left--; if ($('bvCd')) $('bvCd').textContent = left; if (left <= 0) { clearInterval(bvTimer); st.q.push(x); st.i++; bvKorItem(); } }, 1000);
+    };
+  };
 }
 // ---------- ismétlés ----------
 function bvStartDue() {
@@ -3415,31 +3524,43 @@ function bvStartDue() {
 function bvRevItem() {
   const st = bvRunState, R = $('bvRun'); if (!st) return;
   if (st.i >= st.q.length) { R.innerHTML = `<h4>✅ Az esedékes ismétlések kész (${st.q.length})</h4><p>Folyékonyan ment: <b>${st.ok}</b>. A többi a menetrend szerint hamarosan visszajön.</p><div class="center"><button class="alt" id="bvDone">Kész</button></div>`; $('bvDone').onclick = () => bvClose(''); bvRender(); return; }
-  const x = st.q[st.i];
+  const x = st.q[st.i]; st.hinted = false;
   R.innerHTML = `<div class="bv-head"><b>📌 Ismétlés</b> · ${st.i + 1} / ${st.q.length} · ${x.stage + 1}. ${BV_STAGE[x.stage]}<button class="alt bv-x" id="bvQuit">Szünet</button></div>
-    <div class="bv-q">${bvEsc(x.hu)}</div><p class="center muted">Mondd ki hangosan, fejből idegen nyelven – <b>csak utána</b> fedd fel.</p>
-    <div id="bvRet"><div class="center"><button id="bvReveal">Kimondtam – felfedem</button></div></div>`;
+    <div class="bv-q">${bvEsc(x.hu)}</div><p class="center muted">Mondd ki hangosan, fejből – <b>csak utána</b> fedd fel.</p>
+    <div id="bvHintBox"></div>
+    <div id="bvRet"><div class="center"><button class="alt" id="bvHintBtn">💡 Elakadtam – kezdőbetűk</button> <button id="bvReveal">Kimondtam – felfedem</button></div></div>`;
   $('bvQuit').onclick = () => bvClose('Az ismétlés szünetel – a maradék esedékes mondat itt vár.');
+  $('bvHintBtn').onclick = () => { st.hinted = true; $('bvHintBox').innerHTML = `<div class="bv-hint">${bvEsc(bvHint(x.it))}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<p class="center muted">Segítséggel legfeljebb „Akadozva” értékelhető.</p>`; $('bvHintBtn').remove(); };
   $('bvReveal').onclick = () => {
-    $('bvRet').innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.variant ? `<p class="muted center">A változatod: ${bvEsc(x.variant)}</p>` : ''}${x.image ? `<p class="muted center">A képed: ${bvEsc(x.image)}</p>` : ''}
+    $('bvRet').innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="muted center">🧠 ${bvEsc(x.mnemo)}</p>` : ''}${x.variant ? `<p class="muted center">A változatod: ${bvEsc(x.variant)}</p>` : ''}
       <div class="center"><button class="alt" id="bvAgainSnd">🔊</button></div><p class="center"><b>Hogy ment? Légy szigorú:</b></p>
-      <div class="center bv-rate"><button id="bvR3" class="bv-good">✅ Folyékonyan<small>3 mp-en belül, akadás nélkül</small></button><button id="bvR2" class="bv-mid">🟡 Akadozva<small>lassan / kis hibával</small></button><button id="bvR1" class="bv-bad">❌ Nem jött<small>vagy sok hiba</small></button></div>`;
+      <div class="center bv-rate"><button id="bvR3" class="bv-good" ${st.hinted ? 'disabled' : ''}>✅ Folyékonyan<small>3 mp-en belül, segítség nélkül</small></button><button id="bvR2" class="bv-mid">🟡 Akadozva<small>lassan / kis hibával / betűsegítséggel</small></button><button id="bvR1" class="bv-bad">❌ Nem jött<small>vagy sok hiba</small></button></div>`;
     bvPlay(x, 'it', 1); $('bvAgainSnd').onclick = () => bvPlay(x, 'it', 1);
-    $('bvR3').onclick = () => bvRate(x, 3); $('bvR2').onclick = () => bvRate(x, 2);
+    $('bvR3').onclick = () => bvAfterRate(x, 3); $('bvR2').onclick = () => bvAfterRate(x, 2);
     $('bvR1').onclick = () => bvFix(x);
   };
+}
+// értékelés után: ha kell, leírás fejből (a beállítás szerint), utána ütemezés
+function bvAfterRate(x, r) {
+  const mode = bvWriteMode(), need = r < 3 || mode === 'mindig' || (mode === 'reggel' && x.stage === 2);
+  if (!need) return bvRate(x, r);
+  bvStopAudio();
+  $('bvRet').innerHTML = `<div class="bv-q">${bvEsc(x.hu)}</div><p class="center"><b>${r < 3 ? 'Megerősítés: írd le fejből' : 'Reggeli ellenőrzés: írd is le fejből'}</b> – hibátlanig.</p><div id="bvWr"></div><div class="center"><button id="bvWrNext" disabled>Tovább →</button></div>`;
+  let r2 = r;
+  bvWrite(x, $('bvWr'), first => { if (!first && r2 === 3) r2 = 2; $('bvWrNext').disabled = false; if (!first && r === 3) $('bvWrNext').textContent = 'Tovább → (a leírás hibája miatt „Akadozva” lesz)'; });
+  $('bvWrNext').onclick = () => bvRate(x, r2);
 }
 function bvRate(x, r) {
   const st = bvRunState, now = Date.now(); bvStopAudio();
   x.hist.push({ t: now, s: x.stage, r });
   if (r === 3) { st.ok++; if (x.stage >= 5) { x.state = 'done'; x.due = 0; x.doneAt = now; } else { x.stage++; x.due = bvDueFor(x.stage, now); } }
   else if (r === 2) x.due = x.stage <= 2 ? now + 10 * 60e3 : bvNextMorning(now);
-  else { if (x.stage <= 2) { x.stage = 0; x.due = now + 10 * 60e3; } else { x.stage = 2; x.due = bvNextMorning(now); } }
+  else { x.lapses = (x.lapses || 0) + 1; if (x.stage <= 2) { x.stage = 0; x.due = now + 10 * 60e3; } else { x.stage = 2; x.due = bvNextMorning(now); } }
   bvTouch(x); bvSave(); st.i++; bvRevItem(); bvBadge();
 }
 function bvFix(x) {
   const R = $('bvRet'); bvStopAudio();
-  R.innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div><p><b>Mini-javítás:</b> nyomd meg, és mondd a hanggal <b>együtt</b> háromszor – utána jön az előhívás fejből.</p>
+  R.innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}${(x.lapses || 0) >= 1 ? ' – ha nem segít, a „Bevésendő” listában az ✕ után jelöld ki újra, és csinálj új emlékeztetőt.' : ''}</p>` : ''}<p><b>Mini-javítás:</b> nyomd meg, és mondd a hanggal <b>együtt</b> háromszor – utána előhívás fejből, végül leírás.</p>
     <div class="center"><button class="alt" id="bvFix3">🔊 3× lejátszás – mondd vele</button> <span class="muted" id="bvCnt">0 / 3</span></div>`;
   $('bvFix3').onclick = async () => {
     $('bvFix3').disabled = true; let n = 0;
@@ -3447,7 +3568,7 @@ function bvFix(x) {
     if (n < 3) { if ($('bvFix3')) $('bvFix3').disabled = false; return; }
     if (!$('bvRet')) return;
     $('bvRet').innerHTML = `<div class="bv-q">${bvEsc(x.hu)}</div><p class="center muted">Most fejből, hangosan:</p><div id="bvFixRet"></div>`;
-    bvRetrieve(x, () => bvRate(x, 1), $('bvFixRet'));
+    bvRetrieve(x, () => bvAfterRate(x, 1), $('bvFixRet'));
   };
 }
 setInterval(() => { try { bvBadge(); if (!bvRunState && $('bvBox') && !$('bvBox').classList.contains('tabhide')) bvRender(); } catch {} }, 60000);
@@ -3463,7 +3584,9 @@ $('hardToBeves').onclick = () => {
   $('hardStatus').textContent = r.added ? `${r.added} mondat átkerült a Bevésésbe` + (r.dup ? `, ${r.dup} már ott volt.` : '.') : 'Mind ott van már a Bevésésben.';
 };
 $('bvDueBtn').onclick = bvStartDue;
-$('bvNewBtn').onclick = () => { const n = bvLive().filter(y => y.state === 'new').sort((a, b) => (b.step || 0) - (a.step || 0) || a.added - b.added)[0]; bvStartNew(n); };
+$('bvKorBtn').onclick = bvStartKor;
+$('bvWrite').onchange = () => { try { localStorage.setItem(BV_WKEY, $('bvWrite').value); } catch {} };
+$('bvNewBtn').onclick = () => bvStartNew(bvNextNew());
 
 // ============================================================
 // INDÍTÁS
