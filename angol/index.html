@@ -198,6 +198,8 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 .bz-q{font:800 1.35rem/1.4 'Nunito',sans-serif;text-align:center;margin:12px 0;color:var(--ink)}.bz-hide{filter:blur(7px);user-select:none}
 .bz-model{background:var(--soft);border-radius:14px;padding:8px 12px;margin:10px 0}.bz-fix{display:flex;gap:10px;align-items:flex-start;border-top:1px solid #e3ecf1;padding:8px 0}.bz-fix input{margin-top:5px}
 #bzPaste{width:100%;box-sizing:border-box;min-height:110px;padding:9px;border:1px solid #cbd5df;border-radius:10px;font-size:.95rem}
+#study.drilling > :not(#drillBox):not(.studyhead){display:none!important}
+#drillBox:empty{display:none}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -205,7 +207,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>EN</b> English</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">EN V20</span>
+ <span class="ver" title="Programverzió">EN V21</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">GAME PLAN</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -222,7 +224,8 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <p id="status" class="muted"></p>
 <div id="resumeBar" class="hidden"><span id="resumeTxt"></span><span><button id="resumeBtn">▶ Gyakorlás folytatása</button><button id="resumeEnd" class="alt">Befejezés</button></span></div>
 <section id="study" class="box hidden">
- <div class="muted"><span id="island"></span> · <span id="count"></span></div>
+ <div class="muted studyhead"><span id="island"></span> · <span id="count"></span></div>
+ <div id="drillBox"></div>
  <div class="prompt" id="question"></div>
  <div id="typeBox" class="hidden center"><input id="typeInput" placeholder="Írd be a választ…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"><button id="typeCheck">Ellenőrzés</button><div id="typeResult"></div></div>
  <div class="center"><button class="alt" id="qAudio">🔊 Kérdés hangja</button><button id="show">Válasz felfedése</button></div>
@@ -248,7 +251,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
   <label class="muted">Értékelés <select id="hfRate"><option value="wait">a válasz után vár, amíg koppintok (ajánlott)</option><option value="auto">5 mp-ig vár, utána magától „Jól ment”</option><option value="none">nincs – csak hallgatás, a haladás NEM mentődik</option></select></label></div>
 <details class="help" style="margin-top:10px"><summary>A gyakorlóképernyő használata</summary>
 <ol><li>Nézd meg a kérdést, és <b>mondd ki hangosan</b> a választ – csak utána nyomd meg a „Válasz felfedése” gombot.</li><li>Hasonlítsd össze, és <b>értékelj őszintén</b>: ha gondolkodni kellett, az „Nehéz”.</li></ol>
-<h4>Eszközök – mikor melyiket?</h4><ul><li>🔊 <b>Hangok:</b> a kérdés és a válasz meghallgatása.</li><li>📌 <b>Bevésésre:</b> fontos vagy makacs mondat – a 📌 fülön lépésenként rögzíted (a szigetben is megmarad).</li><li>🧠 <b>Szótanulóba:</b> ha csak egy-egy szó nem megy – ott emlékeztetőt kaphat.</li><li>🎙 <b>Felvétel → Saját + eredeti:</b> egymás után hallod a saját hangodat és az eredetit; a dallamot és a tempót így tudod összevetni.</li><li>🗣️ <b>Kiejtés-ellenőrzés:</b> mondd ki az idegen nyelvű mondatot – a telefon leírja, mit értett belőle. A zöld szavakat felismerte, a pirosakat nem: azokat hallgasd meg újra, és mondd utána. Ez érthetőséget mér, nem hangonkénti kiejtést.</li><li>🎧 <b>Kézmentes mód:</b> autóban, kertben – kérdés, szünet (mondd ki), válasz; a „kétszer mondja” a beívódást segíti.</li></ul></details>
+<h4>Eszközök – mikor melyiket?</h4><ul><li>🔊 <b>Hangok:</b> a kérdés és a válasz meghallgatása.</li><li>📌 <b>Bevésésre:</b> fontos vagy makacs mondat – a 📌 fülön lépésenként rögzíted (a szigetben is megmarad).</li><li>🧠 <b>Szótanulóba:</b> ha csak egy-egy szó nem megy – ott emlékeztetőt kaphat.</li><li>🎙 <b>Felvétel → Saját + eredeti:</b> egymás után hallod a saját hangodat és az eredetit; a dallamot és a tempót így tudod összevetni.</li><li>🗣️ <b>Kiejtés-ellenőrzés:</b> mondd ki az idegen nyelvű mondatot – a telefon leírja, mit értett belőle. A zöld szavakat felismerte, a pirosakat nem: azokat hallgasd meg újra, és mondd utána. Ez érthetőséget mér, nem hangonkénti kiejtést.</li><li>📌 <b>Bevéséses tanulás</b> (⚙️ → Mód): az új mondatoknál az app lépésenként végigvezet, a körkérdezés pedig visszakérdezi őket.</li><li>🎧 <b>Kézmentes mód:</b> autóban, kertben – kérdés, szünet (mondd ki), válasz; a „kétszer mondja” a beívódást segíti.</li></ul></details>
 </section>
 
 <section data-tab="terv" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> A mai teendőid a beállított szinted, célod és időkereted alapján – abban a sorrendben, ahogy a memória a legjobban rögzít. <b>Miért?</b> Nem kell gondolkodnod, mit csinálj: csak haladj fentről lefelé.</p>
@@ -320,7 +323,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 </section>
 
 <section data-tab="beallitas" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Bejelentkezés és felhőmentés, a gyakorlás beállításai, a beszédfelismerés próbája és a mentés. <b>Miért?</b> Itt dől el, hogyan kérdez az app – ezeket egyszer kell jól beállítani.</p>
-<h4>Ajánlott beállítások</h4><ul><li><b>Mód:</b> „Esedékes ismétlés + új mondatok” a napi munkához; „Tanulás” csak egy sziget első átnézéséhez.</li><li><b>Irány:</b> magyar → idegen (ez fejleszti a beszédet). Hetente egyszer a fordított irány a megértéshez.</li><li><b>Új mondat naponta:</b> amennyit a 🗺️ terv javasol. Ha túl sok az ismétlés, csökkentsd.</li><li><b>Idegen hang sebessége:</b> eleinte 80–90%, később 100%.</li><li><b>Gépelős mód / diktálás:</b> hetente 1–2× a helyesíráshoz és a hallásértéshez.</li></ul>
+<h4>Ajánlott beállítások</h4><ul><li><b>Mód:</b> „Esedékes ismétlés + új mondatok” a napi munkához; „Tanulás” csak egy sziget első átnézéséhez.</li><li><b>„Bevéséses tanulás”:</b> mint az előző, de minden <b>új</b> mondatot 3 rövid lépésben vésel be (hallás + árnyékolás → kezdőbetűkkel → fejből, ha kéred: leírás), 3 új mondatonként rövid körkérdezés jön, a végén pedig záró kör a mai összes új mondatból. Ami a körben nem megy, egy gombbal a 📌 Bevésésbe teheted. Lassabb, de sokkal több marad meg – akkor használd, ha az új mondatok nem ragadnak meg.</li><li><b>Irány:</b> magyar → idegen (ez fejleszti a beszédet). Hetente egyszer a fordított irány a megértéshez.</li><li><b>Új mondat naponta:</b> amennyit a 🗺️ terv javasol. Ha túl sok az ismétlés, csökkentsd.</li><li><b>Idegen hang sebessége:</b> eleinte 80–90%, később 100%.</li><li><b>Gépelős mód / diktálás:</b> hetente 1–2× a helyesíráshoz és a hallásértéshez.</li></ul>
 <h4>Biztonság</h4><ul><li>Jelentkezz be, hogy a haladás a felhőbe is mentődjön.</li><li>Havonta egyszer: „Haladás exportálása” (tartalék JSON-fájl).</li></ul></details></section>
 <section data-tab="beallitas" class="box"><h3>Felhőszinkronizálás</h3>
  <p class="muted">Jelentkezz be ugyanazzal az e-mail-címmel a számítógépen és az iPhone-on.</p>
@@ -585,7 +588,8 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
  <div class="row"><label>Magyar hang sebessége: <strong id="l1Val">100%</strong><br><input id="l1Speed" type="range" min="0.6" max="1.25" step="0.05" value="1"></label><label>Angol hang sebessége: <strong id="l2Val">80%</strong><br><input id="l2Speed" type="range" min="0.6" max="1.25" step="0.05" value="0.8"></label></div>
  <div class="row">
   <label>Irány<br><select id="dir"><option value="hu-it">Magyar → angol</option><option value="it-hu">Angol → magyar</option><option value="mix">Vegyes</option></select></label>
-  <label>Mód<br><select id="mode"><option value="learn">Tanulás – szabad gyakorlás</option><option value="all">Összes mondat (értékeléssel)</option><option value="due">Esedékes ismétlés + új mondatok</option></select></label>
+  <label>Mód<br><select id="mode"><option value="learn">Tanulás – szabad gyakorlás</option><option value="all">Összes mondat (értékeléssel)</option><option value="due">Esedékes ismétlés + új mondatok</option><option value="drill">Bevéséses tanulás – esedékes + új mondatok lépésenként, körkérdezéssel</option></select></label>
+  <label class="muted"><input type="checkbox" id="drillWrite"> Bevéséses tanulásnál az új mondatot le is írom</label>
   <label>Új mondat naponta<br><input id="newLimit" type="number" min="0" max="100" value="10" style="width:90px;padding:8px"></label>
  </div>
  <label class="muted"><input type="checkbox" id="autoAnswer" checked> A válasz felfedésekor szólaljon meg a válasz hangja</label><br>
@@ -1411,12 +1415,13 @@ function interleave(reviews, fresh) { // minden 3. ismétlés után egy új mond
 function startSession(mode) {
   if (!current) return;
   const { slug, pairs } = current;
-  if (mode === 'due') {
+  if (mode === 'due' || mode === 'drill') {
     const { reviews, fresh } = dueItemsFor(slug, pairs, newLeftToday());
+    if (mode === 'drill') fresh.forEach(f => { f.drill = true; f.dir = 'hu-it'; f.dstep = 0; });
     const items = interleave(reviews, fresh);
     if (!items.length) { $('study').classList.add('hidden'); $('status').textContent = 'Ebben a szigetben most nincs esedékes ismétlés, és a mai új mondatok limitje elfogyott (vagy nincs több új mondat). Válaszd a „Tanulás” vagy az „Összes mondat” módot.'; return; }
-    sess = { title: niceName(slug), items, pos: 0, rated: true, single: null };
-    $('status').textContent = `${reviews.length} esedékes ismétlés és ${fresh.length} új mondat.`;
+    sess = { title: niceName(slug), items, pos: 0, rated: true, single: null, drill: mode === 'drill', drilled: [], sinceKor: [] };
+    $('status').textContent = `${reviews.length} esedékes ismétlés és ${fresh.length} új mondat.` + (mode === 'drill' && fresh.length ? ' Az új mondatokat lépésenként vésed be.' : '');
   } else {
     const prog = getProg(slug);
     sess = { title: niceName(slug), items: pairs.map(p => toItem(slug, p)), pos: Math.min(Math.max(0, prog.pos || 0), pairs.length - 1), rated: mode === 'all', single: slug };
@@ -1439,6 +1444,8 @@ async function startMulti(title, builder, hard) {
 function render() {
   if (!sess || !sess.items.length) { $('study').classList.add('hidden'); return; }
   $('study').classList.remove('hidden', 'parked');
+  if (sess.drill) { const d = sess.items[sess.pos]; if (d.kor || (d.drill && !d.drillDone)) { $('count').textContent = `${sess.pos + 1} / ${sess.items.length}`; $('island').textContent = sess.title; resetRecording(); return drillRender(d); } }
+  $('study').classList.remove('drilling'); $('drillBox').innerHTML = '';
   const it = sess.items[sess.pos];
   const dict = $('dictMode').checked;
   $('question').textContent = dict ? '🎧 Hallgasd meg, és írd le angolul' : (it.dir === 'hu-it' ? it.hu : it.it);
@@ -1574,6 +1581,11 @@ function savePos() {
   const prog = getProg(sess.single); prog.pos = sess.pos; prog.posAt = Date.now(); saveProg(sess.single);
 }
 function advance() {
+  if (sess.drill) {
+    const cur = sess.items[sess.pos];
+    if (!cur.kor && sess.sinceKor.length >= 3) sess.items.splice(sess.pos + 1, 0, { kor: true, list: sess.sinceKor.splice(0) });
+    else if (sess.pos >= sess.items.length - 1 && !sess.finalDone && sess.drilled.length) { sess.finalDone = true; sess.sinceKor = []; sess.items.push({ kor: true, final: true, list: [...sess.drilled] }); }
+  }
   if (sess.pos < sess.items.length - 1) {
     sess.pos++;
     render();
@@ -1770,6 +1782,7 @@ function blobDuration(blob) {
 function speedOf(lang) { return Number($(lang === 'hu' ? 'l1Speed' : 'l2Speed').value) || 1; }
 async function startHandsFree() {
   if (!sess) return;
+  if (sess.drill) { $('status').textContent = 'A bevéséses tanulásnál a kézmentes mód nem használható – válts „Esedékes ismétlés + új mondatok” módra.'; return; }
   resetRecording(); stopActiveAudio();
   hf.on = true; const token = ++hf.token;
   $('hfBtn').textContent = '⏹ Kézmentes leállítása'; $('hfBtn').classList.add('on');
@@ -1875,7 +1888,7 @@ async function loadDailyReview() {
     const btn = document.createElement('button'); btn.textContent = 'Indítás';
     btn.onclick = async () => {
       btn.disabled = true; btn.textContent = 'Betöltés…';
-      try { await openIsland(slug); $('mode').value = 'due'; saveSettings(); startSession('due'); }
+      try { await openIsland(slug); const md = $('mode').value === 'drill' ? 'drill' : 'due'; $('mode').value = md; saveSettings(); startSession(md); }
       catch (e) { $('dailyStatus').textContent = 'Nem sikerült elindítani: ' + e.message; }
       finally { btn.disabled = false; btn.textContent = 'Indítás'; }
     };
@@ -2069,7 +2082,7 @@ function plTasks() {
     const first = todo.find(x => !x.missing);
     const isl = todo.filter(x => !x.missing).map(x => `${x.it.c} ${x.it.n} (${x.st.seen + 1}–${x.st.seen + x.take}. mondat)`).join(', ');
     tasks.push({ id: 'new', time: '🕒 Délután · ' + plan.after + ' perc', title: `${newTarget} új mondat` + (first ? ` – ${first.it.c} ${first.it.n}` : ''), sub: (isl ? `Ma: ${isl}. ` : todo.length ? `A következő sziget (${todo[0].it.c} ${todo[0].it.n}) még nincs feltöltve. ` : '') + `Ma eddig: ${t.new || 0}.`, btn: first ? '▶ Megnyitom' : '🏝️ Szigetek', auto: (t.new || 0) >= newTarget,
-      go: first ? async () => { try { $('mode').value = 'due'; saveSettings(); showTab('beallitas'); await openIsland(first.st.slug); startSession('due'); } catch (e) { $('status').textContent = 'Nem sikerült megnyitni: ' + e.message; plGo('konyvtar'); } } : () => plGo('konyvtar') });
+      go: first ? async () => { try { const md = $('mode').value === 'drill' ? 'drill' : 'due'; $('mode').value = md; saveSettings(); showTab('beallitas'); await openIsland(first.st.slug); startSession(md); } catch (e) { $('status').textContent = 'Nem sikerült megnyitni: ' + e.message; plGo('konyvtar'); } } : () => plGo('konyvtar') });
     const soon = upload.filter(u => u.g.ready);
     if (soon.length) tasks.push({ id: 'upload', time: '📤 Ha időd engedi', title: 'Feltöltésre vár: ' + soon.map(u => u.it.c + ' ' + u.it.n).join(', '), sub: `Python-programmal hang, majd Szigetek → Új sziget feltöltése, a „${soon[0].g.f}” mappába.`, btn: '🏝️ Szigetek', go: () => plGo('konyvtar') });
     else if (upload.length && !upload[0].g.ready) tasks.push({ id: 'upload', time: '📤 Tananyag', title: `A következő csoport (${upload[0].g.f}) tananyaga még készül`, sub: 'Kérd el a Claude-tól a szigeteket, utána töltsd fel őket.', btn: '' });
@@ -2219,14 +2232,14 @@ async function authAction(type) {
 // ============================================================
 // BEÁLLÍTÁSOK
 // ============================================================
-function saveSettings() { saveJSON('angolsziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, dictMode: $('dictMode').checked, mixSrc: $('mixSrc').value, mixDir: $('mixDir').value, mixPause: $('mixPause').value, mixReps: $('mixReps').value, mixGap: $('mixGap').value, mixHu: $('mixHu').value, mixIt: $('mixIt').value, mixBip: $('mixBip').value, mixShuffle: $('mixShuffle').checked, mixOrder: $('mixOrder').value, mixBack: $('mixBack').value, dailyGoal: $('dailyGoal').value, v18: true, mixWave: $('mixWave').value, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked, hfRate: $('hfRate').value }); }
+function saveSettings() { saveJSON('angolsziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, dictMode: $('dictMode').checked, mixSrc: $('mixSrc').value, mixDir: $('mixDir').value, mixPause: $('mixPause').value, mixReps: $('mixReps').value, mixGap: $('mixGap').value, mixHu: $('mixHu').value, mixIt: $('mixIt').value, mixBip: $('mixBip').value, mixShuffle: $('mixShuffle').checked, mixOrder: $('mixOrder').value, mixBack: $('mixBack').value, dailyGoal: $('dailyGoal').value, v18: true, mixWave: $('mixWave').value, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked, hfRate: $('hfRate').value, drillWrite: $('drillWrite').checked }); }
 function loadSettings() {
   const s = loadJSON('angolsziget-settings', {});
   if (s.direction) $('dir').value = s.direction; if (s.mode) $('mode').value = s.mode;
   if (s.l1Speed) $('l1Speed').value = s.l1Speed; if (s.l2Speed) $('l2Speed').value = s.l2Speed;
   if (s.newLimit !== undefined) $('newLimit').value = s.newLimit; if (s.autoAnswer !== undefined) $('autoAnswer').checked = s.autoAnswer;
   if (s.typeMode !== undefined) $('typeMode').checked = s.typeMode; if (s.dictMode !== undefined) $('dictMode').checked = s.dictMode;
-  for (const k of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixHu', 'mixIt', 'mixBip', 'mixWave']) if (s[k] !== undefined) $(k).value = s[k]; if (s.mixSrc === 'daily' && !s.v18) $('mixSrc').value = 'daily_all'; if (s.mixShuffle !== undefined) $('mixShuffle').checked = s.mixShuffle; if (s.mixOrder) $('mixOrder').value = s.mixOrder; if (s.mixBack) $('mixBack').value = s.mixBack; if (s.dailyGoal) $('dailyGoal').value = s.dailyGoal; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat; if (s.hfRate) $('hfRate').value = s.hfRate;
+  for (const k of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixHu', 'mixIt', 'mixBip', 'mixWave']) if (s[k] !== undefined) $(k).value = s[k]; if (s.mixSrc === 'daily' && !s.v18) $('mixSrc').value = 'daily_all'; if (s.mixShuffle !== undefined) $('mixShuffle').checked = s.mixShuffle; if (s.mixOrder) $('mixOrder').value = s.mixOrder; if (s.mixBack) $('mixBack').value = s.mixBack; if (s.dailyGoal) $('dailyGoal').value = s.dailyGoal; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat; if (s.hfRate) $('hfRate').value = s.hfRate; if (s.drillWrite !== undefined) $('drillWrite').checked = s.drillWrite;
 }
 function updateSpeedLabels() { $('l1Val').textContent = Math.round($('l1Speed').value * 100) + '%'; $('l2Val').textContent = Math.round($('l2Speed').value * 100) + '%'; }
 function updateNet() { $('netStatus').textContent = online() ? '' : 'Nincs internet – offline mód. A haladás a készüléken mentődik, és később szinkronizálódik.'; }
@@ -2288,6 +2301,7 @@ $('typeInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.pre
 $('shuffle').onclick = () => { stopHandsFree(); if (!sess) return; for (let i = sess.items.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sess.items[i], sess.items[j]] = [sess.items[j], sess.items[i]]; } sess.pos = 0; sess.single = null; render(); };
 document.querySelectorAll('[data-rate]').forEach(b => b.onclick = () => { if (hf.on && hf.waitRate) { hf.waitRate(b.dataset.rate); return; } stopHandsFree(); sess && rate(b.dataset.rate); });
 $('mode').onchange = () => { saveSettings(); if (current) startSession($('mode').value); };
+$('drillWrite').onchange = saveSettings;
 $('dir').onchange = () => { saveSettings(); if (sess) { sess.items.forEach(i => i.dir = pickDir()); render(); } };
 $('newLimit').onchange = () => { saveSettings(); renderStats(); };
 $('autoAnswer').onchange = saveSettings;
@@ -3906,6 +3920,70 @@ function bzParse(txt) {
     };
   };
 })();
+
+// ============================================================
+// BEVÉSÉSES TANULÁS – a szigetben: új mondat lépésenként + körkérdezés
+// ============================================================
+const DR_STEPS = () => ['Hallás + árnyékolás', 'Kezdőbetűkkel', 'Fejből'].concat($('drillWrite').checked ? ['Leírás'] : []).concat(['Értékelés']);
+function drChips(cur) { return '<div class="bv-chips">' + DR_STEPS().map((s, i) => `<span class="${i < cur ? 'ok' : i === cur ? 'on' : ''}">${i + 1}. ${s}</span>`).join('') + '</div>'; }
+function drX(it) { return { slug: it.slug, n: it.n, hu: it.hu, it: it.it }; }
+function drillRender(it) {
+  $('study').classList.add('drilling'); bvStopAudio();
+  try { stopActiveAudio(); } catch {}
+  if (it.kor) return drillKor(it);
+  const box = $('drillBox'), x = drX(it), s = it.dstep || 0, nNew = sess.items.filter(y => y.drill && !y.kor).length, iNew = sess.drilled.length + 1;
+  const head = `<div class="bv-head"><b>📌 Bevéséses tanulás</b> · új mondat ${Math.min(iNew, nNew)} / ${nNew}</div>` + drChips(s);
+  const go = () => { it.dstep = s + 1; const last = $('drillWrite').checked ? 4 : 3; if (it.dstep >= last) drillDone(it); else drillRender(it); };
+  if (s === 0) {
+    box.innerHTML = head + `<h4>1. Hallás és árnyékolás</h4><div class="bv-q">${bzEsc(it.hu)}</div><div class="bv-a">${bzEsc(it.it)}</div>
+      <ol class="bv-do"><li>Nyomd meg: a mondat <b>háromszor</b> szól – mondd vele <b>együtt</b>, hangosan.</li><li>Utána mondd el <b>egyszer egyedül</b>, és pipáld ki.</li></ol>
+      <div class="center"><button class="alt" id="drPlay">🔊 3× – mondd vele együtt</button> <span class="muted" id="drCnt">0 / 3</span></div>
+      <label class="bv-chk"><input type="checkbox" id="drAlone"> Egyszer egyedül is elmondtam.</label><div class="center"><button id="drNext" disabled>Következő lépés →</button></div>`;
+    let n = 0; const upd = () => { $('drCnt').textContent = Math.min(n, 3) + ' / 3'; $('drNext').disabled = !(n >= 3 && $('drAlone').checked); };
+    $('drPlay').onclick = async () => { $('drPlay').disabled = true; await bvPlay(x, 'it', 3, 2200, i => { n = Math.max(n, i); if ($('drCnt')) upd(); }); if ($('drPlay')) $('drPlay').disabled = false; };
+    $('drAlone').onchange = upd; $('drNext').onclick = go;
+  } else if (s === 1 || s === 2) {
+    box.innerHTML = head + `<h4>${s + 1}. Előhívás ${s === 1 ? 'kezdőbetűkkel' : 'fejből'}</h4><div class="bv-q">${bzEsc(it.hu)}</div><p class="center muted">Mondd ki hangosan, és csak utána fedd fel.</p><div id="drRet"></div>`;
+    bvRetrieve(x, go, $('drRet'), s === 1, s === 1 ? 'A kezdőbetűk segítenek:' : 'Most semmi segítség:');
+  } else {
+    box.innerHTML = head + `<h4>4. Leírás fejből</h4><div class="bv-q">${bzEsc(it.hu)}</div><p class="center muted">Írd le hibátlanul – ha hibás, 5 mp múlva újra.</p><div id="drWr"></div><div class="center"><button id="drNext" disabled>Tovább →</button></div>`;
+    bvWrite(x, $('drWr'), () => { $('drNext').disabled = false; }); $('drNext').onclick = go;
+  }
+}
+function drillDone(it) {
+  it.drillDone = true; sess.drilled.push(it); sess.sinceKor.push(it);
+  $('study').classList.remove('drilling'); $('drillBox').innerHTML = '';
+  render(); revealAnswer(false);
+  $('status').textContent = 'Most értékeld, mennyire ment fejből – ez alapján ütemezi az ismétlést. 3 új mondatonként rövid körkérdezés jön.';
+}
+function drillKor(it) {
+  const box = $('drillBox');
+  if (!it.q) { it.q = bvShuffle(it.list); it.i = 0; it.weak = []; it.failed = new Set(); it.ok = 0; }
+  if (it.i >= it.q.length) {
+    const weak = it.weak;
+    box.innerHTML = `<div class="bv-head"><b>🔁 ${it.final ? 'Záró körkérdezés' : 'Körkérdezés'}</b></div><h4>✅ Kész</h4><p>Elsőre ment: <b>${it.ok}</b> / ${it.list.length}.</p>` +
+      (weak.length ? `<p>Ezek most nehezen jöttek – érdemes a 📌 Bevésésbe tenni őket:</p><ul>${weak.map(w => `<li>${bzEsc(w.hu)} – <i>${bzEsc(w.it)}</i></li>`).join('')}</ul><div class="center"><button class="alt" id="drWeak">📌 Ezek a Bevésésbe</button></div><p class="center muted" id="drWeakInfo"></p>` : '<p>Mind ment – szép munka!</p>') +
+      `<div class="center"><button id="drKorNext">${it.final ? 'A kör befejezése' : 'Tovább a gyakorlásban →'}</button></div>`;
+    if ($('drWeak')) $('drWeak').onclick = () => { const r = bvAdd(weak); $('drWeakInfo').textContent = r.added ? `📌 ${r.added} mondat átkerült a Bevésésbe (a szigetben is megmaradt).` : 'Már mind ott van.'; };
+    $('drKorNext').onclick = () => { $('study').classList.remove('drilling'); box.innerHTML = ''; advance(); };
+    return;
+  }
+  const y = it.q[it.i], x = drX(y);
+  box.innerHTML = `<div class="bv-head"><b>🔁 ${it.final ? 'Záró körkérdezés – a mai összes új mondat' : 'Körkérdezés – az utolsó 3 új mondat'}</b> · ${it.i + 1} / ${it.q.length}</div>
+    <div class="bv-q">${bzEsc(y.hu)}</div><p class="center muted">Fejből, hangosan – csak utána fedd fel.</p>
+    <div id="drKr"><div class="center"><button id="drRev">Kimondtam – felfedem</button></div></div>`;
+  $('drRev').onclick = () => {
+    $('drKr').innerHTML = `<div class="bv-a">${bzEsc(y.it)}</div><div class="center"><button class="alt" id="drSnd">🔊</button></div><div class="center bv-rate"><button class="bv-good" id="drOk">✅ Ment</button><button class="bv-bad" id="drNo">❌ Nem / akadozva</button></div>`;
+    bvPlay(x, 'it', 1); $('drSnd').onclick = () => bvPlay(x, 'it', 1);
+    $('drOk').onclick = () => { bvStopAudio(); if (!it.failed.has(y)) it.ok++; it.i++; drillKor(it); };
+    $('drNo').onclick = () => {
+      bvStopAudio(); bvPlay(x, 'it', 1); let left = 8;
+      if (it.failed.has(y)) { if (!it.weak.includes(y)) it.weak.push(y); } else { it.failed.add(y); it.q.push(y); }
+      $('drKr').innerHTML = `<div class="bv-a">${bzEsc(y.it)}</div><p class="center">Olvasd el, mondd el magadban kétszer… <b id="drCd">8</b></p>`;
+      clearInterval(bvTimer); bvTimer = setInterval(() => { left--; if ($('drCd')) $('drCd').textContent = left; if (left <= 0) { clearInterval(bvTimer); it.i++; drillKor(it); } }, 1000);
+    };
+  };
+}
 
 // ============================================================
 // INDÍTÁS
