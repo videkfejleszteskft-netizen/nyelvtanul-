@@ -104,6 +104,9 @@ details.folder>.fbody{padding:0 12px 10px}
 details.folder details.folder{background:#fff}
 .ftools{display:flex;gap:4px;flex-wrap:wrap;margin:0 0 4px}
 .ftools button{padding:7px 11px;font-size:.9rem}
+.ftools select.move{max-width:100%;margin:0}
+details.folder.lvl>summary{font-weight:600;background:#eef5f8;border-radius:11px}
+details.folder.stg>summary{font-size:1rem}
 select.move{padding:8px;border:1px solid #cbd5df;border-radius:8px;max-width:100%;margin:4px;background:#fff}
 .newfolder{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
 .newfolder input{flex:1;min-width:170px;padding:9px;border:1px solid #cbd5df;border-radius:8px}
@@ -207,7 +210,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>EN</b> English</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">EN V21</span>
+ <span class="ver" title="Programverzió">EN V22</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">GAME PLAN</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -559,11 +562,13 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 
 <section data-tab="konyvtar" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Az összes szigeted a felhőben, mappákba rendezve. Az egyszer megnyitott sziget a készüléken marad, internet nélkül is működik. <b>Miért?</b> Telefonon és gépen ugyanaz a tananyag és ugyanaz a haladás.</p>
 <h4>Új sziget</h4><ol><li>A Claude-tól kapott TXT-ből a Python-program elkészíti a hangfájlokat.</li><li>„Új sziget feltöltése”: név, <b>mappa</b> (a 🗺️ terv mutatja, melyik a következő és melyik mappába való), TXT, magyar és idegen nyelvű hangfájlok.</li></ol>
+<h4>Rendezés – két nézet</h4><ol><li><b>📊 Szint és haladás szerint (automatikus):</b> az app magától sorolja be a szigeteket: <b>szint</b> (A1…C2) → <b>haladás</b> (🟡 elkezdett · 🔁 végigvett, ismétlés alatt · ⬜ még nem gyakorolt · ✅ rögzült = a mondatok legalább 80%-a már 3 hétnél ritkábban jön) → <b>témacsoport</b>. Ahogy tanulsz, a sziget magától átkerül a következő csoportba – nem kell kézzel rendezni.</li><li><b>📁 Saját mappáim:</b> a magad által készített mappák, akárhány szint mélyen (<b>+ Almappa</b>). A mappák is áthelyezhetők másik mappába („↪ Mappa áthelyezése…”), a szigetek a sorukban lévő választóval. Mappa törlésekor semmi nem vész el: a tartalma egy szinttel feljebb kerül.</li><li>A haladás és a hangok nem függnek a mappáktól – a besorolás bármikor szabadon változtatható.</li></ol>
 <h4>Gyakorlás</h4><ol><li>Koppints egy szigetre: a ⚙️ fülön beállított móddal indul (ajánlott: „Esedékes ismétlés + új mondatok”).</li><li>Utazás előtt: <b>„Összes letöltése offline használatra”</b>.</li></ol></details></section>
 <section data-tab="konyvtar" class="box"><h3>Nyelvi sziget-könyvtár (felhő)</h3>
  <p class="muted">Az egyszer megnyitott sziget a készüléken marad, és internet nélkül is használható.</p>
  <button id="refreshLibrary">Könyvtár frissítése</button><button id="downloadAll" class="alt">Összes letöltése offline használatra</button>
- <div class="newfolder"><input id="newFolderName" placeholder="Új mappa neve (pl. Utazás)"><button id="newFolderBtn" class="alt">Új mappa</button></div>
+ <div class="newfolder"><label class="muted" style="flex:1;min-width:220px">Nézet<br><select id="libView" class="move" style="margin:0;width:100%"><option value="auto">📊 Szint és haladás szerint (automatikus)</option><option value="manual">📁 Saját mappáim</option></select></label></div>
+ <div class="newfolder" id="newFolderRow"><input id="newFolderName" placeholder="Új mappa neve (pl. B1 – gyakorolt)"><button id="newFolderBtn" class="alt">Új mappa</button></div>
  <p id="libStatus" class="muted">Jelentkezz be a könyvtár használatához.</p><div id="islandList"></div>
  <details id="uploadBox" style="margin-top:10px"><summary>Új sziget feltöltése</summary>
   <div class="row" style="margin-top:8px"><label>Sziget neve<br><input id="libName" placeholder="pl. Az étteremben"></label><label>Mappa<br><select id="libFolder" class="move" style="margin:0;width:100%"></select></label></div>
@@ -1092,18 +1097,33 @@ async function pullFolders() {
   return false;
 }
 function liveFolders() {
-  return Object.entries(folderData.folders).filter(([, f]) => f && !f.deleted && f.name)
-    .map(([id, f]) => ({ id, name: f.name })).sort((x, y) => x.name.localeCompare(y.name, 'hu', { numeric: true }));
+  // fa-sorrendben adja vissza a mappákat: {id, name, p (szülő), depth, path}
+  const all = Object.entries(folderData.folders).filter(([, f]) => f && !f.deleted && f.name).map(([id, f]) => ({ id, name: f.name, p: f.p || '' }));
+  const ids = new Set(all.map(f => f.id)), kids = new Map();
+  for (const f of all) if (!ids.has(f.p) || f.p === f.id) f.p = '';
+  const byName = (x, y) => x.name.localeCompare(y.name, 'hu', { numeric: true });
+  for (const f of all) { if (!kids.has(f.p)) kids.set(f.p, []); kids.get(f.p).push(f); }
+  for (const l of kids.values()) l.sort(byName);
+  const out = [], seen = new Set();
+  const walk = (pid, depth, path) => { for (const f of kids.get(pid) || []) { if (seen.has(f.id)) continue; seen.add(f.id); f.depth = depth; f.path = path ? path + ' › ' + f.name : f.name; out.push(f); walk(f.id, depth + 1, f.path); } };
+  walk('', 0, '');
+  for (const f of all.filter(x => !seen.has(x.id)).sort(byName)) { if (seen.has(f.id)) continue; f.p = ''; seen.add(f.id); f.depth = 0; f.path = f.name; out.push(f); walk(f.id, 1, f.path); } // körbe mutató szülők (két készülék egyszerre mozgatott) – gyökérbe
+  return out;
 }
 function folderName(id) { const f = id && folderData.folders[id]; return f && !f.deleted ? f.name : ''; }
+function folderPath(id) { const f = id && liveFolders().find(x => x.id === id); return f ? f.path : ''; }
+function folderParent(id) { const f = id && liveFolders().find(x => x.id === id); return f ? f.p : ''; }
+function folderDesc(id, lf = liveFolders()) { const out = [], st = [id]; while (st.length) { const x = st.pop(); for (const k of lf) if (k.p === x && !out.includes(k.id)) { out.push(k.id); st.push(k.id); } } return out; }
+function openFolderChain(fid) { let x = fid, g = 0; while (x && g++ < 30) { rememberOpen('lib:' + x, true); x = folderParent(x); } }
 function folderOf(slug) { const a = folderData.assign[slug]; return a && a.f && folderName(a.f) ? a.f : ''; }
 function setFolder(slug, fid) { folderData.assign[slug] = { f: fid || null, at: Date.now() }; saveFolders(); }
-function createFolder(name) {
+function createFolder(name, parent = '') {
   name = String(name || '').trim(); if (!name) return '';
-  const exist = liveFolders().find(f => f.name.toLocaleLowerCase('hu') === name.toLocaleLowerCase('hu'));
+  parent = folderName(parent) ? parent : '';
+  const exist = liveFolders().find(f => f.p === parent && f.name.toLocaleLowerCase('hu') === name.toLocaleLowerCase('hu'));
   if (exist) return exist.id;
   const id = 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  folderData.folders[id] = { name, at: Date.now() }; saveFolders();
+  folderData.folders[id] = parent ? { name, p: parent, at: Date.now() } : { name, at: Date.now() }; saveFolders();
   return id;
 }
 function isOpen(key, dflt = false) { return openState.has(key) ? true : (openState.has('!' + key) ? false : dflt); }
@@ -1121,7 +1141,7 @@ function fillFolderSelect(sel, value) {
   sel.innerHTML = '';
   const add = (v, t) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.append(o); };
   add('', '— Mappa nélkül —');
-  for (const f of liveFolders()) add(f.id, '📁 ' + f.name);
+  for (const f of liveFolders()) add(f.id, '📁 ' + f.path);
   add('__new__', '+ Új mappa…');
   sel.value = value || '';
 }
@@ -1130,7 +1150,7 @@ function refreshUploadFolderSelect(preferred) {
   const keep = preferred !== undefined ? preferred : sel.value;
   fillFolderSelect(sel, folderName(keep) ? keep : '');
 }
-function askNewFolder() { const name = prompt('Az új mappa neve:'); return name ? createFolder(name) : ''; }
+function askNewFolder(parent = '') { const name = prompt(parent ? 'Az új almappa neve (ide: ' + folderPath(parent) + '):' : 'Az új mappa neve:'); return name ? createFolder(name, parent) : ''; }
 
 async function listLibrary() {
   const token = ++libraryRenderToken;
@@ -1188,9 +1208,9 @@ function islandRow(slug) {
     let fid = move.value;
     if (fid === '__new__') { fid = askNewFolder(); if (!fid) { move.value = folderOf(slug); return; } }
     setFolder(slug, fid);
-    if (fid) rememberOpen('lib:' + fid, true);
+    if (fid) openFolderChain(fid);
     renderLibrary(); renderHard(); refreshUploadFolderSelect();
-    $('libStatus').textContent = niceName(slug) + ' → ' + (folderName(fid) || 'Mappa nélkül');
+    $('libStatus').textContent = niceName(slug) + ' → ' + (folderPath(fid) || 'Mappa nélkül');
   };
   actions.append(move);
   const rn = document.createElement('button'); rn.className = 'alt'; rn.textContent = 'Átnevezés';
@@ -1220,55 +1240,137 @@ function islandStats(slugList) {
   }
   return out;
 }
+const LIB_VIEW_KEY = 'angolsziget-libview';
+function libView() { try { return localStorage.getItem(LIB_VIEW_KEY) || 'auto'; } catch { return 'auto'; } }
+function setLibView(v) { try { localStorage.setItem(LIB_VIEW_KEY, v); } catch {} }
 function renderLibrary() {
   const host = $('islandList'); host.innerHTML = '';
   const { slugs, cached } = lastLibrary;
   const all = uniqueSlugs([...slugs, ...cached]).sort((a, b) => niceName(a).localeCompare(niceName(b), 'hu', { numeric: true }));
   const folders = liveFolders();
   refreshUploadFolderSelect();
+  const view = libView(); if ($('libView')) $('libView').value = view;
+  if ($('newFolderRow')) $('newFolderRow').style.display = view === 'auto' ? 'none' : '';
   if (!all.length && !folders.length) { $('libStatus').textContent = signedIn() ? 'Még nincs feltöltött sziget.' : 'Jelentkezz be a felhős könyvtárhoz.'; return; }
+  if (view === 'auto') renderLibraryAuto(host, all);
+  else renderLibraryManual(host, all, folders, slugs);
+  $('libStatus').textContent = `Szigetek: ${all.length}, ebből a készüléken (offline): ${[...cached].length}. Saját mappák: ${folders.length}.`;
+}
+
+// --- Saját mappák: tetszőleges mélységű mappafa
+function renderLibraryManual(host, all, folders, slugs) {
   const byFolder = new Map(folders.map(f => [f.id, []])); const loose = [];
   for (const slug of all) { const f = folderOf(slug); (f && byFolder.has(f) ? byFolder.get(f) : loose).push(slug); }
-
-  for (const f of folders) {
-    const list = byFolder.get(f.id);
-    const fs = islandStats(list);
-    const g = makeGroup('lib:' + f.id, '📁 ' + f.name, `(${list.length} sziget · ${fs.seen}/${fs.total || '?'} gyakorolt · ${fs.learned} rögzült · ${fs.due} esedékes)`, false);
+  const kids = id => folders.filter(f => f.p === id);
+  const build = f => {
+    const sub = kids(f.id), ids = [f.id, ...folderDesc(f.id, folders)];
+    const list = byFolder.get(f.id) || [], allIsl = ids.flatMap(i => byFolder.get(i) || []);
+    const fs = islandStats(allIsl);
+    const g = makeGroup('lib:' + f.id, '📁 ' + f.name, `(${allIsl.length} sziget${sub.length ? ' · ' + sub.length + ' almappa' : ''} · ${fs.seen}/${fs.total || '?'} gyakorolt · ${fs.learned} rögzült · ${fs.due} esedékes)`, false);
     const tools = document.createElement('div'); tools.className = 'ftools';
     const addHere = document.createElement('button'); addHere.className = 'alt'; addHere.textContent = '+ Új sziget ide';
     addHere.onclick = () => { refreshUploadFolderSelect(f.id); $('uploadBox').open = true; $('uploadBox').scrollIntoView({ behavior: 'smooth', block: 'center' }); $('libName').focus(); };
+    const addSub = document.createElement('button'); addSub.className = 'alt'; addSub.textContent = '+ Almappa';
+    addSub.onclick = () => { const id = askNewFolder(f.id); if (!id) return; openFolderChain(id); renderLibrary(); renderHard(); $('libStatus').textContent = 'Új almappa: ' + folderPath(id); };
     const dl = document.createElement('button'); dl.className = 'alt'; dl.textContent = 'Mappa letöltése offline';
-    dl.onclick = () => downloadSlugs(list.filter(s => slugs.includes(s)), dl, f.name);
+    dl.onclick = () => downloadSlugs(allIsl.filter(x => slugs.includes(x)), dl, f.path);
     const ren = document.createElement('button'); ren.className = 'alt'; ren.textContent = 'Átnevezés';
     ren.onclick = () => {
       const name = prompt('A mappa új neve:', f.name); if (!name || !name.trim()) return;
       folderData.folders[f.id] = { ...folderData.folders[f.id], name: name.trim(), at: Date.now() }; saveFolders();
       renderLibrary(); renderHard();
     };
+    const mv = document.createElement('select'); mv.className = 'move'; mv.title = 'A mappa áthelyezése';
+    const addOpt = (v, t) => { const o = document.createElement('option'); o.value = v; o.textContent = t; mv.append(o); };
+    addOpt('__keep__', '↪ Mappa áthelyezése…');
+    if (f.p) addOpt('', '⬆ Legfelső szintre');
+    const bad = new Set([f.id, ...folderDesc(f.id, folders)]);
+    for (const o of folders) if (!bad.has(o.id) && o.id !== f.p) addOpt(o.id, '📁 ' + o.path);
+    mv.value = '__keep__';
+    mv.onchange = () => {
+      const np = mv.value; if (np === '__keep__') return;
+      folderData.folders[f.id] = { ...folderData.folders[f.id], p: np || null, at: Date.now() }; saveFolders();
+      openFolderChain(f.id); renderLibrary(); renderHard();
+      $('libStatus').textContent = 'Áthelyezve: ' + folderPath(f.id);
+    };
     const del = document.createElement('button'); del.className = 'alt'; del.textContent = 'Mappa törlése';
     del.onclick = () => {
-      if (!confirm('Törlöd a „' + f.name + '” mappát? A benne lévő ' + list.length + ' sziget NEM törlődik, a „Mappa nélkül” csoportba kerül.')) return;
-      folderData.folders[f.id] = { ...folderData.folders[f.id], deleted: true, at: Date.now() }; saveFolders();
+      const where = f.p ? 'a „' + folderPath(f.p) + '” mappába' : 'a legfelső szintre (a szigetek a „Mappa nélkül” csoportba)';
+      if (!confirm('Törlöd a „' + f.name + '” mappát? A benne lévő ' + list.length + ' sziget' + (sub.length ? ' és ' + sub.length + ' almappa' : '') + ' NEM törlődik, hanem ' + where + ' kerül.')) return;
+      const now = Date.now();
+      for (const c of sub) folderData.folders[c.id] = { ...folderData.folders[c.id], p: f.p || null, at: now };
+      for (const slug of list) folderData.assign[slug] = { f: f.p || null, at: now };
+      folderData.folders[f.id] = { ...folderData.folders[f.id], deleted: true, at: now }; saveFolders();
       renderLibrary(); renderHard();
     };
-    tools.append(addHere);
-    if (list.some(s => slugs.includes(s))) tools.append(dl);
-    tools.append(ren, del);
+    tools.append(addHere, addSub);
+    if (allIsl.some(x => slugs.includes(x))) tools.append(dl);
+    tools.append(ren, mv, del);
     g.body.append(tools);
-    if (!list.length) { const m = document.createElement('p'); m.className = 'muted'; m.textContent = 'Üres mappa. Tölts fel ide szigetet, vagy helyezz át egyet a sziget sorában lévő mappaválasztóval.'; g.body.append(m); }
+    for (const c of sub) g.body.append(build(c));
+    if (!list.length && !sub.length) { const m = document.createElement('p'); m.className = 'muted'; m.textContent = 'Üres mappa. Tölts fel ide szigetet, helyezz át egyet a sziget sorában lévő mappaválasztóval, vagy készíts benne almappát.'; g.body.append(m); }
     for (const slug of list) g.body.append(islandRow(slug));
-    host.append(g.el);
-  }
+    return g.el;
+  };
+  for (const f of kids('')) host.append(build(f));
   if (loose.length) {
     if (folders.length) {
-      const g = makeGroup('lib:__none__', 'Mappa nélkül', `(${loose.length} sziget)`, true); // alapból nyitva, hogy semmi ne „tűnjön el”
+      const g = makeGroup('lib:__none__', 'Mappa nélkül', `(${loose.length} sziget)`, true);
       for (const slug of loose) g.body.append(islandRow(slug));
       host.append(g.el);
-    } else {
-      for (const slug of loose) host.append(islandRow(slug)); // nincs még mappa: minden úgy látszik, mint eddig
-    }
+    } else for (const slug of loose) host.append(islandRow(slug));
   }
-  $('libStatus').textContent = `Szigetek: ${all.length}, ebből a készüléken (offline): ${[...cached].length}. Mappák: ${folders.length}.`;
+}
+
+// --- Automatikus nézet: szint → haladás → témacsoport (a tanterv kódjai alapján, magától frissül)
+const LIB_STAGES = [
+  { k: 1, t: '🟡 Elkezdett – még van benne új mondat', open: true },
+  { k: 2, t: '🔁 Végigvett – ismétlés alatt', open: true },
+  { k: 0, t: '⬜ Még nem gyakorolt', open: false },
+  { k: 3, t: '✅ Rögzült', open: false }
+];
+function libCurrInfo() { const m = new Map(); CURRICULUM.forEach((g, gi) => g.i.forEach((it, ii) => m.set(it.c.toLowerCase(), { lv: g.lv, f: g.f, gi, ii, s: it.s }))); return m; }
+function islandStage(slug, ci) {
+  const st = islandStats([slug]), total = st.total || (ci && ci.s) || 0;
+  if (!st.seen) return 0;
+  if (!total || st.seen < total) return 1;
+  return st.learned >= Math.ceil(total * 0.8) ? 3 : 2;
+}
+function renderLibraryAuto(host, all) {
+  const info = libCurrInfo(), levels = new Map();
+  for (const slug of all) {
+    const ci = info.get(String(slug).split(/[-_ ]/)[0].toLowerCase()) || null;
+    const lv = ci ? ci.lv : '?';
+    if (!levels.has(lv)) levels.set(lv, []);
+    levels.get(lv).push({ slug, ci, stage: islandStage(slug, ci) });
+  }
+  const order = [...PL_LEVELS.filter(l => levels.has(l)), ...(levels.has('?') ? ['?'] : [])];
+  let firstOpen = order.find(l => levels.get(l).some(x => x.stage === 1 || x.stage === 2)) || order[0];
+  for (const lv of order) {
+    const items = levels.get(lv).sort((a, b) => a.ci && b.ci ? (a.ci.gi - b.ci.gi) || (a.ci.ii - b.ci.ii) : niceName(a.slug).localeCompare(niceName(b.slug), 'hu', { numeric: true }));
+    const cnt = k => items.filter(x => x.stage === k).length, fs = islandStats(items.map(x => x.slug));
+    const title = lv === '?' ? '📦 Egyéb szigetek (nem a tantervből)' : '🎓 ' + lv + ' szint';
+    const lg = makeGroup('auto:' + lv, title, '(' + [items.length + ' sziget', cnt(1) && cnt(1) + ' elkezdett', cnt(2) && cnt(2) + ' ismétlés alatt', cnt(0) && cnt(0) + ' még nem gyakorolt', cnt(3) && cnt(3) + ' rögzült', fs.due && fs.due + ' esedékes'].filter(Boolean).join(' · ') + ')', lv === firstOpen);
+    lg.el.classList.add('lvl');
+    const themes = [...new Set(items.filter(x => x.ci).map(x => x.ci.f))];
+    for (const stg of LIB_STAGES) {
+      const list = items.filter(x => x.stage === stg.k); if (!list.length) continue;
+      const ss = islandStats(list.map(x => x.slug));
+      const sg = makeGroup('auto:' + lv + ':' + stg.k, stg.t, `(${list.length} sziget${stg.k ? ' · ' + ss.due + ' esedékes' : ''})`, stg.open);
+      sg.el.classList.add('stg');
+      if (themes.length > 1) {
+        for (const th of themes) {
+          const tl = list.filter(x => x.ci && x.ci.f === th); if (!tl.length) continue;
+          const tg = makeGroup('auto:' + lv + ':' + stg.k + ':' + th, '📂 ' + th, `(${tl.length})`, stg.k === 1);
+          for (const x of tl) tg.body.append(islandRow(x.slug));
+          sg.body.append(tg.el);
+        }
+        for (const x of list.filter(x => !x.ci)) sg.body.append(islandRow(x.slug));
+      } else for (const x of list) sg.body.append(islandRow(x.slug));
+      lg.body.append(sg.el);
+    }
+    host.append(lg.el);
+  }
 }
 async function downloadSlugs(list, btn, label) {
   if (!signedIn() || !online()) { $('libStatus').textContent = 'A letöltéshez internet és bejelentkezés kell.'; return; }
@@ -1331,8 +1433,8 @@ async function uploadIsland() {
     }
     await pool(jobs, 4, (d, t) => { $('libStatus').textContent = `Feltöltés: ${d}/${t} hangfájl…`; });
     $('libStatus').textContent = `Feltöltve: ${pairs.length} mondatpár, ${a.length} magyar és ${b.length} angol hangfájl.` + (skipped.length ? ` Kihagyott sorok (nincs „ - ”): ${skipped.join(', ')}.` : '');
-    if (targetFolder || folderOf(slug)) { setFolder(slug, targetFolder); if (targetFolder) rememberOpen('lib:' + targetFolder, true); }
-    if (targetFolder) $('libStatus').textContent += ` Mappa: ${folderName(targetFolder)}.`;
+    if (targetFolder || folderOf(slug)) { setFolder(slug, targetFolder); if (targetFolder) openFolderChain(targetFolder); }
+    if (targetFolder) $('libStatus').textContent += ` Mappa: ${folderPath(targetFolder)}.`;
     if (name !== niceName(slug)) { folderData.names[slug] = { name, at: Date.now() }; saveFolders(); }
     $('libName').value = ''; $('libTxt').value = ''; $('libL1').value = ''; $('libL2').value = '';
     await listLibrary();
@@ -1992,7 +2094,7 @@ function renderHard() {
   const order = [...liveFolders().map(f => f.id).filter(id => groups.has(id)), ...(groups.has('') ? [''] : [])];
   for (const fid of order) {
     const islands = groups.get(fid), items = [...islands.values()].flat();
-    const fg = makeGroup('hard:' + (fid || '__none__'), fid ? '📁 ' + folderName(fid) : 'Mappa nélkül', `(${items.length} nehéz mondat)`, false);
+    const fg = makeGroup('hard:' + (fid || '__none__'), fid ? '📁 ' + folderPath(fid) : 'Mappa nélkül', `(${items.length} nehéz mondat)`, false);
     const tools = document.createElement('div'); tools.className = 'ftools';
     tools.append(hardPracticeButton('A mappa nehéz mondatainak gyakorlása', items, 'Nehéz mondataim – ' + (folderName(fid) || 'Mappa nélkül')));
     fg.body.append(tools);
@@ -2272,6 +2374,7 @@ $('newFolderBtn').onclick = () => {
   $('libStatus').textContent = 'Mappa létrehozva: ' + folderName(id) + '. Szigetet a „+ Új sziget ide” gombbal tölthetsz fel bele, vagy a sziget sorában lévő mappaválasztóval helyezhetsz át.';
 };
 $('newFolderName').addEventListener('keydown', e => { if (e.key === 'Enter') $('newFolderBtn').click(); });
+$('libView').onchange = () => { setLibView($('libView').value); renderLibrary(); };
 $('libFolder').onchange = () => { if ($('libFolder').value === '__new__') refreshUploadFolderSelect(askNewFolder() || ''); };
 $('downloadAll').onclick = downloadAll;
 $('uploadIsland').onclick = uploadIsland;
@@ -2545,7 +2648,7 @@ function vRenderDecks() {
   for (const key of order) {
     const decks = groups.get(key).sort((a, b) => a.name.localeCompare(b.name, 'hu', { numeric: true }));
     const sum = decks.reduce((s, d) => { const c = vDeckCounts(d.id); s.due += c.due; s.fresh += c.fresh; s.total += c.total; return s; }, { due: 0, fresh: 0, total: 0 });
-    const title = key.startsWith('own:') ? '📝 ' + key.slice(4) : key === '__none__' ? 'Szigetek mappa nélkül' : '📁 ' + folderName(key);
+    const title = key.startsWith('own:') ? '📝 ' + key.slice(4) : key === '__none__' ? 'Szigetek mappa nélkül' : '📁 ' + folderPath(key);
     const g = makeGroup('voc:' + key, title, `(${decks.length} lista · ${sum.due} esedékes · ${sum.fresh} új)`, false);
     const tools = document.createElement('div'); tools.className = 'ftools';
     const all = document.createElement('button'); all.textContent = 'A csoport gyakorlása'; all.onclick = () => vStart(decks.map(d => d.id), title.replace(/^\S+\s/, ''));
@@ -2952,7 +3055,7 @@ function saveMixSel() { saveJSON('angolsziget-mixsel', [...mixSel]); }
 function mixGroups() {
   const { slugs, cached } = lastLibrary;
   const all = uniqueSlugs([...slugs, ...cached]).sort((a, b) => niceName(a).localeCompare(niceName(b), 'hu', { numeric: true }));
-  const folders = liveFolders(), groups = folders.map(f => ({ id: f.id, name: '📁 ' + f.name, list: [] })), loose = { id: '__none__', name: 'Mappa nélkül', list: [] };
+  const folders = liveFolders(), groups = folders.map(f => ({ id: f.id, name: '📁 ' + f.path, list: [] })), loose = { id: '__none__', name: 'Mappa nélkül', list: [] };
   for (const slug of all) { const f = folderOf(slug), g = groups.find(x => x.id === f); (g || loose).list.push(slug); }
   return [...groups, loose].filter(g => g.list.length);
 }
