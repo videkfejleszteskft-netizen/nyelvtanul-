@@ -211,7 +211,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>EN</b> English</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">EN V23</span>
+ <span class="ver" title="Programverzió">EN V24</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">GAME PLAN</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -563,6 +563,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 
 <section data-tab="konyvtar" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Az összes szigeted a felhőben, mappákba rendezve. Az egyszer megnyitott sziget a készüléken marad, internet nélkül is működik. <b>Miért?</b> Telefonon és gépen ugyanaz a tananyag és ugyanaz a haladás.</p>
 <h4>Új sziget</h4><ol><li>A Claude-tól kapott TXT-ből a Python-program elkészíti a hangfájlokat.</li><li>„Új sziget feltöltése”: név, <b>mappa</b> (a 🗺️ terv mutatja, melyik a következő és melyik mappába való), TXT, magyar és idegen nyelvű hangfájlok.</li></ol>
+<h4>Szigetcsoport egyszerre</h4><ol><li>A gépen az <b>ssa_szigetcsoport.py</b> egy csoportfájlból (pl. 8 bekezdés) 8 sziget-mappát készít az <b>output</b> mappába.</li><li>Itt: „Szigetcsoport feltöltése egyszerre” → válaszd ki a csoport mappáját (telefonon: a ZIP-et) → „Szigetcsoport feltöltése”. A szigetek nevet és mappát is kapnak, a tananyag-tervben a csoportjukhoz számítanak.</li><li>Egyenként továbbra is feltölthetsz az „Új sziget feltöltése” résznél.</li></ol>
 <h4>Rendezés – két nézet</h4><ol><li><b>📊 Szint és haladás szerint (automatikus):</b> az app magától sorolja be a szigeteket: <b>szint</b> (A1…C2) → <b>haladás</b> (🟡 elkezdett · 🔁 végigvett, ismétlés alatt · ⬜ még nem gyakorolt · ✅ rögzült = a mondatok legalább 80%-a már 3 hétnél ritkábban jön) → <b>témacsoport</b>. Ahogy tanulsz, a sziget magától átkerül a következő csoportba – nem kell kézzel rendezni.</li><li><b>📁 Saját mappáim:</b> a magad által készített mappák, akárhány szint mélyen (<b>+ Almappa</b>). A mappák is áthelyezhetők másik mappába („↪ Mappa áthelyezése…”), a szigetek a sorukban lévő választóval. Mappa törlésekor semmi nem vész el: a tartalma egy szinttel feljebb kerül.</li><li>A haladás és a hangok nem függnek a mappáktól – a besorolás bármikor szabadon változtatható.</li></ol>
 <h4>Gyakorlás</h4><ol><li>Koppints egy szigetre: a ⚙️ fülön beállított móddal indul (ajánlott: „Esedékes ismétlés + új mondatok”).</li><li>Utazás előtt: <b>„Összes letöltése offline használatra”</b>.</li></ol></details></section>
 <section data-tab="konyvtar" class="box"><h3>Nyelvi sziget-könyvtár (felhő)</h3>
@@ -576,6 +577,13 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
   <div class="row"><label>TXT tananyag<br><input id="libTxt" type="file" accept=".txt"></label></div>
   <div class="row"><label>L1 magyar hangfájlok (01.mp3…)<br><input id="libL1" type="file" accept="audio/*" multiple></label><label>L2 angol hangfájlok (01.mp3…)<br><input id="libL2" type="file" accept="audio/*" multiple></label></div>
   <button id="uploadIsland">Sziget feltöltése a felhőbe</button>
+ </details>
+ <details id="bulkBox" style="margin-top:10px"><summary>Szigetcsoport feltöltése egyszerre (az ssa_szigetcsoport.py kimenete)</summary>
+  <p class="muted"><b>Gépen:</b> válaszd ki a csoport mappáját az <b>output</b> mappából (pl. <i>01_Nyelvi_sziget_Beszelgetes_angolokkal</i>) – a benne lévő összes sziget egyszerre felkerül. A böngésző megkérdezheti, hogy „feltöltöd-e a fájlokat” – ez rendben van.<br><b>Telefonon:</b> a csoport mappáját tömörítsd ZIP-be, és a ZIP-et válaszd ki.</p>
+  <div class="row"><label>Csoport mappája (gépen)<br><input id="bulkDir" type="file" webkitdirectory directory multiple></label><label>…vagy ZIP fájl<br><input id="bulkZip" type="file" accept=".zip,application/zip,application/x-zip-compressed"></label></div>
+  <div class="row"><label>Melyik mappába kerüljenek a szigetek?<br><select id="bulkFolder" class="move" style="margin:0;width:100%"></select></label></div>
+  <div id="bulkPreview" class="muted"></div>
+  <button id="bulkUpload" disabled>Szigetcsoport feltöltése a felhőbe</button>
  </details>
 </section>
 
@@ -2138,8 +2146,21 @@ function plSlugMap() {
   return m;
 }
 function plGroups() { const a = PL_LEVELS.indexOf(plan.level), b = PL_LEVELS.indexOf(plan.goal); return CURRICULUM.filter(g => { const l = PL_LEVELS.indexOf(g.lv); return l > a && l <= b; }); }
+function plSlugsAll() {
+  const m = new Map(), all = uniqueSlugs([...librarySlugs(), ...((lastLibrary && lastLibrary.cached) || []), ...allProgSlugs()]);
+  for (const sl of all) { const k = String(sl).split(/[-_ ]/)[0].toLowerCase(); if (!k) continue; if (!m.has(k)) m.set(k, []); m.get(k).push(sl); }
+  for (const [k, l] of m) { const parts = l.filter(sl => new RegExp('^' + k + '-\\d{2}-').test(sl)); m.set(k, (parts.length ? parts : l).sort((a, b) => a.localeCompare(b, 'hu', { numeric: true }))); }
+  return m;
+}
 function plIslandState(it, map) {
-  const slug = map.get(it.c.toLowerCase()); const lib = new Set(librarySlugs());
+  const many = plSlugsAll().get(it.c.toLowerCase()) || [];
+  if (many.length > 1) { // a csoport több kisebb szigetre bontva (ssa_szigetcsoport.py)
+    const lib = new Set(librarySlugs()); let seen = 0, known = 0, unknown = false, up = false, slug = null;
+    for (const sl of many) { const cd = countDue(sl); if (cd.total) { known += cd.total; seen += Math.min(cd.seen, cd.total); } else { unknown = true; seen += cd.seen; } if (lib.has(sl) || cd.total > 0 || cd.seen > 0) up = true; if (!slug && (!cd.total || cd.seen < cd.total)) slug = sl; }
+    const total = unknown ? Math.max(known, it.s) : known;
+    return { slug: slug || many[0], seen: Math.min(seen, total), total, up };
+  }
+  const slug = many[0] || map.get(it.c.toLowerCase()); const lib = new Set(librarySlugs());
   if (!slug) return { slug: null, seen: 0, total: it.s, up: false };
   const cd = countDue(slug), total = cd.total || it.s;
   return { slug, seen: Math.min(cd.seen, total), total, up: lib.has(slug) || cd.total > 0 || cd.seen > 0 };
@@ -2387,6 +2408,108 @@ $('libView').onchange = () => { setLibView($('libView').value); renderLibrary();
 $('libFolder').onchange = () => { if ($('libFolder').value === '__new__') refreshUploadFolderSelect(askNewFolder() || ''); };
 $('downloadAll').onclick = downloadAll;
 $('uploadIsland').onclick = uploadIsland;
+// ============================================================
+// SZIGETCSOPORT FELTÖLTÉSE EGYSZERRE (mappa vagy ZIP)
+//  <csoport>/<NN_sziget>/tananyag.txt + L1/01.mp3… + L2/01.mp3…
+// ============================================================
+let bulkData = null;
+const BULK_MIME = { mp3: 'audio/mpeg', m4a: 'audio/mp4', wav: 'audio/wav', ogg: 'audio/ogg', aac: 'audio/aac' };
+function bulkFillFolders() {
+  const sel = $('bulkFolder'); if (!sel) return; const keep = sel.value || '__group__';
+  fillFolderSelect(sel, '');
+  const o = document.createElement('option'); o.value = '__group__'; o.textContent = '📁 Új mappa a csoport nevével (javasolt)'; sel.prepend(o);
+  sel.querySelector('option[value="__new__"]')?.remove();
+  sel.value = [...sel.options].some(x => x.value === keep) ? keep : '__group__';
+}
+function bulkTitleCase(t) { t = String(t || '').trim(); if (t === t.toLocaleUpperCase('hu')) t = t.toLocaleLowerCase('hu'); return t.charAt(0).toLocaleUpperCase('hu') + t.slice(1); }
+async function bulkCollect(entries) {
+  const dirs = new Map();
+  const get = parts => { const k = parts.join('/'); if (!dirs.has(k)) dirs.set(k, { parts, L1: [], L2: [], txt: null }); return dirs.get(k); };
+  for (const e of entries) {
+    const parts = String(e.path).replace(/\\/g, '/').split('/').filter(Boolean);
+    if (!parts.length || parts.some(x => x.startsWith('.') || x === '__MACOSX')) continue;
+    const fn = parts[parts.length - 1], up = parts[parts.length - 2] || '';
+    if (/\.txt$/i.test(fn)) { const dd = get(parts.slice(0, -1)); if (!dd.txt || /^tananyag\.txt$/i.test(fn)) dd.txt = e; }
+    else if (/^L[12]$/i.test(up) && idxName(fn)) get(parts.slice(0, -2))[up.toUpperCase()].push(e);
+  }
+  const out = [];
+  for (const dd of dirs.values()) {
+    if (!dd.txt || (!dd.L1.length && !dd.L2.length)) continue;
+    const D = dd.parts[dd.parts.length - 1] || 'sziget', G = dd.parts.length >= 2 ? dd.parts[dd.parts.length - 2] : '';
+    const text = await dd.txt.blob.text(), lines = text.replace(/^﻿/, '').split(/\r?\n/);
+    const { pairs } = parse(text);
+    const code = /^\d{2}_/.test(D) && G ? G.split(/[_\- ]/)[0] : '';
+    const slug = slugify((code ? code + '-' : '') + D);
+    const sec = lines.map(l => l.trim().match(/^#\s*(\d+)\s*[.)]\s*(.+)$/)).find(Boolean);
+    const name = sec ? (code ? code.toUpperCase() + ' · ' : '') + sec[1] + '. ' + bulkTitleCase(sec[2]) : D.replace(/_/g, ' ');
+    const h1 = (lines.find(l => /^#\s*\S/.test(l) && !/^#\s*\d+\s*[.)]/.test(l)) || '').replace(/^#\s*/, '').trim();
+    const gt = h1.split(/\s+[–—-]\s+/).filter(Boolean); const gname = gt.length > 1 && /sziget/i.test(gt[0]) ? gt[1] : (gt[0] || '');
+    const group = G ? (code ? code.toUpperCase() + ' · ' : '') + (gname || G.replace(/^[^_]*_/, '').replace(/_/g, ' ')) : '';
+    out.push({ slug, name, group, pairs: pairs.length, txt: dd.txt, L1: dd.L1, L2: dd.L2, D });
+  }
+  return out.sort((a, b) => a.slug.localeCompare(b.slug, 'hu', { numeric: true }));
+}
+async function bulkPrepare(entries) {
+  $('bulkUpload').disabled = true; $('bulkPreview').textContent = 'Fájlok vizsgálata…';
+  try {
+    const list = await bulkCollect(entries);
+    if (!list.length) { bulkData = null; $('bulkPreview').innerHTML = '⚠️ Nem találtam szigetet. A kiválasztott mappában sziget-mappák legyenek, mindegyikben <b>tananyag.txt</b>, <b>L1</b> és <b>L2</b> mappa.'; return; }
+    const have = new Set(lastLibrary.slugs || []);
+    bulkData = list; bulkFillFolders();
+    const bad = x => x.L1.length !== x.pairs || x.L2.length !== x.pairs;
+    $('bulkPreview').innerHTML = `<p><b>${list.length} sziget</b>${list[0].group ? ' · csoport: <b>' + bzEsc(list[0].group) + '</b>' : ''}</p><ul>` + list.map(x =>
+      `<li>${bzEsc(x.name)} – ${x.pairs} mondat, ${x.L1.length} magyar + ${x.L2.length} idegen hang${bad(x) ? ' ⚠️ <b>a hangok száma eltér a mondatokétól</b>' : ''}${have.has(x.slug) ? ' · <i>már fent van – felülíródik</i>' : ''}</li>`).join('') + '</ul>';
+    $('bulkUpload').disabled = false;
+  } catch (e) { bulkData = null; $('bulkPreview').textContent = 'Hiba a fájlok beolvasásakor: ' + e.message; }
+}
+async function bulkFromZip(file) {
+  $('bulkPreview').textContent = 'ZIP kicsomagolása…';
+  if (!window.JSZip) await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+  const zip = await window.JSZip.loadAsync(file), entries = [];
+  for (const [path, ent] of Object.entries(zip.files)) {
+    if (ent.dir) continue;
+    const ext = (path.match(/\.([^.\/]+)$/) || ['', ''])[1].toLowerCase();
+    const raw = await ent.async('blob');
+    entries.push({ path, blob: new Blob([raw], { type: BULK_MIME[ext] || (ext === 'txt' ? 'text/plain' : raw.type) }), name: path.split('/').pop() });
+  }
+  return entries;
+}
+async function bulkUpload() {
+  if (!signedIn()) { $('libStatus').textContent = 'Előbb jelentkezz be.'; return; }
+  if (!bulkData || !bulkData.length) return;
+  const list = bulkData, btn = $('bulkUpload'); btn.disabled = true;
+  try {
+    const existing = new Set((await listFolder('')).filter(isFolder).map(x => x.name));
+    const dup = list.filter(x => existing.has(x.slug));
+    if (dup.length && !confirm(`${dup.length} sziget már fent van (${dup.map(x => x.name).slice(0, 3).join(', ')}${dup.length > 3 ? '…' : ''}). Az azonos nevű fájlok felülíródnak, a haladásod megmarad. Folytatod?`)) return;
+    let target = $('bulkFolder').value;
+    if (target === '__group__') target = createFolder(list[0].group || 'Szigetcsoport');
+    else if (!folderName(target)) target = '';
+    for (let i = 0; i < list.length; i++) {
+      const x = list[i], head = `${i + 1}/${list.length} · ${x.name}`;
+      $('libStatus').textContent = head + ': tananyag…'; $('bulkPreview').textContent = 'Feltöltés: ' + head;
+      let { error } = await client.storage.from(BUCKET).upload(SP(x.slug + '/tananyag.txt'), x.txt.blob, { upsert: true, contentType: 'text/plain' }); if (error) throw error;
+      const jobs = [];
+      for (const folder of ['L1', 'L2']) for (const f of x[folder]) {
+        const n = idxName(f.name); if (!n) continue;
+        const ext = (f.name.match(/\.[^.]+$/) || ['.mp3'])[0].toLowerCase();
+        jobs.push(async () => { const r = await client.storage.from(BUCKET).upload(SP(`${x.slug}/${folder}/${pad(n)}${ext}`), f.blob, { upsert: true, contentType: f.blob.type || BULK_MIME[ext.slice(1)] || 'audio/mpeg' }); if (r.error) throw r.error; });
+      }
+      await pool(jobs, 4, (dn, t) => { $('libStatus').textContent = `${head}: ${dn}/${t} hangfájl…`; });
+      if (target) setFolder(x.slug, target);
+      folderData.names[x.slug] = { name: x.name, at: Date.now() };
+    }
+    saveFolders(); if (target) openFolderChain(target);
+    const msg = `✅ Feltöltve: ${list.length} sziget, ${list.reduce((a, x) => a + x.pairs, 0)} mondat` + (target ? ` · mappa: ${folderPath(target)}` : '') + '.';
+    $('bulkPreview').textContent = msg; bulkData = null; $('bulkDir').value = ''; $('bulkZip').value = '';
+    await listLibrary(); $('libStatus').textContent = msg;
+  } catch (e) { $('libStatus').textContent = 'Feltöltési hiba: ' + e.message + ' – a már feltöltött szigetek megmaradtak; ha újraindítod, a többi is felkerül.'; btn.disabled = false; }
+}
+$('bulkDir').onchange = () => { const fs = [...$('bulkDir').files]; $('bulkZip').value = ''; if (fs.length) bulkPrepare(fs.map(f => ({ path: f.webkitRelativePath || f.name, blob: f, name: f.name }))); };
+$('bulkZip').onchange = async () => { const f = $('bulkZip').files[0]; $('bulkDir').value = ''; if (!f) return; try { bulkPrepare(await bulkFromZip(f)); } catch (e) { $('bulkPreview').textContent = 'A ZIP nem nyitható meg: ' + e.message; } };
+$('bulkUpload').onclick = bulkUpload;
+$('bulkBox').addEventListener('toggle', () => { if ($('bulkBox').open) bulkFillFolders(); });
+
 $('loadDailyReview').onclick = loadDailyReview;
 $('dailyAll').onclick = startDailyAll;
 $('hardRefresh').onclick = async () => { try { if (signedIn() && online()) await pullAll(); } catch {} renderHard(); };
