@@ -203,6 +203,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 #bzPaste{width:100%;box-sizing:border-box;min-height:110px;padding:9px;border:1px solid #cbd5df;border-radius:10px;font-size:.95rem}
 #study.drilling > :not(#drillBox):not(.studyhead){display:none!important}
 #drillBox:empty{display:none}
+#typeInput.grow,textarea.grow{display:block;width:100%;box-sizing:border-box;resize:none;overflow:hidden;font:inherit;font-size:1.1rem;line-height:1.4;min-height:3.2em;text-align:left;padding:10px 12px;margin:0 0 8px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -210,7 +211,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>EN</b> English</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">EN V22</span>
+ <span class="ver" title="Programverzió">EN V23</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">GAME PLAN</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -230,7 +231,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
  <div class="muted studyhead"><span id="island"></span> · <span id="count"></span></div>
  <div id="drillBox"></div>
  <div class="prompt" id="question"></div>
- <div id="typeBox" class="hidden center"><input id="typeInput" placeholder="Írd be a választ…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"><button id="typeCheck">Ellenőrzés</button><div id="typeResult"></div></div>
+ <div id="typeBox" class="hidden center"><textarea id="typeInput" class="grow" rows="2" placeholder="Írd be a választ…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"></textarea><button id="typeCheck">Ellenőrzés</button><div id="typeResult"></div></div>
  <div class="center"><button class="alt" id="qAudio">🔊 Kérdés hangja</button><button id="show">Válasz felfedése</button></div>
  <div id="answrap" class="hidden">
   <div id="answer" class="answer"></div>
@@ -484,7 +485,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
   <div class="muted"><span id="vInfo"></span></div>
   <div class="muted center" id="vHint" style="margin-top:14px"></div>
   <div class="prompt" id="vQ" style="margin:12px 0 18px"></div>
-  <div id="vTypeBox" class="hidden center" style="margin:6px auto 14px;max-width:640px"><input id="vTypeInput" class="vtype" placeholder="Írd be a választ…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"><button id="vCheck">Ellenőrzés</button><div id="vTypeRes" class="tres"></div></div>
+  <div id="vTypeBox" class="hidden center" style="margin:6px auto 14px;max-width:640px"><textarea id="vTypeInput" class="vtype grow" rows="2" placeholder="Írd be a választ…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"></textarea><button id="vCheck">Ellenőrzés</button><div id="vTypeRes" class="tres"></div></div>
   <div class="center"><button class="alt" id="vQAudio">🔊 Kérdés hangja</button><button id="vShow">Válasz felfedése</button></div>
   <div id="vAnsWrap" class="hidden">
    <div id="vAns" class="answer"></div>
@@ -1619,8 +1620,11 @@ async function prepareAudio(it) {
   return audioPrepPromise;
 }
 
+const mainAud = new Audio(); mainAud.preload = 'auto'; let mainPlayId = 0;
+function mainUnlock() { try { if (mainAud.paused) { mainAud.src = SILENT_WAV; const pr = mainAud.play(); if (pr) pr.catch(() => {}); } } catch {} }
 async function play(lang, rep) {
   if (!sess) return;
+  mainUnlock(); // még a gombnyomáson belül (iPhone)
   const it = sess.items[sess.pos];
   const token = audioPrepToken;
   await audioPrepPromise;
@@ -1635,41 +1639,46 @@ async function play(lang, rep) {
   }
   if (!sess || sess.items[sess.pos] !== it || token !== audioPrepToken) return;
 
-  // Minden indítás új Audio elemet kap. Így a befejezett/leállított elem
-  // állapota nem tudja megakadályozni ugyanannak a mondatnak az újrajátszását.
+  // Mindig ugyanaz a (gombnyomással feloldott) lejátszó, minden indításkor új forrással –
+  // iPhone-on csak így szólal meg az automatikus második lejátszás is.
   stopActiveAudio();
   const thisPlayToken = audioPlayToken;
   const url = URL.createObjectURL(blob);
-  const audio = new Audio();
+  const audio = mainAud, myId = ++mainPlayId;
   activeAudio = audio;
   activeAudioUrl = url;
-  audio.preload = 'auto';
+  try { audio.pause(); } catch {}
   audio.src = url;
-  audio.playbackRate = Number($(lang === 'hu' ? 'l1Speed' : 'l2Speed').value);
+  const rate = Number($(lang === 'hu' ? 'l1Speed' : 'l2Speed').value) || 1;
+  audio.defaultPlaybackRate = rate; audio.playbackRate = rate;
 
   const cleanup = () => {
+    if (myId !== mainPlayId) return;
     if (activeAudio === audio) {
       activeAudio = null;
       activeAudioUrl = null;
     }
     try { audio.pause(); } catch {}
-    try { audio.removeAttribute('src'); audio.load(); } catch {}
     try { URL.revokeObjectURL(url); } catch {}
   };
-  audio.addEventListener('ended', () => {
+  audio.onended = () => {
+    if (myId !== mainPlayId) return;
     cleanup();
     // „a választ kétszer mondja”: rövid szünet után még egyszer lejátssza ugyanazt
     if (rep) setTimeout(() => { if (sess && sess.items[sess.pos] === it && thisPlayToken === audioPlayToken) play(lang, false); }, 700);
-  }, { once: true });
-  audio.addEventListener('error', () => {
+  };
+  audio.onerror = () => {
+    if (myId !== mainPlayId || !audio.getAttribute('src') || audio.getAttribute('src') !== url) return;
     if (activeAudio === audio) $('status').textContent = 'A hangfájl nem játszható le. Próbáld meg újra.';
     cleanup();
-  }, { once: true });
+  };
 
   try {
     await audio.play();
+    audio.playbackRate = rate;
     if (thisPlayToken !== audioPlayToken) cleanup();
   } catch (e) {
+    if (myId !== mainPlayId) return; // közben új lejátszás indult
     console.warn('Hang lejátszási hiba:', e);
     cleanup();
     $('status').textContent = 'Nem sikerült lejátszani a hangot. Próbáld meg újra a hanggombbal.';
@@ -1758,7 +1767,7 @@ function compareAnswer(expected, typed) {
 function resetTyping() {
   const on = ($('typeMode').checked || $('dictMode').checked) && sess;
   $('typeBox').classList.toggle('hidden', !on);
-  $('typeInput').value = ''; $('typeResult').innerHTML = '';
+  $('typeInput').value = ''; $('typeInput').style.height = ''; $('typeResult').innerHTML = '';
 }
 function checkTyping() {
   if (!sess) return;
@@ -2400,7 +2409,10 @@ $('hfPause').onchange = saveSettings; $('hfRepeat').onchange = saveSettings; $('
 $('typeMode').onchange = () => { saveSettings(); resetTyping(); };
 $('dictMode').onchange = () => { saveSettings(); if (sess) render(); };
 $('typeCheck').onclick = checkTyping;
-$('typeInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkTyping(); } });
+$('typeInput').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); checkTyping(); } });
+function growTA(el) { if (!el || el.tagName !== 'TEXTAREA') return; el.style.height = 'auto'; if (el.offsetParent !== null && el.scrollHeight) el.style.height = (el.scrollHeight + 2) + 'px'; else el.style.height = ''; }
+document.addEventListener('input', e => { if (e.target && e.target.classList && e.target.classList.contains('grow')) growTA(e.target); });
+document.addEventListener('focusin', e => { if (e.target && e.target.classList && e.target.classList.contains('grow')) growTA(e.target); });
 $('shuffle').onclick = () => { stopHandsFree(); if (!sess) return; for (let i = sess.items.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sess.items[i], sess.items[j]] = [sess.items[j], sess.items[i]]; } sess.pos = 0; sess.single = null; render(); };
 document.querySelectorAll('[data-rate]').forEach(b => b.onclick = () => { if (hf.on && hf.waitRate) { hf.waitRate(b.dataset.rate); return; } stopHandsFree(); sess && rate(b.dataset.rate); });
 $('mode').onchange = () => { saveSettings(); if (current) startSession($('mode').value); };
@@ -2717,7 +2729,7 @@ function vRender() {
   $('vQ').textContent = it.type === 'rec' ? n.it : it.type === 'prod' ? n.hu : cz.masked;
   $('vQAudio').classList.toggle('hidden', !vQuestionLang(it));
   const typing = $('vTyping').checked && it.type !== 'rec';
-  $('vTypeBox').classList.toggle('hidden', !typing); $('vTypeInput').value = ''; $('vTypeRes').innerHTML = '';
+  $('vTypeBox').classList.toggle('hidden', !typing); $('vTypeInput').value = ''; $('vTypeInput').style.height = ''; $('vTypeRes').innerHTML = '';
   // válasz
   const ans = $('vAns'); ans.innerHTML = '';
   if (cz) cz.toks.forEach((t, i) => { if (cz.idx.includes(i)) { const m = document.createElement('mark'); m.textContent = t; m.style.cssText = 'background:#ffe08a;color:#3d2c00;border-radius:4px;padding:0 3px'; ans.append(m); } else ans.append(t); });
@@ -3469,7 +3481,11 @@ function bvWhen(ts) {
   return d.toLocaleDateString('hu-HU', { month: 'long', day: 'numeric' }) + ' ' + hm;
 }
 // ---------- hang ----------
-function bvStopAudio() { bvPlayTok++; try { if (bvEl) bvEl.pause(); } catch {} try { speechSynthesis && speechSynthesis.cancel(); } catch {} clearInterval(bvTimer); }
+function bvStopAudio() { bvPlayTok++; try { if (bvEl) bvEl.pause(); } catch {} if (bvAbort) { const f = bvAbort; bvAbort = null; f(false); } try { speechSynthesis && speechSynthesis.cancel(); } catch {} clearInterval(bvTimer); }
+// iPhone: egy új Audio()-t csak közvetlen gombnyomásra enged lejátszani, ezért mindig UGYANAZT a lejátszót használjuk,
+// és a gombnyomás pillanatában egy néma hanggal „feloldjuk” – így a 2. és 3. ismétlés is megszólal.
+const bvAud = new Audio(); bvAud.preload = 'auto'; let bvAbort = null;
+function bvUnlock() { try { if (bvAud.paused) { bvAud.src = SILENT_WAV; const pr = bvAud.play(); if (pr) pr.catch(() => {}); } } catch {} }
 function bvSpeakOnce(text, lang) {
   return new Promise(res => {
     if (!('speechSynthesis' in window)) return res(false);
@@ -3480,23 +3496,31 @@ function bvSpeakOnce(text, lang) {
 }
 function bvPlayBlob(blob, rate) {
   return new Promise(res => {
-    const a = new Audio(), url = URL.createObjectURL(blob); bvEl = a;
-    const done = ok => { try { URL.revokeObjectURL(url); } catch {} res(ok); };
-    a.onended = () => done(true); a.onerror = () => done(false); a.src = url; a.playbackRate = rate; a.play().catch(() => done(false));
+    const a = bvAud, url = URL.createObjectURL(blob); bvEl = a; let fin = false, guard = 0;
+    const done = ok => { if (fin) return; fin = true; clearTimeout(guard); if (bvAbort === done) bvAbort = null; a.onended = a.onerror = null; try { URL.revokeObjectURL(url); } catch {} res(ok); };
+    bvAbort = done;
+    a.onended = () => done(true); a.onerror = () => done(false);
+    try { a.pause(); } catch {}
+    a.src = url; a.defaultPlaybackRate = rate; a.playbackRate = rate;
+    guard = setTimeout(() => done(false), 60000);
+    const pr = a.play(); if (pr) pr.then(() => { a.playbackRate = rate; }).catch(() => done(false));
   });
 }
 async function bvPlay(x, lang, times = 1, gap = 1500, onEach) {
   bvStopAudio(); const tok = bvPlayTok;
+  bvUnlock(); // még a gombnyomáson belül
   const blob = await getAudioBlobForItem({ slug: x.slug, n: x.n }, lang);
   for (let i = 0; i < times; i++) {
     if (tok !== bvPlayTok) return false;
-    if (blob) await bvPlayBlob(blob, speedOf(lang)); else await bvSpeakOnce(lang === 'hu' ? x.hu : x.it, lang);
+    const ok = blob ? await bvPlayBlob(blob, speedOf(lang)) : await bvSpeakOnce(lang === 'hu' ? x.hu : x.it, lang);
     if (tok !== bvPlayTok) return false;
+    if (!ok) return 'blocked'; // a készülék leállította – csak a ténylegesen lejátszottakat számoljuk
     if (onEach) onEach(i + 1);
     if (i < times - 1) await sleep(gap);
   }
   return true;
 }
+function bvPlayBtn(btn, res, label) { if (!btn) return; btn.disabled = false; if (res === 'blocked') btn.textContent = '🔊 Megállt – koppints a folytatáshoz'; else if (label) btn.textContent = label; }
 // ---------- megjelenítés ----------
 function bvBadge() { const b = $('tbBeves'); if (b) b.textContent = (bvDue().length + bvLive().filter(x => x.state === 'kor').length) || ''; }
 function bvRender() {
@@ -3578,13 +3602,13 @@ function bvStep() {
   const nb = $('bvNext'); if (nb) nb.onclick = go;
   if (s === 0) {
     let n = 0; const upd = () => { $('bvCnt').textContent = Math.min(n, 2) + ' / 2'; nb.disabled = !(n >= 2 && $('bvKey').value.trim().length >= 2); };
-    $('bvPlay2').onclick = async () => { $('bvPlay2').disabled = true; await bvPlay(x, 'it', 2, 1200, i => { n = Math.max(n, i); upd(); }); if ($('bvPlay2')) $('bvPlay2').disabled = false; };
+    $('bvPlay2').onclick = async () => { const b = $('bvPlay2'), lab = b.textContent; b.disabled = true; const r = await bvPlay(x, 'it', Math.max(1, 2 - n), 1200, () => { n++; upd(); }); bvPlayBtn($('bvPlay2'), r, lab.startsWith('🔊 Megállt') ? '🔊 Lejátszás újra' : lab); };
     $('bvKey').oninput = () => { x.key = $('bvKey').value; upd(); };
     nb.onclick = () => { x.key = $('bvKey').value.trim(); go(); };
   }
   if (s === 1) {
     let n = 0; const upd = () => { $('bvCnt').textContent = Math.min(n, 3) + ' / 3'; nb.disabled = !(n >= 3 && $('bvAlone').checked); };
-    $('bvPlay3').onclick = async () => { $('bvPlay3').disabled = true; await bvPlay(x, 'it', 3, 2200, i => { n = Math.max(n, i); upd(); }); if ($('bvPlay3')) $('bvPlay3').disabled = false; };
+    $('bvPlay3').onclick = async () => { const b = $('bvPlay3'), lab = b.textContent; b.disabled = true; const r = await bvPlay(x, 'it', Math.max(1, 3 - n), 2200, () => { n++; upd(); }); bvPlayBtn($('bvPlay3'), r, lab.startsWith('🔊 Megállt') ? '🔊 Lejátszás újra' : lab); };
     $('bvAlone').onchange = upd;
   }
   if (s === 2) {
@@ -3628,7 +3652,7 @@ function bvRetrieve(x, onOk, box, hint, title) {
 // leírás fejből: hibátlanig ismétel; cb(elsőreHibátlan)
 function bvWrite(x, box, cb) {
   let first = true;
-  box.innerHTML = `<input class="vtype" data-w="in" placeholder="Írd le fejből…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"><div class="center"><button data-w="chk">Ellenőrzés</button></div><div class="tres" data-w="res"></div>`;
+  box.innerHTML = `<textarea class="vtype grow" rows="2" data-w="in" placeholder="Írd le fejből…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"></textarea><div class="center"><button data-w="chk">Ellenőrzés</button></div><div class="tres" data-w="res"></div>`;
   const inp = box.querySelector('[data-w=in]'), res = box.querySelector('[data-w=res]'), btn = box.querySelector('[data-w=chk]');
   const check = () => {
     const typed = inp.value; if (!typed.trim()) { inp.focus(); return; }
@@ -3639,9 +3663,9 @@ function bvWrite(x, box, cb) {
     if (good) { inp.disabled = true; btn.disabled = true; cb(first); return; }
     first = false; inp.disabled = true; btn.disabled = true; let left = 5;
     const v = res.querySelector('.verdict'); const t0 = v.textContent;
-    clearInterval(bvTimer); bvTimer = setInterval(() => { left--; v.textContent = `${t0} Újra írhatod: ${left} mp`; if (left <= 0) { clearInterval(bvTimer); inp.value = ''; inp.disabled = false; btn.disabled = false; res.innerHTML = '<div class="verdict">Most írd le újra fejből.</div>'; inp.focus(); } }, 1000);
+    clearInterval(bvTimer); bvTimer = setInterval(() => { left--; v.textContent = `${t0} Újra írhatod: ${left} mp`; if (left <= 0) { clearInterval(bvTimer); inp.value = ''; inp.style.height = ''; inp.disabled = false; btn.disabled = false; res.innerHTML = '<div class="verdict">Most írd le újra fejből.</div>'; inp.focus(); } }, 1000);
   };
-  btn.onclick = check; inp.onkeydown = e => { if (e.key === 'Enter') check(); };
+  btn.onclick = check; inp.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); check(); } };
   setTimeout(() => inp.focus(), 50);
 }
 function bvToKor(x) {
@@ -3746,10 +3770,11 @@ function bvFix(x) {
   const R = $('bvRet'); bvStopAudio();
   R.innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}${(x.lapses || 0) >= 1 ? ' – ha nem segít, a „Bevésendő” listában az ✕ után jelöld ki újra, és csinálj új emlékeztetőt.' : ''}</p>` : ''}<p><b>Mini-javítás:</b> nyomd meg, és mondd a hanggal <b>együtt</b> háromszor – utána előhívás fejből, végül leírás.</p>
     <div class="center"><button class="alt" id="bvFix3">🔊 3× lejátszás – mondd vele</button> <span class="muted" id="bvCnt">0 / 3</span></div>`;
+  let n = 0;
   $('bvFix3').onclick = async () => {
-    $('bvFix3').disabled = true; let n = 0;
-    await bvPlay(x, 'it', 3, 2200, i => { n = i; if ($('bvCnt')) $('bvCnt').textContent = i + ' / 3'; });
-    if (n < 3) { if ($('bvFix3')) $('bvFix3').disabled = false; return; }
+    $('bvFix3').disabled = true;
+    const r = await bvPlay(x, 'it', Math.max(1, 3 - n), 2200, () => { n++; if ($('bvCnt')) $('bvCnt').textContent = Math.min(n, 3) + ' / 3'; });
+    if (n < 3) { bvPlayBtn($('bvFix3'), r); return; }
     if (!$('bvRet')) return;
     $('bvRet').innerHTML = `<div class="bv-q">${bvEsc(x.hu)}</div><p class="center muted">Most fejből, hangosan:</p><div id="bvFixRet"></div>`;
     bvRetrieve(x, () => bvAfterRate(x, 1), $('bvFixRet'));
@@ -3906,7 +3931,7 @@ function bzItem() {
     <p class="center muted">${q.t === 'v' ? 'Alkalmazd, amit tanultál: mondd ki a választ egy teljes mondatban.' : 'Saját válasz: mondj 1–2 teljes mondatot, a saját életedről.'}</p>
     <div class="center"><button id="bzRec">🎙️ Válaszolok</button><button class="alt" id="bzTypeBtn">⌨️ Inkább beírom</button></div>
     <div id="bzLive" class="sr-live"></div>
-    <div id="bzAns" class="hidden"><label class="bv-lab">A válaszod (ha a gép rosszul írta le, javítsd ki): <input id="bzText" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></label><div class="center"><button id="bzEval">Értékelés →</button></div></div>
+    <div id="bzAns" class="hidden"><label class="bv-lab">A válaszod (ha a gép rosszul írta le, javítsd ki): <textarea id="bzText" class="vtype grow" rows="2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"></textarea></label><div class="center"><button id="bzEval">Értékelés →</button></div></div>
     <div id="bzRes"></div>`;
   bzSpeak(q.q);
   $('bzQuit').onclick = () => bzEnd();
@@ -3914,7 +3939,7 @@ function bzItem() {
   if ($('bzShowQ')) $('bzShowQ').onclick = () => { $('bzQ').classList.remove('bz-hide'); $('bzShowQ').remove(); };
   $('bzHuBtn').onclick = () => $('bzHu').classList.toggle('hidden');
   if ($('bzHintBtn')) $('bzHintBtn').onclick = () => $('bzHint').classList.toggle('hidden');
-  const showAns = t => { $('bzAns').classList.remove('hidden'); $('bzText').value = t || ''; if (!t) $('bzText').focus(); };
+  const showAns = t => { $('bzAns').classList.remove('hidden'); $('bzText').value = t || ''; growTA($('bzText')); if (!t) $('bzText').focus(); };
   $('bzTypeBtn').onclick = () => showAns('');
   $('bzRec').onclick = async () => {
     if (srActive) { srStop(); return; }
@@ -3924,7 +3949,7 @@ function bzItem() {
     if ($('bzRec')) $('bzRec').textContent = '🎙️ Újra mondom';
   };
   $('bzEval').onclick = () => bzEval(q, $('bzText').value);
-  $('bzText').onkeydown = e => { if (e.key === 'Enter') bzEval(q, $('bzText').value); };
+  $('bzText').onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); bzEval(q, $('bzText').value); } };
 }
 function bzBest(q, text) {
   let best = null;
@@ -4035,21 +4060,23 @@ function drillRender(it) {
   try { stopActiveAudio(); } catch {}
   if (it.kor) return drillKor(it);
   const box = $('drillBox'), x = drX(it), s = it.dstep || 0, nNew = sess.items.filter(y => y.drill && !y.kor).length, iNew = sess.drilled.length + 1;
-  const head = `<div class="bv-head"><b>📌 Bevéséses tanulás</b> · új mondat ${Math.min(iNew, nNew)} / ${nNew}</div>` + drChips(s);
+  const head = `<div class="bv-head"><b>📌 Bevéséses tanulás</b> · új mondat ${Math.min(iNew, nNew)} / ${nNew}</div>` + drChips(s)
+    + (s < 3 ? `<label class="bv-chk muted" style="font-weight:600;margin:0 0 8px"><input type="checkbox" id="drWriteTgl"${$('drillWrite').checked ? ' checked' : ''}> ✍️ Leírás lépéssel (fejből leírod, amíg hibátlan nem lesz)</label>` : '');
   const go = () => { it.dstep = s + 1; const last = $('drillWrite').checked ? 4 : 3; if (it.dstep >= last) drillDone(it); else drillRender(it); };
+  const wt = () => { const t = $('drWriteTgl'); if (t) t.onchange = () => { $('drillWrite').checked = t.checked; saveSettings(); const c = box.querySelector('.bv-chips'); if (c) c.outerHTML = drChips(s); }; };
   if (s === 0) {
     box.innerHTML = head + `<h4>1. Hallás és árnyékolás</h4><div class="bv-q">${bzEsc(it.hu)}</div><div class="bv-a">${bzEsc(it.it)}</div>
       <ol class="bv-do"><li>Nyomd meg: a mondat <b>háromszor</b> szól – mondd vele <b>együtt</b>, hangosan.</li><li>Utána mondd el <b>egyszer egyedül</b>, és pipáld ki.</li></ol>
       <div class="center"><button class="alt" id="drPlay">🔊 3× – mondd vele együtt</button> <span class="muted" id="drCnt">0 / 3</span></div>
       <label class="bv-chk"><input type="checkbox" id="drAlone"> Egyszer egyedül is elmondtam.</label><div class="center"><button id="drNext" disabled>Következő lépés →</button></div>`;
-    let n = 0; const upd = () => { $('drCnt').textContent = Math.min(n, 3) + ' / 3'; $('drNext').disabled = !(n >= 3 && $('drAlone').checked); };
-    $('drPlay').onclick = async () => { $('drPlay').disabled = true; await bvPlay(x, 'it', 3, 2200, i => { n = Math.max(n, i); if ($('drCnt')) upd(); }); if ($('drPlay')) $('drPlay').disabled = false; };
-    $('drAlone').onchange = upd; $('drNext').onclick = go;
+    let n = 0; const upd = () => { if (!$('drCnt')) return; $('drCnt').textContent = Math.min(n, 3) + ' / 3'; $('drNext').disabled = !(n >= 3 && $('drAlone').checked); };
+    $('drPlay').onclick = async () => { const b = $('drPlay'); b.disabled = true; const r = await bvPlay(x, 'it', Math.max(1, 3 - n), 2200, () => { n++; upd(); }); bvPlayBtn($('drPlay'), r, n >= 3 ? '🔊 Még egyszer' : '🔊 3× – mondd vele együtt'); };
+    $('drAlone').onchange = upd; $('drNext').onclick = go; wt();
   } else if (s === 1 || s === 2) {
     box.innerHTML = head + `<h4>${s + 1}. Előhívás ${s === 1 ? 'kezdőbetűkkel' : 'fejből'}</h4><div class="bv-q">${bzEsc(it.hu)}</div><p class="center muted">Mondd ki hangosan, és csak utána fedd fel.</p><div id="drRet"></div>`;
-    bvRetrieve(x, go, $('drRet'), s === 1, s === 1 ? 'A kezdőbetűk segítenek:' : 'Most semmi segítség:');
+    bvRetrieve(x, go, $('drRet'), s === 1, s === 1 ? 'A kezdőbetűk segítenek:' : 'Most semmi segítség:'); wt();
   } else {
-    box.innerHTML = head + `<h4>4. Leírás fejből</h4><div class="bv-q">${bzEsc(it.hu)}</div><p class="center muted">Írd le hibátlanul – ha hibás, 5 mp múlva újra.</p><div id="drWr"></div><div class="center"><button id="drNext" disabled>Tovább →</button></div>`;
+    box.innerHTML = head + `<h4>4. Leírás fejből</h4><div class="bv-q">${bzEsc(it.hu)}</div><p class="center muted">Írd le fejből. Ha hibás, megmutatom a helyeset, és 5 mp múlva újra leírod – addig, amíg hibátlan nem lesz.</p><div id="drWr"></div><div class="center"><button id="drNext" disabled>Tovább →</button></div>`;
     bvWrite(x, $('drWr'), () => { $('drNext').disabled = false; }); $('drNext').onclick = go;
   }
 }
