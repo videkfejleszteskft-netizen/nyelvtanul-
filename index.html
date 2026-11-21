@@ -204,6 +204,8 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 #study.drilling > :not(#drillBox):not(.studyhead){display:none!important}
 #drillBox:empty{display:none}
 #typeInput.grow,textarea.grow{display:block;width:100%;box-sizing:border-box;resize:none;overflow:hidden;font:inherit;font-size:1.1rem;line-height:1.4;min-height:3.2em;text-align:left;padding:10px 12px;margin:0 0 8px}
+#remPrefs.dim{opacity:.55}
+#remBox input[type=time],#remBox select{padding:8px;border:1px solid #cbd5df;border-radius:8px;font-size:1rem;width:100%;box-sizing:border-box}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -211,7 +213,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>IT</b> Italiano</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">V44</span>
+ <span class="ver" title="Programverzió">V45</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">IL PIANO</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -255,7 +257,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
   <label class="muted">Értékelés <select id="hfRate"><option value="wait">a válasz után vár, amíg koppintok (ajánlott)</option><option value="auto">5 mp-ig vár, utána magától „Jól ment”</option><option value="none">nincs – csak hallgatás, a haladás NEM mentődik</option></select></label></div>
 <details class="help" style="margin-top:10px"><summary>A gyakorlóképernyő használata</summary>
 <ol><li>Nézd meg a kérdést, és <b>mondd ki hangosan</b> a választ – csak utána nyomd meg a „Válasz felfedése” gombot.</li><li>Hasonlítsd össze, és <b>értékelj őszintén</b>: ha gondolkodni kellett, az „Nehéz”.</li></ol>
-<h4>Eszközök – mikor melyiket?</h4><ul><li>🔊 <b>Hangok:</b> a kérdés és a válasz meghallgatása.</li><li>📌 <b>Bevésésre:</b> fontos vagy makacs mondat – a 📌 fülön lépésenként rögzíted (a szigetben is megmarad).</li><li>🧠 <b>Szótanulóba:</b> ha csak egy-egy szó nem megy – ott emlékeztetőt kaphat.</li><li>🎙 <b>Felvétel → Saját + eredeti:</b> egymás után hallod a saját hangodat és az eredetit; a dallamot és a tempót így tudod összevetni.</li><li>🗣️ <b>Kiejtés-ellenőrzés:</b> mondd ki az idegen nyelvű mondatot – a telefon leírja, mit értett belőle. A zöld szavakat felismerte, a pirosakat nem: azokat hallgasd meg újra, és mondd utána. Ez érthetőséget mér, nem hangonkénti kiejtést.</li><li>📌 <b>Bevéséses tanulás</b> (⚙️ → Mód): az új mondatoknál az app lépésenként végigvezet, a körkérdezés pedig visszakérdezi őket.</li><li>🎧 <b>Kézmentes mód:</b> autóban, kertben – kérdés, szünet (mondd ki), válasz; a „kétszer mondja” a beívódást segíti.</li></ul></details>
+<h4>Eszközök – mikor melyiket?</h4><ul><li>🔊 <b>Hangok:</b> a kérdés és a válasz meghallgatása.</li><li>📌 <b>Bevésésre:</b> fontos vagy makacs mondat – a 📌 fülön lépésenként rögzíted (a szigetben is megmarad).</li><li>🧠 <b>Szótanulóba:</b> ha csak egy-egy szó nem megy – ott emlékeztetőt kaphat.</li><li>🎙 <b>Felvétel → Saját + eredeti:</b> egymás után hallod a saját hangodat és az eredetit; a dallamot és a tempót így tudod összevetni.</li><li>🗣️ <b>Kiejtés-ellenőrzés:</b> mondd ki az idegen nyelvű mondatot – a telefon leírja, mit értett belőle. A zöld szavakat felismerte, a pirosakat nem: azokat hallgasd meg újra, és mondd utána. Ez érthetőséget mér, nem hangonkénti kiejtést.</li><li>🔔 <b>Napi emlékeztető</b> (⚙️ fül): értesítést küld a telefonra, amíg nincs meg a napi cél – kedves, poénos vagy szigorú hangnemben.</li><li>📌 <b>Bevéséses tanulás</b> (⚙️ → Mód): az új mondatoknál az app lépésenként végigvezet, a körkérdezés pedig visszakérdezi őket.</li><li>🎧 <b>Kézmentes mód:</b> autóban, kertben – kérdés, szünet (mondd ki), válasz; a „kétszer mondja” a beívódást segíti.</li></ul></details>
 </section>
 
 <section data-tab="terv" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> A mai teendőid a beállított szinted, célod és időkereted alapján – abban a sorrendben, ahogy a memória a legjobban rögzít. <b>Miért?</b> Nem kell gondolkodnod, mit csinálj: csak haladj fentről lefelé.</p>
@@ -587,6 +589,18 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
  </details>
 </section>
 
+<section data-tab="beallitas" class="box" id="remBox"><h3>🔔 Napi emlékeztető</h3>
+ <p class="muted">Értesítést küld a telefonra, amíg a napi cél nincs meg. Ha teljesíted, aznap már nem szól. 21 óra után soha nem jön értesítés, és egy újabb jelzés mindig felváltja az előzőt.</p>
+ <p id="remStatus" class="muted"></p>
+ <div class="center"><button id="remOn">🔔 Bekapcsolás ezen a készüléken</button><button id="remOff" class="alt hidden">Kikapcsolás</button></div>
+ <div id="remPrefs">
+  <div class="row"><label>Első emlékeztető<br><input type="time" id="remFirst" value="08:00"></label><label>Naponta legfeljebb<br><select id="remCount"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option><option value="4">4×</option></select></label></div>
+  <div class="row"><label>Hangnem<br><select id="remTone"><option value="kedves">😊 Kedves</option><option value="poenos">😏 Poénos</option><option value="szigoru">💪 Szigorú edző</option></select></label><label>Pihenőnap (nem szól)<br><select id="remRest"><option value="">nincs</option><option value="0">vasárnap</option><option value="6">szombat</option><option value="6,0">szombat és vasárnap</option></select></label></div>
+  <p id="remSlots" class="muted"></p>
+  <div class="center"><button class="alt" id="remSnooze">😴 Ma már ne emlékeztess</button><button class="alt" id="remTest">📨 Próbaértesítés</button></div>
+ </div>
+ <details class="help"><summary>iPhone-on így kapcsold be</summary><ol><li>Az app legyen a főképernyőn (Safari → Megosztás → „Főképernyőhöz adás”), és <b>onnan</b> nyisd meg.</li><li>Legyél bejelentkezve.</li><li>„🔔 Bekapcsolás” → az iPhone megkérdezi, engedélyezed-e az értesítéseket → <b>Engedélyezés</b>.</li><li>„📨 Próbaértesítés” – pár másodpercen belül meg kell érkeznie.</li></ol><p>Ha egyszer letiltottad: iPhone Beállítások → Értesítések → Sayback → Értesítések engedélyezése.</p><p>Az értesítésre koppintva a 🗺️ mai terv nyílik meg.</p></details>
+</section>
 <section data-tab="beallitas" class="box" id="srTestBox"><h3>🗣️ Beszédfelismerés-próba</h3>
  <p class="muted">Ezzel kipróbálhatod, hogy a készülékeden működik-e a beszédfelismerés – erre épül a kiejtés-ellenőrzés és a későbbi „🗣️ Beszélj!” mód. iPhone-on Safariban és a főképernyőre tett appban is próbáld ki.</p>
  <p id="srEnv" class="muted"></p>
@@ -917,6 +931,7 @@ function streak() {
 function renderCalendar() {
   if (!$('heat')) return;
   const goal = dailyGoal(), today = studyDay(), done = dayTotal(today);
+  try { remPushState(); } catch {}
   $('goalBar').style.width = Math.min(100, done / goal * 100) + '%';
   { const h = document.getElementById('hGoal'); if (h) h.textContent = (done >= goal ? '✅ ' : '🎯 ') + done + '/' + goal; }
   $('goalTxt').textContent = done >= goal ? `✓ Megvan a mai cél: ${done}/${goal} ismétlés. Szép munka!` : `Napi cél: ${done}/${goal} ismétlés (szigetek + szavak) – még ${goal - done}.`;
@@ -2342,6 +2357,7 @@ function setAuthUI() {
   if (s) {
     $('authStatus').textContent = 'Bejelentkezve: ' + auth.user.email + '.';
     listLibrary(); loadDailyReview().then(renderHard); flush();
+    try { remRender(); if (rem.enabled) { remSavePrefs(); remPushState(true); } } catch {}
   } else if (client) { $('authStatus').textContent = 'Nincs bejelentkezve. A készüléken minden működik, de nincs szinkronizálás.'; listLibrary(); }
 }
 async function authAction(type) {
@@ -4237,6 +4253,117 @@ function drillKor(it) {
 }
 
 // ============================================================
+// NAPI EMLÉKEZTETŐ – értesítés a telefonra, amíg nincs meg a napi cél
+// (a küldést a Supabase „sayback-reminder” függvénye végzi negyedóránként)
+// ============================================================
+const REM_VAPID = 'BIGeldZmjzp7EEui4XSW-Any-GgK-khv6MhxwyM7Q5E3L-g5rvDN3YD2Dadq5im6-VNOlkI3ohVrQoQLeYrWNec';
+const REM_APP = 'it';
+const REM_KEY = 'nyelvisziget-remind';
+let rem = { enabled: false, first: '08:00', count: 3, tone: 'poenos', rest: [], snooze: '', ...loadJSON(REM_KEY, {}) };
+let remLastState = '', remTimer = null, remPermOk = false;
+function remSave() { saveJSON(REM_KEY, rem); }
+function remSupported() { return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window; }
+function remIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
+function remStandalone() { return window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches); }
+function remB64(s) { const p = '='.repeat((4 - s.length % 4) % 4), b = atob((s + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(b, c => c.charCodeAt(0)); }
+function remMin(hm) { const m = String(hm || '').match(/^(\d{1,2}):(\d{2})$/); return m ? Number(m[1]) * 60 + Number(m[2]) : 480; }
+// ugyanaz a szabály, mint a szerveren
+function remSlots() {
+  const F = Math.max(360, Math.min(remMin(rem.first), 1230)), n = Math.max(1, Math.min(4, Number(rem.count) || 3));
+  const tpl = { 1: [F], 2: [F, 1200], 3: [F, 780, 1200], 4: [F, 750, 1050, 1230] }[n];
+  return [...new Set(tpl.filter((t, i) => i === 0 || t > F + 60).filter(t => t < 1260))].sort((a, b) => a - b);
+}
+const remFmt = m => Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0');
+function remPrefsPayload() { let tz = 'Europe/Budapest'; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || tz; } catch {} return { enabled: !!rem.enabled, first: rem.first, count: Number(rem.count) || 3, tone: rem.tone, rest: rem.rest || [], snooze: rem.snooze || '', tz }; }
+async function remSavePrefs() {
+  remSave(); remRender();
+  if (!signedIn() || !online()) return false;
+  const { error } = await client.from('reminders').upsert({ user_id: auth.user.id, app: REM_APP, prefs: remPrefsPayload(), updated_at: new Date().toISOString() }, { onConflict: 'user_id,app' });
+  if (error) { $('remStatus').textContent = '⚠️ Nem sikerült menteni a felhőbe: ' + error.message + (/relation|does not exist|schema cache/i.test(error.message) ? ' – a Supabase-ben még nincs létrehozva a tábla (lásd az útmutató 1. lépését).' : ''); return false; }
+  return true;
+}
+// a mai haladás felküldése (ebből tudja a szerver, hogy kell-e még szólni)
+function remPushState(force) {
+  if (!rem.enabled || !signedIn() || !online()) return;
+  const day = studyDay(), st = { day, done: dayTotal(day), goal: dailyGoal(), streak: streak() }, key = JSON.stringify(st);
+  if (!force && key === remLastState) return;
+  clearTimeout(remTimer);
+  remTimer = setTimeout(async () => {
+    try { const { error } = await client.from('reminders').upsert({ user_id: auth.user.id, app: REM_APP, state: st, updated_at: new Date().toISOString() }, { onConflict: 'user_id,app' }); if (!error) remLastState = key; } catch {}
+  }, force ? 0 : 6000);
+}
+function remRender() {
+  if (!$('remBox')) return;
+  const perm = remSupported() ? (remPermOk ? 'granted' : Notification.permission) : 'default';
+  $('remFirst').value = rem.first; $('remCount').value = String(rem.count); $('remTone').value = rem.tone; $('remRest').value = (rem.rest || []).join(',');
+  $('remSlots').textContent = 'Ezekben az időpontokban szólhat (csak ha a napi cél még nincs meg): ' + remSlots().map(remFmt).join(', ') + '.' + ((rem.rest || []).length ? ' Pihenőnapon nem szól.' : '');
+  let s;
+  if (!remSupported()) s = remIOS() && !remStandalone() ? '📱 iPhone-on csak a főképernyőre tett appban működik: Safari → Megosztás → „Főképernyőhöz adás”, majd onnan nyisd meg.' : '⚠️ Ez a böngésző nem tud értesítést fogadni.';
+  else if (remIOS() && !remStandalone()) s = '📱 iPhone-on a főképernyőre tett appból kapcsold be (Safari → Megosztás → „Főképernyőhöz adás”).';
+  else if (!signedIn()) s = 'Az emlékeztetőhöz jelentkezz be (a felhő tudja, megvan-e már a napi cél).';
+  else if (perm === 'denied') s = '🚫 Az értesítések le vannak tiltva. iPhone: Beállítások → Értesítések → Sayback → Értesítések engedélyezése. Utána nyomd meg újra a Bekapcsolás gombot.';
+  else if (rem.enabled && perm === 'granted') s = rem.snooze === studyDay() ? '😴 Ma már nem szól. Holnap reggel újra.' : '✅ Bekapcsolva ezen a készüléken.';
+  else s = 'Kikapcsolva.';
+  $('remStatus').textContent = s;
+  $('remOn').classList.toggle('hidden', !!(rem.enabled && perm === 'granted'));
+  $('remOff').classList.toggle('hidden', !rem.enabled);
+  $('remPrefs').classList.toggle('dim', !rem.enabled);
+}
+async function remTurnOn() {
+  if (!remSupported()) { remRender(); return; }
+  if (!signedIn()) { $('remStatus').textContent = 'Előbb jelentkezz be.'; return; }
+  const btn = $('remOn'); btn.disabled = true;
+  try {
+    const perm = await Notification.requestPermission(); // iPhone: közvetlenül a gombnyomásra kell kérni
+    if (perm !== 'granted') { $('remStatus').textContent = '🚫 Nem engedélyezted az értesítéseket.'; return; }
+    remPermOk = true;
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: remB64(REM_VAPID) });
+    const j = sub.toJSON();
+    const { error } = await client.from('push_subs').upsert({ endpoint: j.endpoint, user_id: auth.user.id, app: REM_APP, sub: j, ua: navigator.userAgent.slice(0, 200) }, { onConflict: 'endpoint' });
+    if (error) throw new Error(error.message + (/relation|does not exist|schema cache/i.test(error.message) ? ' – a Supabase-ben még nincs létrehozva a tábla (útmutató 1. lépés).' : ''));
+    rem.enabled = true; if (rem.snooze === studyDay()) rem.snooze = '';
+    if (await remSavePrefs()) { remPushState(true); $('remStatus').textContent = '✅ Bekapcsolva. Nyomd meg a „Próbaértesítés” gombot, hogy lásd, megérkezik-e.'; }
+  } catch (e) { $('remStatus').textContent = '⚠️ Nem sikerült bekapcsolni: ' + (e && e.message ? e.message : e); }
+  finally { btn.disabled = false; }
+}
+async function remTurnOff() {
+  try {
+    const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription();
+    if (sub) { if (signedIn()) await client.from('push_subs').delete().eq('endpoint', sub.endpoint); await sub.unsubscribe(); }
+  } catch {}
+  rem.enabled = false; await remSavePrefs(); $('remStatus').textContent = 'Kikapcsolva – ezen a készüléken nem jön több emlékeztető.';
+}
+async function remTest() {
+  if (!signedIn()) { $('remStatus').textContent = 'Előbb jelentkezz be.'; return; }
+  $('remStatus').textContent = 'Próbaértesítés küldése…';
+  try {
+    const { data, error } = await client.functions.invoke('sayback-reminder', { body: { test: true, app: REM_APP } });
+    if (error) {
+      let msg = error.message || String(error);
+      try { const b = await error.context.json(); if (b && b.error) msg = b.error; } catch {}
+      throw new Error(msg);
+    }
+    $('remStatus').textContent = data && data.sent ? '📨 Elküldve – pár másodpercen belül meg kell jelennie. (Ha az app épp nyitva van, iPhone-on lehet, hogy csak az értesítési központban látszik.)' : '⚠️ A szerver válaszolt, de nem küldött: ' + JSON.stringify(data);
+  } catch (e) { $('remStatus').textContent = '⚠️ A próba nem sikerült: ' + (e && e.message ? e.message : e) + ' – ellenőrizd az útmutató 2–3. lépését (függvény, titkok).'; }
+}
+function remInit() {
+  if (!$('remBox')) return;
+  remRender();
+  $('remOn').onclick = remTurnOn; $('remOff').onclick = remTurnOff; $('remTest').onclick = remTest;
+  $('remSnooze').onclick = () => { rem.snooze = studyDay(); remSavePrefs(); };
+  $('remFirst').onchange = () => { rem.first = $('remFirst').value || '08:00'; remSavePrefs(); };
+  $('remCount').onchange = () => { rem.count = Number($('remCount').value) || 3; remSavePrefs(); };
+  $('remTone').onchange = () => { rem.tone = $('remTone').value; remSavePrefs(); };
+  $('remRest').onchange = () => { rem.rest = $('remRest').value ? $('remRest').value.split(',').map(Number) : []; remSavePrefs(); };
+  // ha az engedélyt közben máshol visszavonták
+  if (rem.enabled && remSupported() && Notification.permission !== 'granted') remRender();
+  if (rem.enabled) setTimeout(() => { remSavePrefs(); remPushState(true); }, 4000); // időzóna, beállítások frissítése
+  if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'go-today') try { showTab('terv'); window.scrollTo({ top: 0 }); } catch {} });
+}
+
+// ============================================================
 // INDÍTÁS
 // ============================================================
 (() => {
@@ -4272,6 +4399,8 @@ function drillKor(it) {
   sync();
   let t = 'terv'; try { t = localStorage.getItem('nyelvisziget-tab') || 'terv'; if (localStorage.getItem('nyelvisziget-planday') !== studyDay()) { t = 'terv'; localStorage.setItem('nyelvisziget-planday', studyDay()); } } catch {}
   showTab(t);
+  try { remInit(); } catch (e) { console.warn('Emlékeztető:', e); }
+  try { const u = new URL(location.href); if (u.searchParams.get('go') === 'today') { showTab('terv'); u.searchParams.delete('go'); history.replaceState(null, '', u.pathname + u.search + u.hash); } } catch {}
 })();
 try { plLoadForm(); } catch (e) { console.warn(e); }
 loadSettings(); updateSpeedLabels(); updateMixLabels(); syncMixSrc(); mixOrderInfo(); updateNet(); renderMixSaved(); { const last = localStorage.getItem('nyelvisziget-mixlast'); if (last) loadMix(last, false); } renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender(); try { bvRender(); } catch {}
