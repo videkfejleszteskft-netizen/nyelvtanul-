@@ -206,6 +206,20 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 #typeInput.grow,textarea.grow{display:block;width:100%;box-sizing:border-box;resize:none;overflow:hidden;font:inherit;font-size:1.1rem;line-height:1.4;min-height:3.2em;text-align:left;padding:10px 12px;margin:0 0 8px}
 #remPrefs.dim{opacity:.55}
 #remBox input[type=time],#remBox select{padding:8px;border:1px solid #cbd5df;border-radius:8px;font-size:1rem;width:100%;box-sizing:border-box}
+/* V46: egyszerűsített kezdőképernyő – 4 nagy csempe + egy kis sor a ritkábbaknak */
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 12px;justify-content:stretch}
+.tabs .plantab{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;padding:10px}
+.tabs .plantab .ts{margin:0}
+.tabs button.main{min-width:0;padding:12px 6px 10px}
+.tabs button.main .ti{font-size:1.6rem}
+.tabs button.sec{min-width:0;flex-direction:row;justify-content:center;gap:5px;padding:6px 4px;border-radius:12px;background:#f7fafb;box-shadow:none}
+.tabs button.sec .ts{display:none}
+.tabs button.sec .ti{font-size:1rem}
+.tabs button.sec .tl{font-size:.68rem;letter-spacing:.2px}
+.tabs button.sec.hot{background:#fff3ea;border-color:#ffb68c}
+.tabs button.sec[aria-selected="true"]{background:linear-gradient(135deg,var(--coral),#ff9f5a);border-color:transparent}
+@media (max-width:600px){.tabs{grid-template-columns:repeat(4,1fr);gap:7px;padding:8px}.tabs button.main{grid-column:span 2;padding:12px 6px 9px}.tabs button.main .ti{font-size:1.5rem}.tabs button.main .tl{font-size:.86rem}.tabs button.main .ts{font-size:.66rem}.tabs button.sec{padding:7px 3px;gap:3px}.tabs button.sec .ti{font-size:.95rem}.tabs button.sec .tl{font-size:.6rem;letter-spacing:0;white-space:normal;line-height:1.05;text-align:center}}
+#quickMode select,#quickMode input{width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbd5df;border-radius:10px;font-size:1rem}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -213,18 +227,18 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>IT</b> Italiano</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">V45</span>
+ <span class="ver" title="Programverzió">V46</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">IL PIANO</span><span class="ts" id="tbPlan">a mai terv</span></button>
- <button type="button" role="tab" data-tab="ma" title="a kihívás"><i class="ti">🔥</i><span class="tl">LA SFIDA</span><span class="ts">a kihívás</span></button>
- <button type="button" role="tab" data-tab="hallgatas" title="hallgass"><i class="ti">🎧</i><span class="tl">ASCOLTA</span><span class="ts">hallgass</span></button>
- <button type="button" role="tab" data-tab="nehez" title="koncentráció"><i class="ti">🎯</i><span class="tl">FOCUS</span><span class="ts">koncentráció</span><span class="badge" id="tbHard"></span></button>
- <button type="button" role="tab" data-tab="beves" title="bevésés"><i class="ti">📌</i><span class="tl">MEMORIZZA</span><span class="ts">bevésés</span><span class="badge" id="tbBeves"></span></button>
- <button type="button" role="tab" data-tab="beszelj" title="beszélj"><i class="ti">🗣️</i><span class="tl">PARLA</span><span class="ts">beszélj</span></button>
- <button type="button" role="tab" data-tab="szavak" title="szókincs"><i class="ti">🧠</i><span class="tl">VOCABOLI</span><span class="ts">szókincs</span><span class="badge" id="tbWords"></span></button>
- <button type="button" role="tab" data-tab="konyvtar" title="szigetek"><i class="ti">🏝️</i><span class="tl">ISOLE</span><span class="ts">szigetek</span></button>
- <button type="button" role="tab" data-tab="beallitas" title="rendszer"><i class="ti">⚙️</i><span class="tl">SISTEMA</span><span class="ts">rendszer</span></button>
+ <button type="button" role="tab" class="main" data-tab="ma" title="a kihívás"><i class="ti">🔥</i><span class="tl">LA SFIDA</span><span class="ts">a kihívás</span></button>
+ <button type="button" role="tab" class="main" data-tab="hallgatas" title="hallgass"><i class="ti">🎧</i><span class="tl">ASCOLTA</span><span class="ts">hallgass</span></button>
+ <button type="button" role="tab" class="main" data-tab="konyvtar" title="szigetek"><i class="ti">🏝️</i><span class="tl">ISOLE</span><span class="ts">szigetek</span></button>
+ <button type="button" role="tab" class="main" data-tab="beallitas" title="rendszer"><i class="ti">⚙️</i><span class="tl">SISTEMA</span><span class="ts">rendszer</span></button>
+ <button type="button" role="tab" class="sec" data-tab="nehez" title="koncentráció"><i class="ti">🎯</i><span class="tl">FOCUS</span><span class="ts">koncentráció</span><span class="badge" id="tbHard"></span></button>
+ <button type="button" role="tab" class="sec" data-tab="beves" title="bevésés"><i class="ti">📌</i><span class="tl">MEMORIZZA</span><span class="ts">bevésés</span><span class="badge" id="tbBeves"></span></button>
+ <button type="button" role="tab" class="sec" data-tab="beszelj" title="beszélj"><i class="ti">🗣️</i><span class="tl">PARLA</span><span class="ts">beszélj</span></button>
+ <button type="button" role="tab" class="sec" data-tab="szavak" title="szókincs"><i class="ti">🧠</i><span class="tl">VOCABOLI</span><span class="ts">szókincs</span><span class="badge" id="tbWords"></span></button>
 </nav>
 <main>
 <p id="status" class="muted"></p>
@@ -569,6 +583,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <h4>Rendezés – két nézet</h4><ol><li><b>📊 Szint és haladás szerint (automatikus):</b> az app magától sorolja be a szigeteket: <b>szint</b> (A1…C2) → <b>haladás</b> (🟡 elkezdett · 🔁 végigvett, ismétlés alatt · ⬜ még nem gyakorolt · ✅ rögzült = a mondatok legalább 80%-a már 3 hétnél ritkábban jön) → <b>témacsoport</b>. Ahogy tanulsz, a sziget magától átkerül a következő csoportba – nem kell kézzel rendezni.</li><li><b>📁 Saját mappáim:</b> a magad által készített mappák, akárhány szint mélyen (<b>+ Almappa</b>). A mappák is áthelyezhetők másik mappába („↪ Mappa áthelyezése…”), a szigetek a sorukban lévő választóval. Mappa törlésekor semmi nem vész el: a tartalma egy szinttel feljebb kerül.</li><li>A haladás és a hangok nem függnek a mappáktól – a besorolás bármikor szabadon változtatható.</li></ol>
 <h4>Gyakorlás</h4><ol><li>Koppints egy szigetre: a ⚙️ fülön beállított móddal indul (ajánlott: „Esedékes ismétlés + új mondatok”).</li><li>Utazás előtt: <b>„Összes letöltése offline használatra”</b>.</li></ol></details></section>
 <section data-tab="konyvtar" class="box"><h3>Nyelvi sziget-könyvtár (felhő)</h3>
+ <div class="row" id="quickMode"><label>Tanulási mód – ezzel nyílnak meg a szigetek<br><select id="modeQ"></select></label><label style="max-width:150px">Új mondat naponta<br><input id="newLimitQ" type="number" min="0" max="100"></label></div>
  <p class="muted">Az egyszer megnyitott sziget a készüléken marad, és internet nélkül is használható.</p>
  <button id="refreshLibrary">Könyvtár frissítése</button><button id="downloadAll" class="alt">Összes letöltése offline használatra</button>
  <div class="newfolder"><label class="muted" style="flex:1;min-width:220px">Nézet<br><select id="libView" class="move" style="margin:0;width:100%"><option value="auto">📊 Szint és haladás szerint (automatikus)</option><option value="manual">📁 Saját mappáim</option></select></label></div>
@@ -2018,7 +2033,7 @@ async function loadDailyReview() {
     const btn = document.createElement('button'); btn.textContent = 'Indítás';
     btn.onclick = async () => {
       btn.disabled = true; btn.textContent = 'Betöltés…';
-      try { await openIsland(slug); const md = $('mode').value === 'drill' ? 'drill' : 'due'; $('mode').value = md; saveSettings(); startSession(md); }
+      try { await openIsland(slug); const md = $('mode').value === 'drill' ? 'drill' : 'due'; $('mode').value = md; saveSettings(); try { syncQuick(); } catch {} startSession(md); }
       catch (e) { $('dailyStatus').textContent = 'Nem sikerült elindítani: ' + e.message; }
       finally { btn.disabled = false; btn.textContent = 'Indítás'; }
     };
@@ -2225,7 +2240,7 @@ function plTasks() {
     const first = todo.find(x => !x.missing);
     const isl = todo.filter(x => !x.missing).map(x => `${x.it.c} ${x.it.n} (${x.st.seen + 1}–${x.st.seen + x.take}. mondat)`).join(', ');
     tasks.push({ id: 'new', time: '🕒 Délután · ' + plan.after + ' perc', title: `${newTarget} új mondat` + (first ? ` – ${first.it.c} ${first.it.n}` : ''), sub: (isl ? `Ma: ${isl}. ` : todo.length ? `A következő sziget (${todo[0].it.c} ${todo[0].it.n}) még nincs feltöltve. ` : '') + `Ma eddig: ${t.new || 0}.`, btn: first ? '▶ Megnyitom' : '🏝️ Szigetek', auto: (t.new || 0) >= newTarget,
-      go: first ? async () => { try { const md = $('mode').value === 'drill' ? 'drill' : 'due'; $('mode').value = md; saveSettings(); showTab('beallitas'); await openIsland(first.st.slug); startSession(md); } catch (e) { $('status').textContent = 'Nem sikerült megnyitni: ' + e.message; plGo('konyvtar'); } } : () => plGo('konyvtar') });
+      go: first ? async () => { try { const md = $('mode').value === 'drill' ? 'drill' : 'due'; $('mode').value = md; saveSettings(); try { syncQuick(); } catch {} showTab('beallitas'); await openIsland(first.st.slug); startSession(md); } catch (e) { $('status').textContent = 'Nem sikerült megnyitni: ' + e.message; plGo('konyvtar'); } } : () => plGo('konyvtar') });
     const soon = upload.filter(u => u.g.ready);
     if (soon.length) tasks.push({ id: 'upload', time: '📤 Ha időd engedi', title: 'Feltöltésre vár: ' + soon.map(u => u.it.c + ' ' + u.it.n).join(', '), sub: `Python-programmal hang, majd Szigetek → Új sziget feltöltése, a „${soon[0].g.f}” mappába.`, btn: '🏝️ Szigetek', go: () => plGo('konyvtar') });
     else if (upload.length && !upload[0].g.ready) tasks.push({ id: 'upload', time: '📤 Tananyag', title: `A következő csoport (${upload[0].g.f}) tananyaga még készül`, sub: 'Kérd el a Claude-tól a szigeteket, utána töltsd fel őket.', btn: '' });
@@ -2344,7 +2359,7 @@ function plLoadForm() {
   $('plCustomAdd').onclick = () => { plan.custom.push({ slot: 'barmikor', min: 15, text: '' }); plSave(); plRenderCustom(); const r = $('plCustom').lastElementChild; if (r) r.querySelector('.plc-t').focus(); };
   plRenderCustom();
   $('plCurrBox').addEventListener('toggle', () => { if ($('plCurrBox').open) plRenderCurr(); });
-  $('plApply').onclick = () => { const c = plCalc(); $('newLimit').value = c.perDay; saveSettings(); renderStats(); renderPlan(); $('planRes').insertAdjacentHTML('beforeend', '<br>✓ Beállítva.'); };
+  $('plApply').onclick = () => { const c = plCalc(); $('newLimit').value = c.perDay; saveSettings(); try { syncQuick(); } catch {} renderStats(); renderPlan(); $('planRes').insertAdjacentHTML('beforeend', '<br>✓ Beállítva.'); };
 }
 
 // ============================================================
@@ -2553,7 +2568,17 @@ document.querySelectorAll('[data-rate]').forEach(b => b.onclick = () => { if (hf
 $('mode').onchange = () => { saveSettings(); if (current) startSession($('mode').value); };
 $('drillWrite').onchange = saveSettings;
 $('dir').onchange = () => { saveSettings(); if (sess) { sess.items.forEach(i => i.dir = pickDir()); render(); } };
-$('newLimit').onchange = () => { saveSettings(); renderStats(); };
+$('newLimit').onchange = () => { saveSettings(); renderStats(); syncQuick(); };
+// Isole: gyors módválasztó (ugyanaz, mint a ⚙️ fülön – a kettő mindig együtt változik)
+function syncQuick() { const q = $('modeQ'), n = $('newLimitQ'); if (!q) return; if (!q.options.length) q.innerHTML = $('mode').innerHTML; q.value = $('mode').value; n.value = $('newLimit').value; }
+$('modeQ').onchange = () => { $('mode').value = $('modeQ').value; $('mode').dispatchEvent(new Event('change')); };
+$('newLimitQ').onchange = () => { $('newLimit').value = $('newLimitQ').value; $('newLimit').dispatchEvent(new Event('change')); };
+$('mode').addEventListener('change', syncQuick);
+syncQuick();
+// a ritkábban használt csempék kiemelése, ha esedékes feladat van bennük
+function markHot() { document.querySelectorAll('.tabs button.sec').forEach(b => { const g = b.querySelector('.badge'); b.classList.toggle('hot', !!(g && g.textContent.trim() && g.textContent.trim() !== '0')); }); }
+try { new MutationObserver(markHot).observe($('tabs'), { subtree: true, childList: true, characterData: true }); } catch {}
+markHot();
 $('autoAnswer').onchange = saveSettings;
 $('l1Speed').oninput = () => { saveSettings(); updateSpeedLabels(); };
 $('l2Speed').oninput = () => { saveSettings(); updateSpeedLabels(); };
@@ -4403,7 +4428,7 @@ function remInit() {
   try { const u = new URL(location.href); if (u.searchParams.get('go') === 'today') { showTab('terv'); u.searchParams.delete('go'); history.replaceState(null, '', u.pathname + u.search + u.hash); } } catch {}
 })();
 try { plLoadForm(); } catch (e) { console.warn(e); }
-loadSettings(); updateSpeedLabels(); updateMixLabels(); syncMixSrc(); mixOrderInfo(); updateNet(); renderMixSaved(); { const last = localStorage.getItem('nyelvisziget-mixlast'); if (last) loadMix(last, false); } renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender(); try { bvRender(); } catch {}
+loadSettings(); try { syncQuick(); } catch {} updateSpeedLabels(); updateMixLabels(); syncMixSrc(); mixOrderInfo(); updateNet(); renderMixSaved(); { const last = localStorage.getItem('nyelvisziget-mixlast'); if (last) loadMix(last, false); } renderStats(); renderHard(); refreshUploadFolderSelect(''); vRefreshAndRender(); try { bvRender(); } catch {}
 const configured = SUPABASE_URL.startsWith('https://') && SUPABASE_PUBLISHABLE_KEY.startsWith('sb_publishable_');
 if (configured && window.supabase) {
   client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
