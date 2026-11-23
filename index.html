@@ -220,6 +220,9 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 .tabs button.sec[aria-selected="true"]{background:linear-gradient(135deg,var(--coral),#ff9f5a);border-color:transparent}
 @media (max-width:600px){.tabs{grid-template-columns:repeat(4,1fr);gap:7px;padding:8px}.tabs button.main{grid-column:span 2;padding:12px 6px 9px}.tabs button.main .ti{font-size:1.5rem}.tabs button.main .tl{font-size:.86rem}.tabs button.main .ts{font-size:.66rem}.tabs button.sec{padding:7px 3px;gap:3px}.tabs button.sec .ti{font-size:.95rem}.tabs button.sec .tl{font-size:.6rem;letter-spacing:0;white-space:normal;line-height:1.05;text-align:center}}
 #quickMode select,#quickMode input{width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbd5df;border-radius:10px;font-size:1rem}
+#ratingArea .rate.suggest{outline:3px solid #ffb02e;outline-offset:2px;position:relative}
+#ratingArea .rate.suggest::after{content:"javasolt";position:absolute;top:-10px;right:-6px;background:#ffb02e;color:#3b2600;font-size:.62rem;font-weight:800;padding:1px 6px;border-radius:8px}
+.dr-sum{background:#f4f9fb;border:1px solid #d7e6ee;border-radius:12px;padding:10px 12px;margin:0 0 10px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -227,7 +230,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>IT</b> Italiano</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">V48</span>
+ <span class="ver" title="Programverzió">V49</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">IL PIANO</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -343,7 +346,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 </section>
 
 <section data-tab="beallitas" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Bejelentkezés és felhőmentés, a gyakorlás beállításai, a beszédfelismerés próbája és a mentés. <b>Miért?</b> Itt dől el, hogyan kérdez az app – ezeket egyszer kell jól beállítani.</p>
-<h4>Ajánlott beállítások</h4><ul><li><b>Mód:</b> „Esedékes ismétlés + új mondatok” a napi munkához; „Tanulás” csak egy sziget első átnézéséhez.</li><li><b>„Bevéséses tanulás”:</b> mint az előző, de minden <b>új</b> mondatot 3 rövid lépésben vésel be (hallás + árnyékolás → kezdőbetűkkel → fejből, ha kéred: leírás), 3 új mondatonként rövid körkérdezés jön, a végén pedig záró kör a mai összes új mondatból. Ami a körben nem megy, egy gombbal a 📌 Bevésésbe teheted. Lassabb, de sokkal több marad meg – akkor használd, ha az új mondatok nem ragadnak meg.</li><li><b>Irány:</b> magyar → idegen (ez fejleszti a beszédet). Hetente egyszer a fordított irány a megértéshez.</li><li><b>Új mondat naponta:</b> amennyit a 🗺️ terv javasol. Ha túl sok az ismétlés, csökkentsd.</li><li><b>Idegen hang sebessége:</b> eleinte 80–90%, később 100%.</li><li><b>Gépelős mód / diktálás:</b> hetente 1–2× a helyesíráshoz és a hallásértéshez.</li></ul>
+<h4>Ajánlott beállítások</h4><ul><li><b>Mód:</b> „Esedékes ismétlés + új mondatok” a napi munkához; „Tanulás” csak egy sziget első átnézéséhez.</li><li><b>„Bevéséses tanulás”:</b> mint az előző, de minden <b>új</b> mondatot 3 rövid lépésben vésel be (hallás + árnyékolás → kezdőbetűkkel → fejből, ha kéred: leírás), a végén még egyszer <b>kimondod vagy leírod</b>, az app összeveti, és csak utána értékelsz, 3 új mondatonként rövid körkérdezés jön, a végén pedig záró kör a mai összes új mondatból. Ami a körben nem megy, egy gombbal a 📌 Bevésésbe teheted. Lassabb, de sokkal több marad meg – akkor használd, ha az új mondatok nem ragadnak meg.</li><li><b>Irány:</b> magyar → idegen (ez fejleszti a beszédet). Hetente egyszer a fordított irány a megértéshez.</li><li><b>Új mondat naponta:</b> amennyit a 🗺️ terv javasol. Ha túl sok az ismétlés, csökkentsd.</li><li><b>Idegen hang sebessége:</b> eleinte 80–90%, később 100%.</li><li><b>Gépelős mód / diktálás:</b> hetente 1–2× a helyesíráshoz és a hallásértéshez.</li></ul>
 <h4>Biztonság</h4><ul><li>Jelentkezz be, hogy a haladás a felhőbe is mentődjön.</li><li>Havonta egyszer: „Haladás exportálása” (tartalék JSON-fájl).</li></ul></details></section>
 <section data-tab="beallitas" class="box"><h3>Felhőszinkronizálás</h3>
  <p class="muted">Jelentkezz be ugyanazzal az e-mail-címmel a számítógépen és az iPhone-on.</p>
@@ -1585,6 +1588,7 @@ function render() {
   $('study').classList.remove('hidden', 'parked');
   if (sess.drill) { const d = sess.items[sess.pos]; if (d.kor || (d.drill && !d.drillDone)) { $('count').textContent = `${sess.pos + 1} / ${sess.items.length}`; $('island').textContent = sess.title; resetRecording(); return drillRender(d); } }
   $('study').classList.remove('drilling'); $('drillBox').innerHTML = '';
+  document.querySelectorAll('#ratingArea .rate.suggest').forEach(b => b.classList.remove('suggest'));
   const it = sess.items[sess.pos];
   const dict = $('dictMode').checked;
   $('question').textContent = dict ? '🎧 Hallgasd meg, és írd le olaszul' : (it.dir === 'hu-it' ? it.hu : it.it);
@@ -4263,17 +4267,19 @@ function bzParse(txt) {
 // ============================================================
 // BEVÉSÉSES TANULÁS – a szigetben: új mondat lépésenként + körkérdezés
 // ============================================================
-const DR_STEPS = () => ['Hallás + árnyékolás', 'Kezdőbetűkkel', 'Fejből'].concat($('drillWrite').checked ? ['Leírás'] : []).concat(['Értékelés']);
+const DR_STEPS = () => ['Hallás + árnyékolás', 'Kezdőbetűkkel', 'Fejből'].concat($('drillWrite').checked ? ['Leírás'] : []).concat(['Ellenőrzés + értékelés']);
 function drChips(cur) { return '<div class="bv-chips">' + DR_STEPS().map((s, i) => `<span class="${i < cur ? 'ok' : i === cur ? 'on' : ''}">${i + 1}. ${s}</span>`).join('') + '</div>'; }
 function drX(it) { return { slug: it.slug, n: it.n, hu: it.hu, it: it.it }; }
 function drillRender(it) {
   $('study').classList.add('drilling'); bvStopAudio();
-  try { stopActiveAudio(); } catch {}
+  try { stopActiveAudio(); } catch {} try { srStop(); } catch {}
+  document.querySelectorAll('#ratingArea .rate.suggest').forEach(b => b.classList.remove('suggest'));
   if (it.kor) return drillKor(it);
   const box = $('drillBox'), x = drX(it), s = it.dstep || 0, nNew = sess.items.filter(y => y.drill && !y.kor).length, iNew = sess.drilled.length + 1;
   const head = `<div class="bv-head"><b>📌 Bevéséses tanulás</b> · új mondat ${Math.min(iNew, nNew)} / ${nNew}</div>` + drChips(s)
     + (s < 3 ? `<label class="bv-chk muted" style="font-weight:600;margin:0 0 8px"><input type="checkbox" id="drWriteTgl"${$('drillWrite').checked ? ' checked' : ''}> ✍️ Leírás lépéssel (fejből leírod, amíg hibátlan nem lesz)</label>` : '');
-  const go = () => { it.dstep = s + 1; const last = $('drillWrite').checked ? 4 : 3; if (it.dstep >= last) drillDone(it); else drillRender(it); };
+  const L = $('drillWrite').checked ? 4 : 3; // az utolsó (ellenőrző) lépés sorszáma
+  const go = () => { it.dstep = Math.min(s + 1, L); drillRender(it); };
   const wt = () => { const t = $('drWriteTgl'); if (t) t.onchange = () => { $('drillWrite').checked = t.checked; saveSettings(); const c = box.querySelector('.bv-chips'); if (c) c.outerHTML = drChips(s); }; };
   if (s === 0) {
     box.innerHTML = head + `<h4>1. Hallás és árnyékolás</h4><div class="bv-q">${bzEsc(it.hu)}</div><div class="bv-a">${bzEsc(it.it)}</div>
@@ -4286,15 +4292,55 @@ function drillRender(it) {
   } else if (s === 1 || s === 2) {
     box.innerHTML = head + `<h4>${s + 1}. Előhívás ${s === 1 ? 'kezdőbetűkkel' : 'fejből'}</h4><div class="bv-q">${bzEsc(it.hu)}</div><p class="center muted">Mondd ki hangosan, és csak utána fedd fel.</p><div id="drRet"></div>`;
     bvRetrieve(x, go, $('drRet'), s === 1, s === 1 ? 'A kezdőbetűk segítenek:' : 'Most semmi segítség:'); wt();
-  } else {
+  } else if (s < L) {
     box.innerHTML = head + `<h4>4. Leírás fejből</h4><div class="bv-q">${bzEsc(it.hu)}</div><p class="center muted">Írd le fejből. Ha hibás, megmutatom a helyeset, és 5 mp múlva újra leírod – addig, amíg hibátlan nem lesz.</p><div id="drWr"></div><div class="center"><button id="drNext" disabled>Tovább →</button></div>`;
     bvWrite(x, $('drWr'), () => { $('drNext').disabled = false; }); $('drNext').onclick = go;
-  }
+  } else drillCheck(it, head, L);
 }
-function drillDone(it) {
+// Utolsó lépés: még egyszer fejből – KIMONDOD vagy LEÍROD –, az app összeveti, és csak utána értékelsz.
+function drillCheck(it, head, L) {
+  const box = $('drillBox');
+  box.innerHTML = head + `<h4>${L + 1}. Ellenőrzés és értékelés</h4><div class="bv-q">${bzEsc(it.hu)}</div>
+    <p class="center muted">Utoljára fejből, segítség nélkül: <b>mondd ki</b> vagy <b>írd le</b> – az app összeveti, és utána értékelsz.</p>
+    <div class="center">${SRClass ? '<button id="drSay">🎙️ Kimondom</button>' : ''}<button class="alt" id="drType">⌨️ Leírom</button></div>
+    <div id="drLive" class="sr-live"></div>
+    <div id="drTypeBox" class="hidden"><textarea class="vtype grow" rows="2" id="drTxt" placeholder="Írd le fejből…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"></textarea><div class="center"><button id="drChk">Ellenőrzés</button></div></div>
+    <p class="center"><button class="alt" id="drSkip">Nem megy – mutasd a választ</button></p>`;
+  const lines = (r, who) => {
+    const row = (label, toks, states) => `<div><span class="muted">${label} </span>` + toks.map((t, k) => `<span class="w ${states[k]}">${bzEsc(t.raw)}</span>`).join(' ') + '</div>';
+    return `<div class="tres">${row('Helyesen:', r.E, r.eState)}${row(who, r.T, r.tState)}</div>`;
+  };
+  if ($('drSay')) $('drSay').onclick = async () => {
+    if (srActive) { srStop(); return; }
+    const b = $('drSay'); b.textContent = '⏹ Kész'; $('drLive').textContent = 'Hallgatlak… mondd ki az olasz mondatot.';
+    try {
+      const res = await srListen('it', t => { if ($('drLive')) $('drLive').textContent = '„' + t + '”'; });
+      const best = srCompare(it.it, res.text, res.alts);
+      drillDone(it, { pct: best.pct, how: 'kimondva', html: lines(best.r, 'Ezt értette a telefon:') + '<p class="muted">A felismerő néha félrehall – ha biztos vagy benne, hogy jól mondtad, értékelj aszerint.</p>' });
+    } catch (e) { if ($('drLive')) $('drLive').textContent = srErrText(e.code || e.message) + ' – próbáld újra, vagy írd le.'; if ($('drSay')) $('drSay').textContent = '🎙️ Kimondom'; }
+  };
+  $('drType').onclick = () => { $('drTypeBox').classList.remove('hidden'); $('drTxt').focus(); };
+  const check = () => {
+    const typed = $('drTxt').value; if (!typed.trim()) { $('drTxt').focus(); return; }
+    const r = compareAnswer(it.it, typed), ok = r.eState.filter(v => v !== 'miss').length, pct = Math.round(ok / Math.max(1, r.E.length, r.T.length) * 100);
+    drillDone(it, { pct, how: 'leírva', html: lines(r, 'Te írtad:') });
+  };
+  $('drChk').onclick = check;
+  $('drTxt').onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); check(); } };
+  $('drSkip').onclick = () => drillDone(it, { pct: 0, how: '', html: '<p>Most nem ment fejből – semmi baj, a „Nem ment” értékeléssel hamar újra előkerül.</p>' });
+}
+function drillDone(it, res) {
+  try { srStop(); } catch {}
   it.drillDone = true; sess.drilled.push(it); sess.sinceKor.push(it);
   $('study').classList.remove('drilling'); $('drillBox').innerHTML = '';
   render(); revealAnswer(false);
+  let sug = '';
+  if (res) {
+    sug = res.pct >= 95 ? 'good' : res.pct >= 70 ? 'hard' : 'again';
+    const name = { good: 'Jól ment', hard: 'Nehéz', again: 'Nem ment' }[sug];
+    $('drillBox').innerHTML = `<div class="dr-sum"><b>Az utolsó próba${res.how ? ' (' + res.how + ')' : ''}: ${res.pct}%</b>${res.html}<p class="muted" style="margin:6px 0 0">Javaslat: <b>${name}</b> – de te döntesz: ha csak egy apróság csúszott el, nyugodtan válassz jobbat; ha nagyon könnyen ment, a „Könnyű”-t.</p></div>`;
+  }
+  document.querySelectorAll('#ratingArea .rate').forEach(b => b.classList.toggle('suggest', !!sug && b.dataset.rate === sug));
   $('status').textContent = 'Most értékeld, mennyire ment fejből – ez alapján ütemezi az ismétlést. 3 új mondatonként rövid körkérdezés jön.';
 }
 function drillKor(it) {
