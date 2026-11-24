@@ -230,7 +230,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>EN</b> English</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">EN V29</span>
+ <span class="ver" title="Programverzió">EN V30</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">GAME PLAN</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -346,7 +346,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 </section>
 
 <section data-tab="beallitas" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Bejelentkezés és felhőmentés, a gyakorlás beállításai, a beszédfelismerés próbája és a mentés. <b>Miért?</b> Itt dől el, hogyan kérdez az app – ezeket egyszer kell jól beállítani.</p>
-<h4>Ajánlott beállítások</h4><ul><li><b>Mód:</b> „Esedékes ismétlés + új mondatok” a napi munkához; „Tanulás” csak egy sziget első átnézéséhez.</li><li><b>„Bevéséses tanulás”:</b> mint az előző, de minden <b>új</b> mondatot 3 rövid lépésben vésel be (hallás + árnyékolás → kezdőbetűkkel → fejből, ha kéred: leírás), a végén még egyszer <b>kimondod vagy leírod</b>, az app összeveti, és csak utána értékelsz, 3 új mondatonként rövid körkérdezés jön, a végén pedig záró kör a mai összes új mondatból. Ami a körben nem megy, egy gombbal a 📌 Bevésésbe teheted. Lassabb, de sokkal több marad meg – akkor használd, ha az új mondatok nem ragadnak meg.</li><li><b>Irány:</b> magyar → idegen (ez fejleszti a beszédet). Hetente egyszer a fordított irány a megértéshez.</li><li><b>Új mondat naponta:</b> amennyit a 🗺️ terv javasol. Ha túl sok az ismétlés, csökkentsd.</li><li><b>Idegen hang sebessége:</b> eleinte 80–90%, később 100%.</li><li><b>Gépelős mód / diktálás:</b> hetente 1–2× a helyesíráshoz és a hallásértéshez.</li></ul>
+<h4>Ajánlott beállítások</h4><ul><li><b>Mód:</b> „Esedékes ismétlés + új mondatok” a napi munkához; „Tanulás” csak egy sziget első átnézéséhez.</li><li><b>Okos ismétlés:</b> az app figyeli, milyen gyorsan jut eszedbe a mondat (a „Felfedem” gomb megnyomásáig), és a mondat hosszát is: ami gyorsan megy, kicsit később jön vissza, ami lassan, kicsit hamarabb; a hosszú mondatok lassabban távolodnak. A „Nehéz” csak óvatosabb ütemezést jelent, a „Nem ment” felejtés – utána nem a nulláról, hanem a korábbi köz negyedéről indul újra. Ha egy mondat sokszor nem megy (makacs mondat), magától átkerül a 📌 Bevésésbe, és a 🎯 Focusban 🔁 jellel látod.</li><li><b>„Bevéséses tanulás”:</b> mint az előző, de minden <b>új</b> mondatot 3 rövid lépésben vésel be (hallás + árnyékolás → kezdőbetűkkel → fejből, ha kéred: leírás), a végén még egyszer <b>kimondod vagy leírod</b>, az app összeveti, és csak utána értékelsz, 3 új mondatonként rövid körkérdezés jön, a végén pedig záró kör a mai összes új mondatból. Ami a körben nem megy, egy gombbal a 📌 Bevésésbe teheted. Lassabb, de sokkal több marad meg – akkor használd, ha az új mondatok nem ragadnak meg.</li><li><b>Irány:</b> magyar → idegen (ez fejleszti a beszédet). Hetente egyszer a fordított irány a megértéshez.</li><li><b>Új mondat naponta:</b> amennyit a 🗺️ terv javasol. Ha túl sok az ismétlés, csökkentsd.</li><li><b>Idegen hang sebessége:</b> eleinte 80–90%, később 100%.</li><li><b>Gépelős mód / diktálás:</b> hetente 1–2× a helyesíráshoz és a hallásértéshez.</li></ul>
 <h4>Biztonság</h4><ul><li>Jelentkezz be, hogy a haladás a felhőbe is mentődjön.</li><li>Havonta egyszer: „Haladás exportálása” (tartalék JSON-fájl).</li></ul></details></section>
 <section data-tab="beallitas" class="box"><h3>Felhőszinkronizálás</h3>
  <p class="muted">Jelentkezz be ugyanazzal az e-mail-címmel a számítógépen és az iPhone-on.</p>
@@ -878,6 +878,7 @@ function isHard(c) {
   if (!c || !c.reps || (Number(c.hardDismissedAt) || 0) > (Number(c.lastReviewed) || 0)) return false;
   if (c.last === 'again') return true;
   const h = (c.hist || '').slice(-4);
+  if (isLeech(c) && !/[ge]{3}$/.test(c.hist || '')) return true; // makacs mondat: csak 3 egymás utáni jó után kerül le
   if (/[ge]{2}$/.test(h)) return false; // két egymás utáni „Jól ment / Könnyű” után lekerül a listáról
   return (h.match(/[ah]/g) || []).length >= 2;
 }
@@ -885,30 +886,54 @@ function isHard(c) {
 // ============================================================
 // ÜTEMEZÉS – SM-2 jellegű, mondatonkénti nehézségi értékkel (ease)
 // ============================================================
-function schedule(old, v, now) {
+// V51 finomítások (a régi adatokkal kompatibilisen, csak a következő értékeléstől hatnak):
+//  1) gyorsaság: a felfedésig eltelt idő a mondat hosszához mérve (gyors → kicsit hosszabb, lassú → rövidebb köz)
+//  2) „Nehéz” ≠ „Nem ment”: a felejtés (lapse) után a régi köz negyedéről indul újra, nem a nulláról
+//  3) számlálók: hányszor nem ment / volt nehéz / kellett a körben újra elővenni
+//  4) hossz: a hosszú mondatok lassabban, a nagyon rövidek gyorsabban távolodnak
+//  5) visszatérő hiba („makacs mondat”): célzott gyakorlás a 📌 Bevésésben + kiemelés a 🎯 Focusban
+const wordCount = t => String(t || '').trim().split(/\s+/).filter(w => /[\p{L}\d]/u.test(w)).length;
+function lenFactor(W) { return W >= 13 ? 0.85 : W >= 9 ? 0.92 : W && W <= 4 ? 1.1 : 1; }
+function speedClass(rt, W) {
+  if (!rt || rt < 0.4 || rt > 60) return '';
+  const exp = 2.5 + 0.45 * Math.max(1, W || 6);
+  return rt < exp * 0.5 ? 'fast' : rt > exp * 2 ? 'slow' : '';
+}
+function isLeech(c) { return !!c && ((c.lapses || 0) >= 3 || (c.againN || 0) >= 4); }
+function schedule(old, v, now, ctx = {}) {
   const c = { ease: 2.5, interval: 0, reps: 0, lapses: 0, hist: '', ...(old || {}) };
   const learning = (Number(c.interval) || 0) < 1;
+  const W = wordCount(c.it || ctx.it), sp = (v === 'good' || v === 'easy') ? speedClass(ctx.rt, W) : '';
   let requeue = 0;
   if (v === 'again') {
-    if (c.reps > 0 && !learning) c.lapses = (c.lapses || 0) + 1;
-    c.ease = Math.max(1.3, c.ease - 0.2); c.interval = 0; c.due = now + 60e3; requeue = 3;
+    if (c.reps > 0 && !learning) { c.lapses = (c.lapses || 0) + 1; c.relearnTo = Math.max(1, Math.round((Number(c.interval) || 0) * 0.25)); }
+    c.ease = Math.max(1.3, c.ease - 0.2); c.interval = 0; c.due = now + 60e3; requeue = W >= 9 ? 2 : 3;
+    c.againN = (c.againN || 0) + 1; c.requeueN = (c.requeueN || 0) + 1;
   } else if (v === 'hard') {
+    c.hardN = (c.hardN || 0) + 1; if (learning) c.requeueN = (c.requeueN || 0) + 1;
     c.ease = Math.max(1.3, c.ease - 0.15);
     if (learning) { c.interval = 0; c.due = now + 10 * 60e3; requeue = 5; }
     else { c.interval = Math.max(c.interval + 1, Math.round(c.interval * 1.2)); c.due = dueAfterDays(c.interval, now); }
-  } else if (v === 'good') {
-    c.interval = goodInterval(c, learning);
-    c.due = dueAfterDays(c.interval, now);
-  } else if (v === 'easy') {
-    const g = goodInterval(c, learning);
-    c.ease = c.ease + 0.15;
-    c.interval = learning ? 4 : Math.max(g + 2, Math.round(c.interval * c.ease * 1.3));
-    c.due = dueAfterDays(c.interval, now);
+  } else if (v === 'good' || v === 'easy') {
+    const prev = Number(c.interval) || 0;
+    let iv;
+    if (learning && c.relearnTo > 1) { iv = v === 'easy' ? Math.round(c.relearnTo * 1.5) : c.relearnTo; }
+    else if (v === 'good') iv = goodInterval(c, learning);
+    else { const g = goodInterval(c, learning); c.ease = c.ease + 0.15; iv = learning ? 4 : Math.max(g + 2, Math.round(c.interval * c.ease * 1.3)); }
+    if (learning) delete c.relearnTo;
+    if (!learning && prev >= 3) {
+      const f = lenFactor(W) * (sp === 'fast' ? 1.15 : sp === 'slow' ? 0.85 : 1);
+      iv = Math.max(prev + 1, Math.round(iv * f));
+    }
+    if (sp === 'fast') c.ease = Math.min(3.2, c.ease + 0.03);
+    if (sp === 'slow') c.ease = Math.max(1.3, c.ease - 0.05);
+    c.interval = iv; c.due = dueAfterDays(c.interval, now);
   }
+  if (ctx.rt && ctx.rt >= 0.4 && ctx.rt <= 60) { const r = Math.round(ctx.rt * 10) / 10; c.rt = r; c.rtAvg = c.rtAvg ? Math.round((c.rtAvg * 0.7 + r * 0.3) * 10) / 10 : r; }
   c.reps = (c.reps || 0) + 1; c.last = v; c.lastReviewed = now;
   c.hist = ((c.hist || '') + v[0]).slice(-5);
   c.ease = Math.round(c.ease * 100) / 100;
-  return { card: c, requeue };
+  return { card: c, requeue, speed: sp };
 }
 function goodInterval(c, learning) {
   if (learning) return 1;
@@ -1600,14 +1625,14 @@ function render() {
   { const mn = typeof brMnFor === 'function' ? brMnFor(it.hu, it.it) : ''; $('mnIsland').textContent = mn ? '🧠 ' + mn : ''; $('mnIsland').classList.toggle('hidden', !mn); }
   $('toVocabInfo').textContent = '';
   $('answrap').classList.add('hidden'); $('show').classList.remove('hidden');
+  sess.shownAt = Date.now(); sess.rtPos = -1; sess.rt = 0;
   $('ratingArea').classList.toggle('hidden', !sess.rated);
   $('hideAnswer').classList.toggle('hidden', sess.rated);
   $('shuffle').classList.toggle('hidden', !sess.single);
   $('count').textContent = `${sess.pos + 1} / ${sess.items.length} · ${it.n}. mondat` + (sess.single ? '' : ' · ' + niceName(it.slug));
   $('island').textContent = sess.title;
   if (sess.rated) {
-    const now = Date.now(), old = getProg(it.slug).cards[it.k];
-    document.querySelectorAll('[data-rate]').forEach(b => { b.querySelector('small').textContent = describeDue(schedule(old, b.dataset.rate, now).card, now); });
+    updateRateLabels();
   }
   resetRecording();
   resetTyping();
@@ -1771,8 +1796,8 @@ function advance() {
 }
 function rate(v) {
   const it = sess.items[sess.pos], prog = getProg(it.slug), now = Date.now();
-  const old = prog.cards[it.k], wasNew = !old || !old.reps;
-  const { card, requeue } = schedule(old, v, now);
+  const old = prog.cards[it.k], wasNew = !old || !old.reps, wasLeech = isLeech(old);
+  const { card, requeue, speed } = schedule(old, v, now, rateCtx());
   Object.assign(card, { hu: it.hu, it: it.it, n: it.n, hardDismissedAt: now });
   if (v === 'again' || v === 'hard') card.hardDay = studyDay(now); // a mai hallgatható összeállításhoz
   if (wasNew && !card.firstDay) card.firstDay = studyDay(now); // az első tanulás napja: a „ma / tegnap tanult új mondatok” hanganyaghoz
@@ -1781,7 +1806,11 @@ function rate(v) {
   clearTimeout(rate.hardT); rate.hardT = setTimeout(renderHard, 400);
   recordRating(v, wasNew);
   if (requeue) sess.items.splice(Math.min(sess.items.length, sess.pos + 1 + requeue), 0, { ...it });
-  const msg = v === 'again' ? 'Nem ment: néhány mondat múlva újra előjön.' : v === 'hard' && card.interval < 1 ? 'Nehéz: hamarosan újra előjön.' : 'Következő ismétlés: ' + describeDue(card, now) + '.';
+  let msg = v === 'again' ? ((old && old.interval >= 1) ? `Nem ment: néhány mondat múlva újra előjön (utána ${card.relearnTo > 1 ? card.relearnTo + ' nap múlva' : 'holnap'} tér vissza).` : 'Nem ment: néhány mondat múlva újra előjön.') : v === 'hard' && card.interval < 1 ? 'Nehéz: hamarosan újra előjön.' : 'Következő ismétlés: ' + describeDue(card, now) + (speed === 'fast' ? ' (gyorsan ment – kicsit később jön újra)' : speed === 'slow' ? ' (lassan jött elő – kicsit hamarabb jön újra)' : '') + '.';
+  if (!wasLeech && isLeech(card)) {
+    let added = 0; try { added = bvAdd([{ slug: it.slug, n: it.n, hu: it.hu, it: it.it }]).added; } catch {}
+    msg = `🔁 Ez a mondat már ${Math.max(card.againN || 0, card.lapses || 0)}× nem ment – ` + (added ? 'átkerült a 📌 Bevésésbe célzott gyakorlásra (a szigetben is megmarad), és kiemelve látod a 🎯 Focusban.' : 'kiemelve látod a 🎯 Focusban; a 📌 Bevésésben már ott van.');
+  }
   advance();
   if (sess && !$('study').classList.contains('hidden')) $('status').textContent = msg;
 }
@@ -2101,8 +2130,8 @@ async function startDailyAll() {
 // ============================================================
 function hardItems() {
   const out = [];
-  for (const slug of allProgSlugs()) for (const [k, c] of Object.entries(getProg(slug).cards)) if (isHard(c)) out.push({ slug, k, hu: c.hu, it: c.it, n: c.n, ease: c.ease, lapses: c.lapses || 0 });
-  out.sort((a, b) => (a.ease - b.ease) || (b.lapses - a.lapses));
+  for (const slug of allProgSlugs()) for (const [k, c] of Object.entries(getProg(slug).cards)) if (isHard(c)) out.push({ slug, k, hu: c.hu, it: c.it, n: c.n, ease: c.ease, lapses: c.lapses || 0, againN: c.againN || 0, leech: isLeech(c) });
+  out.sort((a, b) => (b.leech - a.leech) || (a.ease - b.ease) || (b.lapses - a.lapses));
   return out;
 }
 function hardPracticeButton(label, items, title) {
@@ -2116,7 +2145,7 @@ function hardPracticeButton(label, items, title) {
 function hardRow(h) {
   const d = document.createElement('div'); d.className = 'hard';
   const a = document.createElement('div'); a.textContent = h.hu + ' – ' + h.it;
-  const b = document.createElement('div'); b.className = 'muted'; b.textContent = niceName(h.slug) + ' · ' + h.n + '. mondat';
+  const b = document.createElement('div'); b.className = 'muted'; b.textContent = (h.leech ? `🔁 makacs mondat (${Math.max(h.againN, h.lapses)}× nem ment) · ` : '') + niceName(h.slug) + ' · ' + h.n + '. mondat';
   const dismiss = document.createElement('button'); dismiss.className = 'alt'; dismiss.textContent = 'Eltávolítás a nehéz mondatokból';
   dismiss.onclick = () => {
     const prog = getProg(h.slug), card = prog.cards[h.k];
@@ -2555,7 +2584,17 @@ $('hardPractice').onclick = async () => {
   if (!ok) $('hardStatus').textContent = 'Nincs nehéz mondat.';
 };
 $('load').onclick = () => loadFromFiles().catch(e => { $('status').textContent = e.message; });
-$('show').onclick = () => { stopHandsFree(); revealAnswer(true); };
+$('show').onclick = () => {
+  stopHandsFree();
+  if (sess && sess.rtPos !== sess.pos && !$('typeMode').checked && !$('dictMode').checked && sess.shownAt) { sess.rt = (Date.now() - sess.shownAt) / 1000; sess.rtPos = sess.pos; }
+  revealAnswer(true); if (sess && sess.rated) updateRateLabels();
+};
+function rateCtx() { const it = sess && sess.items[sess.pos]; return { rt: sess && sess.rtPos === sess.pos ? sess.rt : 0, it: it && it.it }; }
+function updateRateLabels() {
+  if (!sess || !sess.items[sess.pos]) return;
+  const it = sess.items[sess.pos], now = Date.now(), old = getProg(it.slug).cards[it.k], ctx = rateCtx();
+  document.querySelectorAll('[data-rate]').forEach(b => { b.querySelector('small').textContent = describeDue(schedule(old, b.dataset.rate, now, ctx).card, now); });
+}
 $('hideAnswer').onclick = () => { $('answrap').classList.add('hidden'); $('show').classList.remove('hidden'); };
 $('qAudio').onclick = () => play(qLang());
 $('aAudio').onclick = () => play(aLang(), $('hfRepeat').checked);
