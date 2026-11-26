@@ -268,6 +268,23 @@ body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
 .cc-bar label,.cc-legend-line label{display:inline-flex;align-items:center;gap:5px}
 .cc-legend-line{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:0 0 8px}
 #ccFix textarea{width:100%;box-sizing:border-box;min-height:90px;font-size:.9rem}
+/* V57: ráhangolódás */
+#wuCard{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;background:linear-gradient(135deg,#fff6e8,#eef8fb);border:1px solid #f3d9b0;border-radius:14px;padding:10px 12px;margin:6px 0 10px}
+#wuCard.done{background:#eefaf2;border-color:#bfe5cc}
+#wuOv{position:fixed;inset:0;z-index:9999;background:#f8fbfc;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;overflow:auto}
+#wuOv.hidden{display:none}
+#wuIn{width:100%;max-width:520px;text-align:center}
+#wuIn h3{margin:0 0 6px}
+#wuIn .wu-opts{text-align:left;display:inline-block;margin:8px 0}
+#wuIn .wu-opts label{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+.wu-time{font-size:.9rem;color:#52606d;margin:4px 0 10px}
+.wu-breath{width:220px;height:220px;margin:18px auto;position:relative;display:flex;align-items:center;justify-content:center}
+.wu-breath i{position:absolute;inset:0;margin:auto;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,#8fd3e8,#127f8c);opacity:.85}
+.wu-breath b{position:relative;font-size:1.15rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+.wu-field{position:relative;height:200px;margin:14px 0;border-radius:16px;background:#f2f6f8;overflow:hidden}
+.wu-dot{position:absolute;top:50%;width:46px;height:46px;margin-top:-23px;border-radius:50%;transition:left .08s linear,background-color .08s linear}
+.wu-q{font-size:1.25rem;font-weight:600;margin:14px 0}
+.wu-a{font-size:1.3rem;font-weight:700;color:#127f8c;margin:10px 0}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -275,7 +292,7 @@ body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>IT</b> Italiano</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">V56</span>
+ <span class="ver" title="Programverzió">V57</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">IL PIANO</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -326,7 +343,7 @@ body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
   <label class="muted">Értékelés <select id="hfRate"><option value="wait">a válasz után vár, amíg koppintok (ajánlott)</option><option value="auto">5 mp-ig vár, utána magától „Jól ment”</option><option value="none">nincs – csak hallgatás, a haladás NEM mentődik</option></select></label></div>
 <details class="help" style="margin-top:10px"><summary>A gyakorlóképernyő használata</summary>
 <ol><li>Nézd meg a kérdést, és <b>mondd ki hangosan</b> a választ – csak utána nyomd meg a „Válasz felfedése” gombot.</li><li>Hasonlítsd össze, és <b>értékelj őszintén</b>: ha gondolkodni kellett, az „Nehéz”.</li></ol>
-<h4>Eszközök – mikor melyiket?</h4><ul><li>🔊 <b>Hangok:</b> a kérdés és a válasz meghallgatása.</li><li>📌 <b>Bevésésre:</b> fontos vagy makacs mondat – a 📌 fülön lépésenként rögzíted (a szigetben is megmarad).</li><li>🧠 <b>Szótanulóba:</b> ha csak egy-egy szó nem megy – ott emlékeztetőt kaphat.</li><li>🎙 <b>Felvétel → Saját + eredeti:</b> egymás után hallod a saját hangodat és az eredetit; a dallamot és a tempót így tudod összevetni.</li><li>🗣️ <b>Kiejtés-ellenőrzés:</b> mondd ki az idegen nyelvű mondatot – a telefon leírja, mit értett belőle. A zöld szavakat felismerte, a pirosakat nem: azokat hallgasd meg újra, és mondd utána. Ez érthetőséget mér, nem hangonkénti kiejtést.</li><li>🔔 <b>Napi emlékeztető</b> (⚙️ fül): értesítést küld a telefonra, amíg nincs meg a napi cél – kedves, poénos vagy szigorú hangnemben.</li><li>📌 <b>Bevéséses tanulás</b> (⚙️ → Mód): az új mondatoknál az app lépésenként végigvezet, a körkérdezés pedig visszakérdezi őket.</li><li>🎧 <b>Kézmentes mód:</b> autóban, kertben – kérdés, szünet (mondd ki), válasz; a „kétszer mondja” a beívódást segíti.</li></ul></details>
+<h4>Eszközök – mikor melyiket?</h4><ul><li>🔊 <b>Hangok:</b> a kérdés és a válasz meghallgatása.</li><li>📌 <b>Bevésésre:</b> fontos vagy makacs mondat – a 📌 fülön lépésenként rögzíted (a szigetben is megmarad).</li><li>🧠 <b>Szótanulóba:</b> ha csak egy-egy szó nem megy – ott emlékeztetőt kaphat.</li><li>🎙 <b>Felvétel → Saját + eredeti:</b> egymás után hallod a saját hangodat és az eredetit; a dallamot és a tempót így tudod összevetni.</li><li>🗣️ <b>Kiejtés-ellenőrzés:</b> mondd ki az idegen nyelvű mondatot – a telefon leírja, mit értett belőle. A zöld szavakat felismerte, a pirosakat nem: azokat hallgasd meg újra, és mondd utána. Ez érthetőséget mér, nem hangonkénti kiejtést.</li><li>🌅 <b>Ráhangolódás</b> (a terv tetején): 2 perc a tanulás elején – légzés, bal–jobb ébresztő (kísérleti), és 5 tegnapi mondat felidézése. Kérésre minden tanulás előtt felajánlja (naponta egyszer).</li><li>🔔 <b>Napi emlékeztető</b> (⚙️ fül): értesítést küld a telefonra, amíg nincs meg a napi cél – kedves, poénos vagy szigorú hangnemben.</li><li>📌 <b>Bevéséses tanulás</b> (⚙️ → Mód): az új mondatoknál az app lépésenként végigvezet, a körkérdezés pedig visszakérdezi őket.</li><li>🎧 <b>Kézmentes mód:</b> autóban, kertben – kérdés, szünet (mondd ki), válasz; a „kétszer mondja” a beívódást segíti.</li></ul></details>
 </section>
 
 <section data-tab="terv" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> A mai teendőid a beállított szinted, célod és időkereted alapján – abban a sorrendben, ahogy a memória a legjobban rögzít. <b>Miért?</b> Nem kell gondolkodnod, mit csinálj: csak haladj fentről lefelé.</p>
@@ -336,6 +353,7 @@ body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
 <section data-tab="terv" class="box" id="planBox"><h3>A mai terv</h3>
  <div class="plan-head"><div class="plan-day" id="planDay"></div><div class="muted" id="planSum"></div></div>
  <div class="plan-prog"><i id="planBar"></i></div>
+ <div id="wuCard"><div><b>🌅 Ráhangolódás</b> <span class="muted" id="wuCardTxt">– 2 perc a tanulás elején: légzés, bal–jobb ébresztő, 5 mondat felidézése</span></div><button type="button" id="wuOpen">🌅 Indítom</button></div>
  <div id="planList"></div>
  <p class="muted" id="planNote"></p>
  <details id="planSet" style="margin-top:10px"><summary>🎯 Célom és időbeosztásom (minden állítható)</summary>
@@ -1706,8 +1724,9 @@ function practiceEnd() {
   }
   sess = null;
 }
-function startSession(mode) {
+function startSession(mode, noWu) {
   if (!current) return;
+  if (!noWu && wuMaybeOffer(() => startSession(mode, true))) return;
   const { slug, pairs } = current;
   if (mode === 'practice') return startPractice(slug, pairs, '');
   if (mode === 'due' || mode === 'drill') {
@@ -5207,6 +5226,125 @@ function ccApplyText() {
   ccApplyBody();
 })();
 
+
+// ============================================================
+// 🌅 RÁHANGOLÓDÁS – 2 perc a tanulás elején
+// ============================================================
+const WU_SET = 'nyelvisziget-wuset', WU_DONE = 'nyelvisziget-wudone', WU_SKIP = 'nyelvisziget-wuskip';
+let wuSet = { breath: true, bil: true, sound: true, recall: true, offer: false, ...loadJSON(WU_SET, {}) };
+let wuTimers = [], wuAudio = null, wuAfter = null;
+function wuClear() { wuTimers.forEach(t => { clearTimeout(t); clearInterval(t); }); wuTimers = []; }
+const wuT = (f, ms) => { const t = setTimeout(f, ms); wuTimers.push(t); return t; };
+const wuI = (f, ms) => { const t = setInterval(f, ms); wuTimers.push(t); return t; };
+function wuDoneToday() { try { return localStorage.getItem(WU_DONE) === studyDay(); } catch { return false; } }
+function wuCard() {
+  const c = $('wuCard'); if (!c) return; const done = wuDoneToday();
+  c.classList.toggle('done', done);
+  $('wuCardTxt').textContent = done ? '– ma már megvolt ✅ (bármikor megismételheted)' : '– 2 perc a tanulás elején: légzés, bal–jobb ébresztő, 5 mondat felidézése';
+  $('wuOpen').textContent = done ? '🌅 Még egyszer' : '🌅 Indítom';
+}
+// a felidézéshez: tegnapi új → ma átvett → nehéz → bármely tanult mondat
+function wuItems() {
+  const pick = l => uniqItems(l).filter(x => x.hu && x.it);
+  let l = []; try { l = pick(newOn(studyDay(Date.now() - 864e5), false)); } catch {}
+  if (l.length < 5) try { l = l.concat(pick(reviewedToday(false))); } catch {}
+  if (l.length < 5) try { l = l.concat(pick(hardItems())); } catch {}
+  if (l.length < 5) try { for (const slug of allProgSlugs()) for (const c of Object.values(getProg(slug).cards)) if (c && c.reps && c.hu && c.it) l.push({ slug, n: c.n, hu: c.hu, it: c.it }); } catch {}
+  const seen = new Set(), out = [];
+  for (const x of bvShuffle(l)) { const k = x.slug + '|' + x.n; if (seen.has(k)) continue; seen.add(k); out.push(x); if (out.length >= 5) break; }
+  return out;
+}
+function wuOpen(after) {
+  wuAfter = typeof after === 'function' ? after : null;
+  try { if (typeof stopActiveAudio === 'function') stopActiveAudio(); } catch {}
+  $('wuOv').classList.remove('hidden'); document.body.style.overflow = 'hidden';
+  const ck = (k, t, sub) => `<label><input type="checkbox" data-k="${k}"${wuSet[k] ? ' checked' : ''}><span>${t}${sub ? `<br><small class="muted">${sub}</small>` : ''}</span></label>`;
+  $('wuIn').innerHTML = `<h3>🌅 Ráhangolódás</h3><p class="muted">Kb. 2 perc. Ülj kényelmesen, ha van, tedd fel a fülhallgatót.</p>
+    <div class="wu-opts">${ck('breath', '🫁 Légzés – 30 mp', 'lassan be (4 mp), lassan ki (6 mp) – lenyugtat, összeszed')}${ck('bil', '↔️ Bal–jobb ébresztő – 30 mp <i>(kísérleti)</i>', 'szemmel követed a balra-jobbra ugráló pöttyöt; a hatása nem biztos, de nem árt')}${ck('sound', '🔊 Hang is a bal–jobb részhez', 'halk kattanás felváltva bal és jobb fülben')}${ck('recall', '🧠 Bemelegítő felidézés – 5 mondat', `magyarul látod, ${'olaszul'} kimondod, aztán meghallod – ez hat a legbiztosabban`)}${ck('offer', '⏰ Minden tanulás előtt ajánlja fel (naponta egyszer)', '')}</div>
+    <div class="center"><button type="button" id="wuGo">▶ Kezdés</button><button type="button" class="alt" id="wuX">Most nem</button></div>`;
+  $('wuIn').querySelectorAll('[data-k]').forEach(c => c.onchange = () => { wuSet[c.dataset.k] = c.checked; saveJSON(WU_SET, wuSet); });
+  $('wuGo').onclick = () => { wuAudioInit(); try { bvUnlock(); } catch {} wuRun(); };
+  $('wuX').onclick = () => { try { localStorage.setItem(WU_SKIP, studyDay()); } catch {} wuClose(true); };
+}
+function wuClose(runAfter) {
+  wuClear(); try { bvStopAudio(); } catch {}
+  $('wuOv').classList.add('hidden'); document.body.style.overflow = ''; wuCard();
+  const f = wuAfter; wuAfter = null; if (runAfter && f) f();
+}
+function wuAudioInit() { try { if (!wuAudio) wuAudio = new (window.AudioContext || window.webkitAudioContext)(); if (wuAudio.state === 'suspended') wuAudio.resume(); } catch { wuAudio = null; } }
+function wuClick(side) {
+  if (!wuAudio || !wuSet.sound) return;
+  try {
+    const t = wuAudio.currentTime, o = wuAudio.createOscillator(), g = wuAudio.createGain(), pn = wuAudio.createStereoPanner ? wuAudio.createStereoPanner() : null;
+    o.frequency.value = side < 0 ? 520 : 620; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.09, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0008, t + 0.12);
+    o.connect(g); if (pn) { pn.pan.value = side; g.connect(pn); pn.connect(wuAudio.destination); } else g.connect(wuAudio.destination);
+    o.start(t); o.stop(t + 0.14);
+  } catch {}
+}
+function wuSkipBtn(next) { return `<div class="center" style="margin-top:8px"><button type="button" class="alt" id="wuNext">Tovább →</button><button type="button" class="alt" id="wuStop">Befejezés</button></div>`; }
+function wuWire(next) { $('wuNext').onclick = () => { wuClear(); next(); }; $('wuStop').onclick = () => wuClose(false); }
+function wuRun() {
+  const steps = [];
+  if (wuSet.breath) steps.push(wuBreath);
+  if (wuSet.bil) steps.push(wuBil);
+  if (wuSet.recall) steps.push(wuRecall);
+  let k = 0; const next = () => { wuClear(); if (k < steps.length) steps[k++](next); else wuEnd(); };
+  next();
+}
+function wuBreath(next) {
+  $('wuIn').innerHTML = `<h3>🫁 Légzés</h3><p class="wu-time" id="wuLeft">30 mp</p><div class="wu-breath"><i id="wuCirc"></i><b id="wuBT">Belégzés…</b></div><p class="muted">Orron be, amíg a kör nő – szájon lassan ki, amíg zsugorodik.</p>` + wuSkipBtn();
+  wuWire(next);
+  const c = $('wuCirc'); let left = 30;
+  const cycle = () => { if (!c.isConnected) return; $('wuBT').textContent = 'Belégzés…'; c.style.transition = 'width 4s ease-in-out,height 4s ease-in-out'; c.style.width = c.style.height = '210px';
+    wuT(() => { if (!c.isConnected) return; $('wuBT').textContent = 'Kilégzés…'; c.style.transition = 'width 6s ease-in-out,height 6s ease-in-out'; c.style.width = c.style.height = '70px'; }, 4000); };
+  wuT(cycle, 60); wuI(cycle, 10000);
+  wuI(() => { left--; if ($('wuLeft')) $('wuLeft').textContent = left + ' mp'; if (left <= 0) next(); }, 1000);
+}
+function wuBil(next) {
+  $('wuIn').innerHTML = `<h3>↔️ Bal–jobb ébresztő</h3><p class="wu-time" id="wuLeft">30 mp</p><div class="wu-field"><div class="wu-dot" id="wuDot"></div></div><p class="muted">A fejed maradjon egy helyben – csak a szemeddel kövesd a pöttyöt.</p>` + wuSkipBtn();
+  wuWire(next);
+  const cols = ['#ff7a59', '#127f8c', '#8a3fc7', '#178a43', '#d06a00', '#1d5fd1'];
+  let side = -1, n = 0, left = 30;
+  const jump = () => { const dot = $('wuDot'); if (!dot) return; side = -side; n++; dot.style.left = side < 0 ? '4%' : 'calc(96% - 46px)'; dot.style.backgroundColor = cols[n % cols.length]; wuClick(side); };
+  jump(); wuI(jump, 500);
+  wuI(() => { left--; if ($('wuLeft')) $('wuLeft').textContent = left + ' mp'; if (left <= 0) next(); }, 1000);
+}
+function wuRecall(next) {
+  const items = wuItems();
+  if (!items.length) { $('wuIn').innerHTML = `<h3>🧠 Bemelegítő felidézés</h3><p>Még nincs tanult mondatod – ez a rész majd a tanulás után működik.</p><div class="center"><button type="button" id="wuNext">Tovább →</button></div>`; $('wuNext').onclick = next; return; }
+  let i = 0, ok = 0;
+  const show = () => {
+    if (i >= items.length) { wuRecallScore = { ok, n: items.length }; next(); return; }
+    const x = items[i];
+    $('wuIn').innerHTML = `<h3>🧠 Bemelegítő felidézés</h3><p class="wu-time">${i + 1} / ${items.length}</p><div class="wu-q">${bvEsc(x.hu)}</div><p class="muted">Mondd ki ${'olaszul'} – hangosan, egész mondatban.</p><div class="center"><button type="button" id="wuRev">Kimondtam – mutasd</button></div><div class="center" style="margin-top:8px"><button type="button" class="alt" id="wuStop">Befejezés</button></div>`;
+    $('wuStop').onclick = () => wuClose(false);
+    $('wuRev').onclick = async () => {
+      $('wuIn').innerHTML = `<h3>🧠 Bemelegítő felidézés</h3><p class="wu-time">${i + 1} / ${items.length}</p><div class="wu-q">${bvEsc(x.hu)}</div><div class="wu-a">${typeof ccH === 'function' ? ccH(x.it) : bvEsc(x.it)}</div><div class="center"><button type="button" class="alt" id="wuSnd">🔊</button></div><p><b>Sikerült?</b></p><div class="center"><button type="button" id="wuOk">✅ Ment</button><button type="button" class="alt" id="wuNo">❌ Nem ment</button></div>`;
+      $('wuSnd').onclick = () => bvPlay(x, 'it', 1);
+      $('wuOk').onclick = () => { ok++; i++; show(); };
+      $('wuNo').onclick = () => { i++; show(); };
+      try { await bvPlay(x, 'it', 1); } catch {}
+    };
+  };
+  show();
+}
+let wuRecallScore = null;
+function wuEnd() {
+  try { localStorage.setItem(WU_DONE, studyDay()); } catch {}
+  const sc = wuRecallScore; wuRecallScore = null;
+  $('wuIn').innerHTML = `<h3>✅ Ráhangolódva!</h3>${sc ? `<p>A felidézésből ${sc.ok} / ${sc.n} ment. ${sc.ok === sc.n ? 'Kiváló kezdés!' : 'Ami nem ment, az ma úgyis előjön az ismétlésekben.'}</p>` : ''}<p class="muted">Az agy most „nyelvi üzemmódban” van – ez a legjobb pillanat a tanulásra.</p>
+    <div class="center"><button type="button" id="wuGoOn">${wuAfter ? '▶ Folytatás a tanulással' : '▶ Irány a mai terv'}</button><button type="button" class="alt" id="wuCl">Bezárás</button></div>`;
+  $('wuGoOn').onclick = () => { const had = !!wuAfter; wuClose(true); if (!had) try { showTab('terv'); window.scrollTo({ top: 0, behavior: 'smooth' }); } catch {} };
+  $('wuCl').onclick = () => wuClose(false);
+}
+// „Minden tanulás előtt ajánlja fel”: naponta egyszer, ha még nem volt és nem utasítottad el
+function wuMaybeOffer(resume) {
+  if (!wuSet.offer || wuDoneToday()) return false;
+  try { if (localStorage.getItem(WU_SKIP) === studyDay()) return false; } catch {}
+  wuOpen(resume); return true;
+}
+(() => { if ($('wuOpen')) $('wuOpen').onclick = () => wuOpen(null); wuCard(); })();
+
 // ============================================================
 // INDÍTÁS
 // ============================================================
@@ -5218,7 +5356,7 @@ function ccApplyText() {
     document.querySelectorAll('main section[data-tab]').forEach(sec => sec.classList.toggle('tabhide', sec.dataset.tab !== t));
     try { localStorage.setItem('nyelvisziget-tab', t); } catch {}
     if (t === 'szavak') try { brFillDecks(); } catch {}
-    if (t === 'terv') try { renderPlan(); } catch {}
+    if (t === 'terv') try { renderPlan(); wuCard(); } catch {}
     if (t !== 'beves') try { if (bvRunState) bvStopAudio(); } catch {}
     if (t === 'beves') try { bvRender(); } catch {}
     if (t !== 'beszelj') try { if (srActive) srStop(); } catch {}
@@ -5269,5 +5407,6 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
 window.__nyelvisziget = { schedule, studyDay, dueAfterDays, parse, getProg, stats: () => stats, flushNow: flush };
 })();
 </script>
+<div id="wuOv" class="hidden" role="dialog" aria-modal="true" aria-label="Ráhangolódás"><div id="wuIn"></div></div>
 </body>
 </html>
