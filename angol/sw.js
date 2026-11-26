@@ -1,6 +1,6 @@
 // Sayback Island – angol – service worker
 // Angol V7: az A2 mindkét mappája kész.
-const CACHE = 'angolsziget-v32-1';
+const CACHE = 'angolsziget-v33-1';
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
