@@ -250,6 +250,24 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 #wrRun .wr-bar{height:6px;border-radius:4px;background:#e3edf1;margin:4px 0 10px;overflow:hidden}#wrRun .wr-bar i{display:block;height:100%;background:var(--coral)}
 #wrRun .wr-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
 .wr-again{display:flex;justify-content:center}
+/* V56: színkódolás */
+body.cc-on .cc-w.cc-V{color:#1d5fd1;font-weight:700}
+body.cc-on .cc-w.cc-V .cc-e{color:#0a3685;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+body.cc-on .cc-w.cc-A{color:#178a43;font-weight:700}
+body.cc-on .cc-w.cc-P{color:#d06a00;font-weight:700}
+body.cc-on .cc-w.cc-R{color:#8a3fc7;font-weight:700}
+body.cc-on .cc-w.cc-n{color:#243b53}
+.cc-e{font-weight:inherit}
+.cc-legend{display:none;font-size:.85rem;gap:8px;flex-wrap:wrap}
+.cc-legend .cc-V{color:#1d5fd1;font-weight:700}.cc-legend .cc-A{color:#178a43;font-weight:700}.cc-legend .cc-P{color:#d06a00;font-weight:700}.cc-legend .cc-R{color:#8a3fc7;font-weight:700}
+body.cc-on .cc-legend{display:inline-flex}
+.cc-only,.cc-line{display:none}
+body.cc-on .cc-only{display:inline-block}body.cc-on .cc-line{display:block;margin-top:4px}
+body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
+.cc-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;justify-content:center;margin:2px 0 6px;font-size:.9rem}
+.cc-bar label,.cc-legend-line label{display:inline-flex;align-items:center;gap:5px}
+.cc-legend-line{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:0 0 8px}
+#ccFix textarea{width:100%;box-sizing:border-box;min-height:90px;font-size:.9rem}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -257,7 +275,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>EN</b> English</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">EN V33</span>
+ <span class="ver" title="Programverzió">EN V34</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">GAME PLAN</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -277,6 +295,12 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <section id="study" class="box hidden">
  <div class="muted studyhead"><span id="island"></span> · <span id="count"></span></div>
  <div id="drillBox"></div>
+ <div class="cc-bar" id="ccBar"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">■ ige</span> <span class="cc-A">■ névelő</span> <span class="cc-P">■ elöljáró</span> <span class="cc-R">■ névmás</span></span><label class="cc-only"><input type="checkbox" id="ccEdit"> ✏️ javítás koppintással</label><button type="button" class="alt cc-only" id="ccFixBtn">🎨 Pontosítás a Claude-dal</button></div>
+ <div id="ccFix" class="hidden box" style="margin:4px 0 8px;padding:10px"><p class="muted" style="margin:0 0 6px">A színezést az app magától készíti – ez nagyjából 9 szóból 8-at talál el. Ha pontosra szeretnéd: ① „Kérés másolása” → ② illeszd be egy új Claude-beszélgetésbe → ③ a teljes választ másold vissza ide → ④ „Feldolgozás”. Ezt elég szigetenként egyszer megcsinálni, utána az app megjegyzi. Egy-egy szót kézzel is átállíthatsz: kapcsold be a „✏️ javítás koppintással” lehetőséget, és koppints a szóra (ige → névelő → elöljáró → névmás → semmi).</p>
+  <div class="center"><button type="button" id="ccCopy">📋 Kérés másolása (ez a sziget)</button></div>
+  <textarea id="ccIn" placeholder="Ide másold vissza a Claude teljes válaszát…"></textarea>
+  <div class="center"><button type="button" id="ccApply">Feldolgozás</button><button type="button" class="alt" id="ccReset">Az automatikus színezés visszaállítása</button></div>
+  <p class="muted" id="ccStatus" style="margin:4px 0 0"></p></div>
  <div class="prompt" id="question"></div>
  <div id="typeBox" class="hidden center"><textarea id="typeInput" class="grow" rows="2" placeholder="Írd be a választ…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"></textarea><button id="typeCheck">Ellenőrzés</button><div id="typeResult"></div></div>
  <div class="center"><button class="alt" id="qAudio">🔊 Kérdés hangja</button><button id="show">Válasz felfedése</button></div>
@@ -425,6 +449,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
  <div class="row">
   <label>Bip a szünetben (figyelmeztet, hogy jön a válasz)<br><select id="mixBip" class="move" style="margin:0;width:100%"><option value="off">nincs bip</option><option value="0.05">a szünet elején – „te jössz”</option><option value="0.65" selected>a szünet 65%-ánál (mint a Sayback-programban)</option><option value="end1">1 mp-cel a válasz előtt</option></select></label>
   <label>Hullámzás az angol mondatnál (fülhallgatóval)<br><select id="mixWave" class="move" style="margin:0;width:100%"><option value="off">nincs</option><option value="0.5">enyhe</option><option value="0.82" selected>normál (mint a Sayback-programban)</option><option value="strong">erős: bal–jobb oda-vissza</option><option value="random">🎲 kiszámíthatatlan: mindig máshol és máskor mozdul</option></select></label>
+  <label>Magyar hang a térben (fülhallgatóval)<br><select id="mixHuSpace" class="move" style="margin:0;width:100%"><option value="center">középről (mint eddig)</option><option value="orbit">🌀 körbejárás – lassan körbemegy a fejed körül</option></select></label>
  </div>
  <div class="row">
   <label>Magyar hang sebessége: <strong id="mixHuVal">100%</strong><br><input id="mixHu" type="range" min="0.6" max="1.3" step="0.05" value="1"></label>
@@ -452,6 +477,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <section data-tab="nehez" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Azok a mondatok az összes szigetből, amiket az utóbbi időben többször „Nem ment” vagy „Nehéz” értékeléssel jelöltél. <b>Miért?</b> Ez a kevés mondat okozza a legtöbb felejtést – célzott munkával gyorsan rendbe jön.</p>
 <h4>Ajánlott sorrend</h4><ol><li>Hetente 1–2× <b>„Nehéz mondatok gyakorlása”</b>.</li><li>Ha egy mondat egész szerkezete nem megy: <b>„📌 Mind bevésésre”</b> – a Bevésés a legerősebb módszer.</li><li>Ha csak egy-egy szó a gond: <b>„🧠 Mind a szótanulóba”</b>, és ott kérj hozzá emlékeztetőt.</li></ol><p>A mondatok mindkét esetben a szigetükben is megmaradnak.</p></details></section>
 <section data-tab="nehez" class="box"><h3>Nehéz mondataim</h3>
+ <p class="cc-legend-line"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">■ ige</span> <span class="cc-A">■ névelő</span> <span class="cc-P">■ elöljáró</span> <span class="cc-R">■ névmás</span></span></p>
  <p class="muted">Amiket a legutóbbi ismétléseknél többször „Nem ment” vagy „Nehéz” értékeléssel jelöltél, az összes szigetből.</p>
  <button id="hardRefresh" class="alt">Lista frissítése</button><button id="hardPractice">Nehéz mondatok gyakorlása</button><button id="hardToVocab" class="alt">🧠 Mind a szótanulóba</button><button id="hardToBeves" class="alt">📌 Mind bevésésre</button>
  <p id="hardStatus" class="muted"></p><div id="hardList"></div>
@@ -460,6 +486,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <section data-tab="beves" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> A kijelölt, fontos vagy makacs mondatok lépésenkénti rögzítése, utána pontos menetrend szerinti ismétlése. <b>Miért?</b> Ez a legerősebb módszer: többféle előhívás, leírás, emlékeztető és körkérdezés – ettől marad meg másnap is.</p>
 <h4>Ajánlott sorrend</h4><ol><li>Gyakorlás közben jelölj ki mondatot a <b>„📌 Bevésésre”</b> gombbal (napi 5–7 elég).</li><li>Délután itt: <b>„Következő új mondat bevésése”</b> – végigvezet a 7 lépésen.</li><li>2–3 mondatonként és a végén: <b>„🔁 Körkérdezés”</b>.</li><li>Ha a 📌 fülön szám jelenik meg, esedékes ismétlés van – főleg az <b>esti (lefekvés előtt)</b> és a <b>másnap reggeli</b> fontos.</li></ol><p>A részletes menetrend lent, a „📋 A pontos menetrend” résznél van.</p></details></section>
 <section data-tab="beves" class="box" id="bvBox"><h3>📌 Bevésés</h3>
+ <p class="cc-legend-line"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">■ ige</span> <span class="cc-A">■ névelő</span> <span class="cc-P">■ elöljáró</span> <span class="cc-R">■ névmás</span></span></p>
  <p class="muted">Ide kerülnek a szigetekből kijelölt mondatok (a szigetben is megmaradnak). Itt lépésről lépésre bevésed őket, utána az app a menetrend szerint visszahozza.</p>
  <div id="bvSum"></div>
  <div class="center"><button id="bvDueBtn">▶ Esedékes ismétlések</button><button id="bvKorBtn">🔁 Körkérdezés</button><button id="bvNewBtn" class="alt">▶ Következő új mondat bevésése</button></div>
@@ -506,6 +533,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <h4>Így használd</h4><ol><li><b>Miből?</b> – ma esedékes ismétlések, ma / tegnap tanult új mondatok, nehéz mondatok, a 📌 Bevésés mondatai, a korábban írásban elrontottak, vagy szigetek / mappák pipálva.</li><li><b>Miből írod le?</b> – 🇭🇺 magyarból (fordítás) · 🎧 csak hallás után (diktálás, magyar nélkül) · 🎧 + 🇭🇺 hallás után a jelentéssel · 🧩 hiányos mondat (csak a hiányzó 1–3 szót írod be) · 🔀 vegyesen.</li><li>Hiba után a helyes megoldás <b>a beállított ideig</b> látszik (5–30 mp, vagy amíg az „Újra írom” gombra nem koppintasz), aztán újra leírod. A hibás mondatok a kör végén még egyszer visszajönnek.</li><li>💡 Segítség: először a kezdőbetűk, másodszorra a mondat eleje. 🔊 bármikor meghallgatható.</li><li>A kör végén az elrontott mondatokat egy gombbal a 📌 Bevésésbe teheted. Az app megjegyzi őket („Írásban korábban elrontott mondataim”).</li></ol>
 <h4>Az ismétlési rend</h4><p>Alapból az írás <b>nem változtat</b> az ismétlési időpontokon. Ha bekapcsolod az „Az esedékes mondatoknál számítson ismétlésnek” kapcsolót, akkor a ma esedékes mondatoknál az <b>első</b> próbálkozás számít: hibátlan (vagy csak ékezet tér el) = „Jól ment”, kis hiba (70% felett) vagy segítséggel = „Nehéz”, hibás = „Nem ment”. A nem esedékes mondatokat ilyenkor sem érinti.</p></details></section>
 <section data-tab="scrivi" class="box" id="wrBox"><h3>✍️ Írásgyakorlás</h3>
+ <p class="cc-legend-line"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">■ ige</span> <span class="cc-A">■ névelő</span> <span class="cc-P">■ elöljáró</span> <span class="cc-R">■ névmás</span></span></p>
  <div id="wrSetup">
   <div class="row">
    <label>Miből?<br><select id="wrSrc" class="move" style="margin:0;width:100%"><option value="daily">Ma esedékes ismétlések</option><option value="today_done">A ma már átvett mondatok</option><option value="new_today">A ma tanult új mondatok</option><option value="new_yesterday">A tegnap tanult új mondatok</option><option value="hard">Nehéz mondataim (🎯 Focus)</option><option value="beves">A 📌 Bevésés mondatai</option><option value="wrong">Írásban korábban elrontott mondataim</option><option value="current">A megnyitott sziget</option><option value="multi">Szigetek / mappák – én választom ki</option></select></label>
@@ -696,6 +724,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
   <label>Új mondat naponta<br><input id="newLimit" type="number" min="0" max="100" value="10" style="width:90px;padding:8px"></label>
  </div>
  <label class="muted"><input type="checkbox" id="autoAnswer" checked> A válasz felfedésekor szólaljon meg a válasz hangja</label><br>
+ <label class="muted"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás – az angol mondatokban más színű az ige (a végződése aláhúzva), a névelő, az elöljárószó és a névmás</label><br>
  <label class="muted"><input type="checkbox" id="typeMode"> Gépelős mód – begépelem a választ, és a program ellenőrzi (minden módban működik)</label><br>
  <label class="muted"><input type="checkbox" id="dictMode"> Diktálás – az angol mondatot csak hallom, és leírom (a szöveg rejtve marad)</label><br>
  <button id="load">Betöltés fájlból</button><button class="alt" id="clear">Haladás törlése (ez a sziget)</button>
@@ -1719,8 +1748,9 @@ function render() {
   document.querySelectorAll('#ratingArea .rate.suggest').forEach(b => b.classList.remove('suggest'));
   const it = sess.items[sess.pos];
   const dict = $('dictMode').checked;
-  $('question').textContent = dict ? '🎧 Hallgasd meg, és írd le angolul' : (it.dir === 'hu-it' ? it.hu : it.it);
-  $('answer').textContent = dict ? it.it : (it.dir === 'hu-it' ? it.it : it.hu);
+  ccSetEl($('question'), dict ? null : (it.dir === 'hu-it' ? null : it.it));
+  if (dict || it.dir === 'hu-it') $('question').textContent = dict ? '🎧 Hallgasd meg, és írd le angolul' : (it.dir === 'hu-it' ? it.hu : it.it);
+  if (dict || it.dir === 'hu-it') ccSetEl($('answer'), it.it); else $('answer').textContent = it.hu;
   { const mn = typeof brMnFor === 'function' ? brMnFor(it.hu, it.it) : ''; $('mnIsland').textContent = mn ? '🧠 ' + mn : ''; $('mnIsland').classList.toggle('hidden', !mn); }
   $('toVocabInfo').textContent = '';
   $('answrap').classList.add('hidden'); $('show').classList.remove('hidden');
@@ -2245,7 +2275,7 @@ function hardPracticeButton(label, items, title) {
 }
 function hardRow(h) {
   const d = document.createElement('div'); d.className = 'hard';
-  const a = document.createElement('div'); a.textContent = h.hu + ' – ' + h.it;
+  const a = document.createElement('div'); a.innerHTML = bvEsc(h.hu) + ' – ' + ccH(h.it);
   const b = document.createElement('div'); b.className = 'muted'; b.textContent = (h.leech ? `🔁 makacs mondat (${Math.max(h.againN, h.lapses)}× nem ment) · ` : '') + niceName(h.slug) + ' · ' + h.n + '. mondat';
   const dismiss = document.createElement('button'); dismiss.className = 'alt'; dismiss.textContent = 'Eltávolítás a nehéz mondatokból';
   dismiss.onclick = () => {
@@ -2531,14 +2561,14 @@ async function authAction(type) {
 // ============================================================
 // BEÁLLÍTÁSOK
 // ============================================================
-function saveSettings() { saveJSON('angolsziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, dictMode: $('dictMode').checked, mixSrc: $('mixSrc').value, mixDir: $('mixDir').value, mixPause: $('mixPause').value, mixReps: $('mixReps').value, mixGap: $('mixGap').value, mixHu: $('mixHu').value, mixIt: $('mixIt').value, mixBip: $('mixBip').value, mixShuffle: $('mixShuffle').checked, mixOrder: $('mixOrder').value, mixBack: $('mixBack').value, dailyGoal: $('dailyGoal').value, v18: true, mixWave: $('mixWave').value, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked, hfRate: $('hfRate').value, drillWrite: $('drillWrite').checked }); }
+function saveSettings() { saveJSON('angolsziget-settings', { direction: $('dir').value, mode: $('mode').value, l1Speed: $('l1Speed').value, l2Speed: $('l2Speed').value, newLimit: $('newLimit').value, autoAnswer: $('autoAnswer').checked, typeMode: $('typeMode').checked, dictMode: $('dictMode').checked, mixSrc: $('mixSrc').value, mixDir: $('mixDir').value, mixPause: $('mixPause').value, mixReps: $('mixReps').value, mixGap: $('mixGap').value, mixHu: $('mixHu').value, mixIt: $('mixIt').value, mixBip: $('mixBip').value, mixShuffle: $('mixShuffle').checked, mixOrder: $('mixOrder').value, mixBack: $('mixBack').value, dailyGoal: $('dailyGoal').value, v18: true, mixWave: $('mixWave').value, mixHuSpace: $('mixHuSpace').value, hfPause: $('hfPause').value, hfRepeat: $('hfRepeat').checked, hfRate: $('hfRate').value, drillWrite: $('drillWrite').checked }); }
 function loadSettings() {
   const s = loadJSON('angolsziget-settings', {});
   if (s.direction) $('dir').value = s.direction; if (s.mode) $('mode').value = s.mode;
   if (s.l1Speed) $('l1Speed').value = s.l1Speed; if (s.l2Speed) $('l2Speed').value = s.l2Speed;
   if (s.newLimit !== undefined) $('newLimit').value = s.newLimit; if (s.autoAnswer !== undefined) $('autoAnswer').checked = s.autoAnswer;
   if (s.typeMode !== undefined) $('typeMode').checked = s.typeMode; if (s.dictMode !== undefined) $('dictMode').checked = s.dictMode;
-  for (const k of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixHu', 'mixIt', 'mixBip', 'mixWave']) if (s[k] !== undefined) $(k).value = s[k]; if (s.mixSrc === 'daily' && !s.v18) $('mixSrc').value = 'daily_all'; if (s.mixShuffle !== undefined) $('mixShuffle').checked = s.mixShuffle; if (s.mixOrder) $('mixOrder').value = s.mixOrder; if (s.mixBack) $('mixBack').value = s.mixBack; if (s.dailyGoal) $('dailyGoal').value = s.dailyGoal; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat; if (s.hfRate) $('hfRate').value = s.hfRate; if (s.drillWrite !== undefined) $('drillWrite').checked = s.drillWrite;
+  for (const k of ['mixSrc', 'mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixHu', 'mixIt', 'mixBip', 'mixWave', 'mixHuSpace']) if (s[k] !== undefined) $(k).value = s[k]; if (s.mixSrc === 'daily' && !s.v18) $('mixSrc').value = 'daily_all'; if (s.mixShuffle !== undefined) $('mixShuffle').checked = s.mixShuffle; if (s.mixOrder) $('mixOrder').value = s.mixOrder; if (s.mixBack) $('mixBack').value = s.mixBack; if (s.dailyGoal) $('dailyGoal').value = s.dailyGoal; if (s.hfPause) $('hfPause').value = s.hfPause; if (s.hfRepeat !== undefined) $('hfRepeat').checked = s.hfRepeat; if (s.hfRate) $('hfRate').value = s.hfRate; if (s.drillWrite !== undefined) $('drillWrite').checked = s.drillWrite;
 }
 function updateSpeedLabels() { $('l1Val').textContent = Math.round($('l1Speed').value * 100) + '%'; $('l2Val').textContent = Math.round($('l2Speed').value * 100) + '%'; }
 function updateNet() { $('netStatus').textContent = online() ? '' : 'Nincs internet – offline mód. A haladás a készüléken mentődik, és később szinkronizálódik.'; }
@@ -3472,6 +3502,7 @@ function randPan() {
 // Térbeli helyzet (–1 bal … +1 jobb) a mondat t (0–1) pontjában – a Sayback-program mozgását követi
 function panAt(spec, t) {
   if (!spec) return 0;
+  if (spec.type === 'orbit') return 0.95 * Math.sin(spec.a0 + (spec.a1 - spec.a0) * t);
   if (spec.type === 'rand') {
     const S = spec.side, u = Math.max(0, Math.min(1, (t - spec.start) / spec.len));
     if (spec.shape === 'move') { if (t < spec.start || t > spec.start + spec.len) return 0; return u < 0.4 ? S * smooth(u / 0.4) : u < 0.6 ? S : S * (1 - smooth((u - 0.6) / 0.4)); } // középről ki és vissza
@@ -3565,7 +3596,10 @@ async function buildMix() {
     if (!items.length) throw new Error(/^hard/.test($('mixSrc').value) ? 'Nincs nehéz mondat.' : $('mixSrc').value === 'today_done' ? 'Ma még nem értékeltél mondatot.' : $('mixSrc').value === 'new_today' ? 'Ma még nem tanultál új mondatot.' : $('mixSrc').value === 'new_yesterday' ? 'Tegnapról nincs új mondat (a V23 előtt tanultakat a program nem tudja azonosítani).' : 'Nincs mondat ehhez a választáshoz.');
     const dir = $('mixDir').value, reps = Number($('mixReps').value) || 1, gap = Number($('mixGap').value) || 2;
     const huRate = Number($('mixHu').value) || 1, itRate = Number($('mixIt').value) || 1, pauseSel = $('mixPause').value;
-    const bipSel = $('mixBip').value, waveSel = $('mixWave').value, stereo = waveSel !== 'off', bip = makeBip();
+    const bipSel = $('mixBip').value, waveSel = $('mixWave').value, huOrbit = $('mixHuSpace').value === 'orbit', stereo = waveSel !== 'off' || huOrbit, bip = makeBip();
+    // magyar hang körbejárása: kb. 12 mp magyar beszéd alatt ér körbe; „mögötted” kicsit halkabb
+    let huAng = Math.random() * Math.PI * 2;
+    const huPan = x => { if (!huOrbit || !x) return null; const a0 = huAng; huAng += x.length / MIX_RATE * (2 * Math.PI / 12); return { type: 'orbit', a0, a1: huAng }; };
     const order = $('mixOrder').value, backMin = $('mixBack').value === 'off' ? 0 : Number($('mixBack').value);
     const shadow = order === 'shadow', shadowCut = $('shadowCut') ? $('shadowCut').value : 'off';
     const seq = order === 'seq' || shadow ? items.map((_, i) => ({ i, stage: 0 })) : pimsleurOrder(items.length, order === 'pim4' ? [1, 3, 13, 65] : [1, 3, 13]);
@@ -3584,7 +3618,7 @@ async function buildMix() {
       for (const { x, pan } of segs) {
         const m = x.length;
         if (!stereo) for (let i = 0; i < m; i++) L[off + i] = toI(x[i]);
-        else for (let i = 0; i < m; i++) { const p = pan ? panAt(pan, i / m) : 0, g = (p + 1) * Math.PI / 4; L[off + i] = toI(x[i] * Math.cos(g) * Math.SQRT2); R[off + i] = toI(x[i] * Math.sin(g) * Math.SQRT2); }
+        else for (let i = 0; i < m; i++) { const p = pan ? panAt(pan, i / m) : 0, g = (p + 1) * Math.PI / 4, gn = pan && pan.type === 'orbit' ? 0.8 + 0.1 * (1 + Math.cos(pan.a0 + (pan.a1 - pan.a0) * i / m)) : 1; L[off + i] = toI(x[i] * gn * Math.cos(g) * Math.SQRT2); R[off + i] = toI(x[i] * gn * Math.sin(g) * Math.SQRT2); }
         off += m;
       }
       total += n;
@@ -3626,7 +3660,7 @@ async function buildMix() {
         // 1) magyarul → 2) angolul eredeti tempóban, utána szünet: mondd utána → (ha kérted: darabonként, csak természetes szünetnél)
         // → bip → 3) lassítva: mondd VELE EGYÜTT → 4) eredeti tempóban: mondd VELE EGYÜTT
         const full = au.itFull || itA, segs = [], fullSec = full.length / MIX_RATE;
-        segs.push({ x: hu, pan: null }, silenceSeg(0.8));
+        segs.push({ x: hu, pan: huPan(hu) }, silenceSeg(0.8));
         segs.push({ x: full, pan: null }, silenceSeg(fullSec * 1.3 + 1.2));
         if (shadowCut === 'natural') { const parts = naturalChunks(itA); for (const part of parts) segs.push({ x: part, pan: null }, silenceSeg(part.length / MIX_RATE * 1.2 + 0.8)); }
         segs.push({ x: bip, pan: null }, silenceSeg(0.5));
@@ -3644,10 +3678,10 @@ async function buildMix() {
       for (let r = 0; r < repsEff; r++) {
         // a hullámzás az angol mondatot éri; elhangzásonként váltakozó oldalra
         const side = ((k + r) % 2 ? 1 : -1) * (waveSel === 'strong' ? 0.92 : Number(waveSel) || 0);
-        const itPan = !stereo ? null : waveSel === 'random' ? randPan() : waveSel === 'strong' ? { type: 'strong' } : { type: 'move', side };
-        segs.push({ x: q, pan: dir === 'hu-it' ? null : itPan }, pauseSeg(pause));
+        const itPan = waveSel === 'off' ? null : waveSel === 'random' ? randPan() : waveSel === 'strong' ? { type: 'strong' } : { type: 'move', side };
+        segs.push({ x: q, pan: dir === 'hu-it' ? huPan(q) : itPan }, pauseSeg(pause));
         if (r === 0) for (const part of chain) segs.push({ x: part, pan: null }, silenceSeg(part.length / MIX_RATE * 1.1 + 1.0));
-        segs.push({ x: a, pan: dir === 'hu-it' ? itPan : null });
+        segs.push({ x: a, pan: dir === 'hu-it' ? itPan : huPan(a) });
         segs.push(silenceSeg(r < repsEff - 1 ? 1.2 : (r === 0 && chain.length ? Math.max(gap, a.length / MIX_RATE + 1) : gap)));
       }
       flushSegs(segs);
@@ -3678,7 +3712,7 @@ async function buildMix() {
 function updateMixLabels() { $('mixHuVal').textContent = Math.round($('mixHu').value * 100) + '%'; $('mixItVal').textContent = Math.round($('mixIt').value * 100) + '%'; }
 $('mixBuild').onclick = buildMix;
 $('mixStop').onclick = () => { if (mixCtl) mixCtl.stop = true; };
-for (const id of ['mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixBip', 'mixWave']) $(id).onchange = saveSettings;
+for (const id of ['mixDir', 'mixPause', 'mixReps', 'mixGap', 'mixBip', 'mixWave', 'mixHuSpace']) $(id).onchange = saveSettings;
 function syncMixSrc() { $('mixMulti').classList.toggle('hidden', $('mixSrc').value !== 'multi'); renderMixPicker(); }
 $('mixSrc').onchange = () => { saveSettings(); syncMixSrc(); };
 $('mixSelAll').onclick = () => { mixGroups().forEach(g => g.list.forEach(s => mixSel.add(s))); saveMixSel(); renderMixPicker(); };
@@ -3957,7 +3991,7 @@ function bvStep() {
   const st = bvRunState; if (!st || st.kind !== 'new') return; const x = st.x, s = x.step || 0, R = $('bvRun');
   bvStopAudio();
   const head = `<div class="bv-head"><b>📌 Bevésés</b> · ${bvEsc(x.src)}<button class="alt bv-x" id="bvQuit">Szünet (később folytatom)</button></div>` + bvChips(s);
-  const hu = `<div class="bv-q">${bvEsc(x.hu)}</div>`, itc = `<div class="bv-a">${bvEsc(x.it)}</div>`;
+  const hu = `<div class="bv-q">${bvEsc(x.hu)}</div>`, itc = `<div class="bv-a">${ccH(x.it)}</div>`;
   const nextBtn = (lbl = 'Következő lépés →') => `<div class="center"><button id="bvNext" disabled>${lbl}</button></div>`;
   let body = '';
   if (s === 0) body = `<h4>1. lépés – Megértés és darabolás (kb. 20 mp)</h4>${hu}${itc}
@@ -4029,12 +4063,12 @@ function bvRetrieve(x, onOk, box, hint, title) {
   const q = sel => box.querySelector(sel);
   const ask = () => { box.innerHTML = (title ? `<p class="center"><b>${title}</b></p>` : '') + (hint ? `<div class="bv-hint">${bvEsc(bvHint(x.it))}</div>` : '') + '<div class="center"><button data-r="rev">Kimondtam – felfedem</button></div>'; q('[data-r=rev]').onclick = reveal; };
   const reveal = () => {
-    box.innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div><div class="center"><button class="alt" data-r="snd">🔊</button></div><p class="center"><b>Hangosan, ${hint ? 'a kezdőbetűkkel' : 'fejből'} sikerült?</b></p><div class="center bv-rate"><button data-r="ok" class="bv-good">✅ Sikerült</button><button data-r="no" class="bv-bad">❌ Nem sikerült</button></div>`;
+    box.innerHTML = `<div class="bv-a">${ccH(x.it)}</div><div class="center"><button class="alt" data-r="snd">🔊</button></div><p class="center"><b>Hangosan, ${hint ? 'a kezdőbetűkkel' : 'fejből'} sikerült?</b></p><div class="center bv-rate"><button data-r="ok" class="bv-good">✅ Sikerült</button><button data-r="no" class="bv-bad">❌ Nem sikerült</button></div>`;
     bvPlay(x, 'it', 1); q('[data-r=snd]').onclick = () => bvPlay(x, 'it', 1);
     q('[data-r=ok]').onclick = () => { bvStopAudio(); onOk(); };
     q('[data-r=no]').onclick = () => {
       let left = 10; bvStopAudio();
-      box.innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<p class="center">Olvasd el figyelmesen, mondd el magadban… <b data-r="cd">10</b></p>`;
+      box.innerHTML = `<div class="bv-a">${ccH(x.it)}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<p class="center">Olvasd el figyelmesen, mondd el magadban… <b data-r="cd">10</b></p>`;
       bvPlay(x, 'it', 1);
       clearInterval(bvTimer); bvTimer = setInterval(() => { left--; const c = q('[data-r=cd]'); if (c) c.textContent = left; if (left <= 0) { clearInterval(bvTimer); box.innerHTML = '<p class="center"><b>Most újra!</b></p>'; setTimeout(ask, 400); } }, 1000);
     };
@@ -4064,7 +4098,7 @@ function bvToKor(x) {
   Object.assign(x, { state: 'kor', kor: 0, korR: 0, learnedAt: now, step: 7 }); x.hist.push({ t: now, s: 'bevésés' }); bvTouch(x); bvSave();
   const kr = bvLive().filter(y => y.state === 'kor').length, nw = bvLive().filter(y => y.state === 'new').length;
   const korNow = kr >= 3 || !nw;
-  $('bvRun').innerHTML = bvChips(7) + `<h4>✅ A 7 lépés megvan!</h4><div class="bv-a">${bvEsc(x.it)}</div>
+  $('bvRun').innerHTML = bvChips(7) + `<h4>✅ A 7 lépés megvan!</h4><div class="bv-a">${ccH(x.it)}</div>
     <p>Most <b>körkérdezésre vár</b> (${kr} mondat). A körkérdezésben minden mondatot <b>két külön körben</b> kell fejből visszamondanod – ettől lesz tartós.</p>
     <p class="muted">${korNow ? 'A menetrend szerint most jön a körkérdezés.' : 'A menetrend szerint 2–3 új mondatonként jön a körkérdezés – vehetsz még egy újat, vagy kezdheted most.'}</p>
     <div class="center"><button id="bvKorNow" ${korNow ? '' : 'class="alt"'}>🔁 Körkérdezés most (${kr})</button>${nw ? `<button id="bvMore" ${korNow ? 'class="alt"' : ''}>▶ Következő új mondat</button>` : ''}<button class="alt" id="bvDone">Később</button></div>`;
@@ -4099,7 +4133,7 @@ function bvKorItem() {
     <div id="bvRet"><div class="center"><button id="bvReveal">Kimondtam – felfedem</button></div></div>`;
   $('bvQuit').onclick = () => { bvSave(); bvClose('A körkérdezés szünetel – a „🔁 Körkérdezés” gombbal folytathatod.'); };
   $('bvReveal').onclick = () => {
-    $('bvRet').innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="muted center">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<div class="center"><button class="alt" id="bvAgainSnd">🔊</button></div>
+    $('bvRet').innerHTML = `<div class="bv-a">${ccH(x.it)}</div>${x.mnemo ? `<p class="muted center">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<div class="center"><button class="alt" id="bvAgainSnd">🔊</button></div>
       <p class="center"><b>Fejből, hangosan, akadás nélkül ment?</b></p><div class="center bv-rate"><button id="bvKOk" class="bv-good">✅ Igen</button><button id="bvKNo" class="bv-bad">❌ Nem / akadozva</button></div>`;
     bvPlay(x, 'it', 1); $('bvAgainSnd').onclick = () => bvPlay(x, 'it', 1);
     $('bvKOk').onclick = () => {
@@ -4110,7 +4144,7 @@ function bvKorItem() {
     };
     $('bvKNo').onclick = () => {
       let left = 10; bvStopAudio(); bvPlay(x, 'it', 1);
-      $('bvRet').innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<p class="center">Olvasd el, mondd el magadban kétszer… <b id="bvCd">10</b></p>`;
+      $('bvRet').innerHTML = `<div class="bv-a">${ccH(x.it)}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<p class="center">Olvasd el, mondd el magadban kétszer… <b id="bvCd">10</b></p>`;
       clearInterval(bvTimer); bvTimer = setInterval(() => { left--; if ($('bvCd')) $('bvCd').textContent = left; if (left <= 0) { clearInterval(bvTimer); st.q.push(x); st.i++; bvKorItem(); } }, 1000);
     };
   };
@@ -4131,7 +4165,7 @@ function bvRevItem() {
   $('bvQuit').onclick = () => bvClose('Az ismétlés szünetel – a maradék esedékes mondat itt vár.');
   $('bvHintBtn').onclick = () => { st.hinted = true; $('bvHintBox').innerHTML = `<div class="bv-hint">${bvEsc(bvHint(x.it))}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}</p>` : ''}<p class="center muted">Segítséggel legfeljebb „Akadozva” értékelhető.</p>`; $('bvHintBtn').remove(); };
   $('bvReveal').onclick = () => {
-    $('bvRet').innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="muted center">🧠 ${bvEsc(x.mnemo)}</p>` : ''}${x.variant ? `<p class="muted center">A változatod: ${bvEsc(x.variant)}</p>` : ''}
+    $('bvRet').innerHTML = `<div class="bv-a">${ccH(x.it)}</div>${x.mnemo ? `<p class="muted center">🧠 ${bvEsc(x.mnemo)}</p>` : ''}${x.variant ? `<p class="muted center">A változatod: ${bvEsc(x.variant)}</p>` : ''}
       <div class="center"><button class="alt" id="bvAgainSnd">🔊</button></div><p class="center"><b>Hogy ment? Légy szigorú:</b></p>
       <div class="center bv-rate"><button id="bvR3" class="bv-good" ${st.hinted ? 'disabled' : ''}>✅ Folyékonyan<small>3 mp-en belül, segítség nélkül</small></button><button id="bvR2" class="bv-mid">🟡 Akadozva<small>lassan / kis hibával / betűsegítséggel</small></button><button id="bvR1" class="bv-bad">❌ Nem jött<small>vagy sok hiba</small></button></div>`;
     bvPlay(x, 'it', 1); $('bvAgainSnd').onclick = () => bvPlay(x, 'it', 1);
@@ -4159,7 +4193,7 @@ function bvRate(x, r) {
 }
 function bvFix(x) {
   const R = $('bvRet'); bvStopAudio();
-  R.innerHTML = `<div class="bv-a">${bvEsc(x.it)}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}${(x.lapses || 0) >= 1 ? ' – ha nem segít, a „Bevésendő” listában az ✕ után jelöld ki újra, és csinálj új emlékeztetőt.' : ''}</p>` : ''}<p><b>Mini-javítás:</b> nyomd meg, és mondd a hanggal <b>együtt</b> háromszor – utána előhívás fejből, végül leírás.</p>
+  R.innerHTML = `<div class="bv-a">${ccH(x.it)}</div>${x.mnemo ? `<p class="center muted">🧠 ${bvEsc(x.mnemo)}${(x.lapses || 0) >= 1 ? ' – ha nem segít, a „Bevésendő” listában az ✕ után jelöld ki újra, és csinálj új emlékeztetőt.' : ''}</p>` : ''}<p><b>Mini-javítás:</b> nyomd meg, és mondd a hanggal <b>együtt</b> háromszor – utána előhívás fejből, végül leírás.</p>
     <div class="center"><button class="alt" id="bvFix3">🔊 3× lejátszás – mondd vele</button> <span class="muted" id="bvCnt">0 / 3</span></div>`;
   let n = 0;
   $('bvFix3').onclick = async () => {
@@ -4845,13 +4879,13 @@ function wrCheck(it, st, giveUp) {
   const res = $('wrRes'), lock = on => { ['wrChk', 'wrHelp', 'wrGive'].forEach(id => { const b = $(id); if (b) b.disabled = on; }); const t = $('wrIn'); if (t) t.disabled = on; $('wrRun').querySelectorAll('[data-g]').forEach(x => { x.disabled = on; }); };
   if (g.good) {
     if (st.first !== 'bad' && !it.again) wrMarkWrong(it, false);
-    res.innerHTML = `<div class="verdict">${g.perfect ? '✓ Hibátlan!' : '≈ Jó – csak ékezet tér el.'}</div>` + g.html + (it.mode === 'ear' ? `<div class="muted">${wrEsc(it.hu)}</div>` : '') + '<div class="center"><button id="wrNext">Következő →</button></div>';
+    res.innerHTML = `<div class="verdict">${g.perfect ? '✓ Hibátlan!' : '≈ Jó – csak ékezet tér el.'}</div>` + g.html + `<div class="cc-line">🎨 ${ccH(it.it)}</div>` + (it.mode === 'ear' ? `<div class="muted">${wrEsc(it.hu)}</div>` : '') + '<div class="center"><button id="wrNext">Következő →</button></div>';
     lock(true); const nb = $('wrNext'); nb.onclick = () => { wr.pos++; wrRender(); }; setTimeout(() => nb.focus(), 30);
     return;
   }
   wrMarkWrong(it, true);
   if (!st.requeued) { st.requeued = true; wr.items.push({ ...it, again: true, gap: null, mode: it.mode }); }
-  res.innerHTML = `<div class="verdict">${giveUp ? 'Itt a megoldás – jegyezd meg.' : `${Math.round(g.pct * 100)}% – nézd meg a hibát.`}</div>` + g.html + (it.mode === 'ear' ? `<div class="muted">${wrEsc(it.hu)}</div>` : '');
+  res.innerHTML = `<div class="verdict">${giveUp ? 'Itt a megoldás – jegyezd meg.' : `${Math.round(g.pct * 100)}% – nézd meg a hibát.`}</div>` + g.html + `<div class="cc-line">🎨 ${ccH(it.it)}</div>` + (it.mode === 'ear' ? `<div class="muted">${wrEsc(it.hu)}</div>` : '');
   lock(true);
   wrHold(res.querySelector('.verdict'), () => {
     lock(false); res.innerHTML = '<div class="verdict">Most írd le újra.</div>';
@@ -4899,6 +4933,280 @@ function wrEnd(early) {
   $('wrSelNone').onclick = () => { wrSel.clear(); wrSaveSel(); wrRenderPicker(); };
   $('wrStart').onclick = wrStart;
   wrBadge();
+})();
+
+// ============================================================
+// 🎨 SZÍNKÓDOLÁS – szófajok automatikus felismerése (ige, névelő, elöljáró, névmás)
+// ============================================================
+const CC_LANG = 'en';
+const ccNorm = w => String(w).toLocaleLowerCase().replace(/[’`´]/g, "'");
+const ccSet = s => new Set(s.split(/\s+/).filter(Boolean));
+// ---------- OLASZ ----------
+const CCI = (() => {
+  const ART = ccSet("il lo la i gli le un uno una l' un'");
+  const PREP = ccSet("di a da in con su per tra fra d' verso senza contro durante presso sopra sotto dentro fuori dietro davanti oltre lungo " +
+    "del dello della dei degli delle dell' al allo alla ai agli alle all' dal dallo dalla dai dagli dalle dall' nel nello nella nei negli nelle nell' sul sullo sulla sui sugli sulle sull' col coi");
+  const PRON = ccSet("io tu lui lei noi voi loro me te sé mi ti ci vi si ne c' v' m' t' s' ce glielo gliela glieli gliele gliene " +
+    "mio mia miei mie tuo tua tuoi tue suo sua suoi sue nostro nostra nostri nostre vostro vostra vostri vostre " +
+    "questo questa questi queste quello quella quelli quelle quel quei quegli quest' quell' ciò chi qualcuno qualcosa nessuno ognuno");
+  const CLITIC = ccSet("mi ti ci vi si ne ce me te se c' m' t' s' v' glielo gliela glieli gliele gliene");
+  const AMBIG = ccSet("lo la le li gli l'"); // névelő VAGY névmás – ige előtt névmás
+  const SUBJ = ccSet("io tu lui lei noi voi loro");
+  const ADV = ccSet("non sempre mai più ancora molto troppo bene male così già proprio solo tanto poco anche spesso subito ora adesso oggi domani ieri qui lì là poi");
+  const POSS = ccSet("mio mia miei mie tuo tua tuoi tue suo sua suoi sue nostro nostra nostri nostre vostro vostra vostri vostre questo questa questi queste quel quello quella quelli quelle quei quegli");
+  const IRR = ccSet(
+    "è sono sei siamo siete era ero eri eravamo eravate erano sarò sarai sarà saremo sarete saranno sarei saresti sarebbe saremmo sareste sarebbero sia siano fossi fosse fossimo fossero fui fu furono stato stata stati state essere " +
+    "ho hai ha abbiamo avete hanno avevo avevi aveva avevamo avevate avevano avrò avrai avrà avremo avrete avranno avrei avresti avrebbe avremmo avreste avrebbero abbia abbiano avessi avesse ebbi ebbe avuto avere " +
+    "vado vai va andiamo andate vanno andavo andava andavamo andavano andrò andrai andrà andremo andrete andranno andrei andresti andrebbe andremmo vada vadano andato andata andati andate andare andando " +
+    "faccio fai fa facciamo fate fanno facevo faceva facevamo facevano farò farai farà faremo farete faranno farei faresti farebbe faremmo faccia facciano feci fece fatto fatta fatti fatte fare facendo " +
+    "posso puoi può possiamo potete possono potevo poteva potevamo potevano potrò potrà potremo potrei potresti potrebbe potremmo potreste potrebbero possa potuto potere " +
+    "voglio vuoi vuole vogliamo volete vogliono volevo voleva volevamo volevano vorrò vorrà vorrei vorresti vorrebbe vorremmo vorreste vorrebbero voglia voluto volere " +
+    "devo devi deve dobbiamo dovete devono dovevo doveva dovevamo dovevano dovrò dovrà dovrei dovresti dovrebbe dovremmo dovreste dovrebbero debba dovuto dovere " +
+    "dico dici dice diciamo dite dicono dicevo diceva dirò dirà direi direbbe dica detto detta dire dicendo " +
+    "sto stai sta stiamo stanno stavo stava stavamo stavano starò starà starei starebbe stia stare stando " +
+    "so sai sa sappiamo sapete sanno sapevo sapeva saprò saprei saprebbe sappia saputo sapere " +
+    "vengo vieni viene veniamo venite vengono venivo veniva verrò verrà verrei verrebbe venga venuto venuta venuti venute venire " +
+    "esco esci esce usciamo uscite escono uscivo usciva uscirò uscito uscita usciti uscire " +
+    "bevo bevi beve beviamo bevete bevono bevuto bere " +
+    "do dà diamo date danno davo dava darò darà darei darebbe dia dato data dare " +
+    "tengo tieni tiene teniamo tengono tenuto tenere rimango rimani rimane rimaniamo rimangono rimasto rimasta rimasti rimanere " +
+    "piace piacciono piaceva piacevano piacerà piacerebbe piacerebbero piaciuto piaciuta piacere " +
+    "scelgo scegli sceglie scelgono scelto scelta tolgo togli toglie tolgono tolto salgo sali sale salgono " +
+    "muoio muore morto nato nata nati nate nasce vissuto conosciuto cresciuto " +
+    "preso presa presi prese messo messa messi visto vista visti scritto scritta letto letta chiuso chiusa aperto aperta " +
+    "successo successa scelti vinto risposto chiesto chiesta speso sceso scesa corso perso persa offerto acceso accesa spento spenta " +
+    "deciso rotto rotta cotto cotta mosso permesso promesso sorpreso compreso raggiunto aggiunto dipinto condiviso diviso " +
+    "c'è c'era c'erano c'è");
+  const NOTVERB = ccSet("mare lungomare bicchiere ingegnere cameriere carattere quartiere mestiere corriere particolare popolare secolare familiare regolare " +
+    "militare solare telecamere zanzare chiacchiere belvedere sere vere intere severe sincere altare collare quando orrendo tremendo stupendo grammo " +
+    "brava bravo lava cava ottavo schiavo prima dopo sempre ancora molto troppo poco tanto meno più come dove quale quanto mentre perché anche " +
+    "amico amica amici amiche ora caso modo mondo giorno anno sera notte casa vita bene male tutto tutti tutte niente nulla");
+  // gyakori igék – ezekből az app kiszámolja a szabályos alakokat
+  const VERBS = ("parlare mangiare partire parcheggiare cambiare lavorare comprare prenotare prendere portare viaggiare ripetere noleggiare lasciare scendere entrare chiamare " +
+    "assaggiare visitare trovare togliere scrivere rimandare restare passeggiare guidare guardare consigliare compilare chiedere bloccare versare tornare staccare restituire " +
+    "provare prelevare pensare ordinare mostrare migliorare mandare indicare cuocere cucinare controllare arrivare accostare trattare tagliare spiegare spegnere spedire " +
+    "sorpassare sgridare separare segnalare scoprire scegliere rosolare rispondere rispettare rischiare riposare ripartire rimontare riflettere rifiutare ricordare " +
+    "riconsegnare richiamare riaccendere realizzare proseguire prevenire preparare preoccupare premere organizzare mettere mescolare leggere innervosire imparare imbarcare " +
+    "gonfiare firmare evitare dormire disdire dipingere dimenticare digitare denunciare crescere costare correre convalidare consumare confermare condividere comunicare " +
+    "chiudere chiacchierare cercare caricare camminare calcolare bollire alimentare aiutare aggiustare aggiungere aggiornare abitare aprire ascoltare aspettare cominciare " +
+    "conoscere continuare credere decidere dimostrare diventare divertire domandare durare finire funzionare giocare girare incontrare iniziare insegnare invitare " +
+    "lavare mancare nuotare offrire pagare perdere permettere piovere portare potere pranzare preferire pulire raccontare ricevere riempire riuscire salutare sentire " +
+    "servire smettere sperare spendere spostare studiare succedere suonare svegliare telefonare temere usare vendere vedere vincere visitare vivere volare " +
+    "accendere accettare accompagnare affittare alzare amare annoiare arrabbiare attraversare ballare baciare bastare cenare chiarire colpire coltivare costruire " +
+    "fermare festeggiare fumare gestire guarire immaginare informare innaffiare interessare mettere morire nascere notare occupare pesare piantare potare " +
+    "prestare raccogliere rallentare rilassare ringraziare risolvere rompere sbagliare scaricare scusare sedere seguire soffrire sorridere spingere stancare " +
+    "tirare toccare trasferire uscire vestire collegare connettere installare inviare ricaricare condividere attivare impostare aggiornare spegnere accendere").split(/\s+/);
+  const ISC = ccSet("finire capire preferire pulire spedire restituire chiarire colpire costruire gestire guarire innervosire trasferire suggerire");
+  const FORMS = new Map(); // alak -> a végződés hossza (a kiemeléshez)
+  const add = (stem, ends) => { for (const e of ends) { const f = stem + e; if (!FORMS.has(f)) FORMS.set(f, e); } };
+  const H = (stem, e) => /[cg]$/.test(stem) && /^[ie]/.test(e) ? 'h' + e : e; // cerc-hi, pag-herò
+  for (const v of VERBS) {
+    const inf = v.slice(-3), st = v.slice(0, -3);
+    if (inf === 'are') {
+      const ii = /[cg]i$/.test(st) ? st.slice(0, -1) : st; // mangi-are → mang-erò, lasc-erò
+      const sx = /i$/.test(st) ? st.slice(0, -1) : st;     // mangi + iamo → mangiamo
+      add(st, ['o', 'a', 'ate', 'ano', 'ato', 'ata', 'ati', 'ando', 'avo', 'avi', 'ava', 'avamo', 'avate', 'avano', 'ai', 'asti', 'ò', 'ammo', 'aste', 'arono', 'are']);
+      add(sx, ['i', 'iamo', 'iate', 'ino'].map(e => H(sx, e)));
+      add(ii, ['erò', 'erai', 'erà', 'eremo', 'erete', 'eranno', 'erei', 'eresti', 'erebbe', 'eremmo', 'ereste', 'erebbero'].map(e => H(ii, e)));
+    } else if (inf === 'ere') {
+      add(st, ['o', 'i', 'e', 'iamo', 'ete', 'ono', 'uto', 'uta', 'uti', 'ute', 'endo', 'evo', 'evi', 'eva', 'evamo', 'evate', 'evano', 'erò', 'erai', 'erà', 'eremo', 'erete', 'eranno', 'erei', 'eresti', 'erebbe', 'eremmo', 'ereste', 'erebbero', 'a', 'ano', 'ere']);
+    } else {
+      add(st, ['iamo', 'ite', 'ito', 'ita', 'iti', 'endo', 'ivo', 'ivi', 'iva', 'ivamo', 'ivate', 'ivano', 'irò', 'irai', 'irà', 'iremo', 'irete', 'iranno', 'irei', 'iresti', 'irebbe', 'iremmo', 'ireste', 'irebbero', 'ire']);
+      add(st, ISC.has(v) ? ['isco', 'isci', 'isce', 'iscono', 'isca', 'iscano'] : ['o', 'i', 'e', 'ono', 'a', 'ano']);
+    }
+  }
+  const STRONG = /(iamo|eremo|iremo|eranno|iranno|erei|irei|eresti|iresti|erebbe|irebbe|eremmo|iremmo|erebbero|irebbero|avamo|avate|avano|evamo|evate|evano|ivamo|ivano|ando|endo|arono|erono|irono|iscono)$/;
+  const INF = /(are|ere|ire|rsi|rmi|rti|rci|rvi|rlo|rla|rli|rle|rne|rgli)$/;
+  const PART = /(ato|ata|ati|ate|uto|uta|uti|ute|ito|ita|iti|ite)$/;
+  const AUX = ccSet("ho hai ha abbiamo avete hanno avevo aveva avevamo avevano avrò avrei avrebbe abbia sono sei è siamo siete era ero erano eravamo sarò sarà sarei sarebbe sia stato stata stati state essere avere");
+  function isVerbWord(w, prev, prev2) {
+    if (NOTVERB.has(w) || PREP.has(w) || ART.has(w)) return 0;
+    if (IRR.has(w)) return -1; // -1: van, de nincs végződés-kiemelés
+    if (FORMS.has(w)) {
+      // névelő / birtokos után inkább főnév (la porta, il conto)
+      if ((ART.has(prev) && !CLITIC.has(prev)) || POSS.has(prev)) return 0;
+      const e = FORMS.get(w);
+      if (/^h?(ato|ata|ati|ate|uto|uta|uti|ute|ito|ita|iti|ite)$/.test(e) && !(AUX.has(prev) || (ADV.has(prev) && AUX.has(prev2)))) return 0;
+      return e.length;
+    }
+    if (w.length >= 5 && STRONG.test(w)) return (w.match(STRONG) || [''])[0].length;
+    if (w.length >= 5 && INF.test(w) && !(ART.has(prev) || POSS.has(prev))) return 3;
+    if (w.length >= 5 && PART.test(w) && (AUX.has(prev) || (ADV.has(prev) && AUX.has(prev2)))) return 3;
+    return 0;
+  }
+  function tag(words) {
+    const n = words.length, T = new Array(n).fill('-'), E = new Array(n).fill(0);
+    // 1) igék
+    for (let i = 0; i < n; i++) { const w = words[i], v = isVerbWord(w, words[i - 1] || '', words[i - 2] || ''); if (v) { T[i] = 'V'; E[i] = v > 0 ? v : 0; } }
+    // 2) környezet: alanyi névmás / „non” / simulószó után álló, még ismeretlen szó → ige
+    for (let i = 1; i < n; i++) {
+      if (T[i] !== '-') continue; const w = words[i], p = words[i - 1];
+      if (ART.has(w) || PREP.has(w) || PRON.has(w) || ADV.has(w) || NOTVERB.has(w) || !/\p{L}/u.test(w)) continue;
+      if (SUBJ.has(p) || p === 'non' || CLITIC.has(p) || ((AMBIG.has(p) || p === "l'") && i >= 2 && (words[i - 2] === 'non' || SUBJ.has(words[i - 2]) || CLITIC.has(words[i - 2])))) {
+        if (/[oaeiòàèù]$/.test(w) && w.length >= 2) T[i] = 'V';
+      }
+    }
+    // 3) névelők, elöljárók, névmások
+    for (let i = 0; i < n; i++) {
+      if (T[i] === 'V') continue; const w = words[i], nx = T[i + 1];
+      if (AMBIG.has(w)) T[i] = nx === 'V' ? 'R' : 'A';
+      else if (ART.has(w)) T[i] = 'A';
+      else if (PREP.has(w)) T[i] = 'P';
+      else if (PRON.has(w)) T[i] = 'R';
+    }
+    return { T, E };
+  }
+  return { tag };
+})();
+// ---------- ANGOL ----------
+const CCE = (() => {
+  const ART = ccSet("a an the");
+  const PREP = ccSet("in on at of for with from by about into onto over under between through during before after without within around near behind across along towards toward against among until since beside inside outside above below");
+  const PRON = ccSet("i you he she it we they me him her us them my your his its our their mine yours hers ours theirs myself yourself himself herself itself ourselves yourselves themselves this these those who someone somebody anyone anybody everyone everybody nobody something anything nothing everything " +
+    "i'm you're he's she's it's we're they're i've you've we've they've i'll you'll he'll she'll it'll we'll they'll i'd you'd he'd she'd we'd they'd let's");
+  const SUBJ = ccSet("i you he she it we they");
+  const DET = ccSet("a an the my your his her its our their this that these those some any every each no");
+  const IRR = ccSet("be am is are was were been being have has had having do does did done doing will would can could shall should may might must " +
+    "don't doesn't didn't can't cannot won't wouldn't couldn't shouldn't isn't aren't wasn't weren't haven't hasn't hadn't mustn't " +
+    "go goes went gone going get gets got gotten getting make makes made making take takes took taken taking come comes came coming see sees saw seen seeing " +
+    "know knows knew known think thinks thought say says said tell tells told give gives gave given find finds found feel feels felt keep keeps kept " +
+    "bring brings brought buy buys bought pay pays paid eat eats ate eaten drink drinks drank drunk drive drives drove driven write writes wrote written " +
+    "speak speaks spoke spoken sleep sleeps slept meet meets met sit sits sat stand stands stood understand understands understood begin begins began begun " +
+    "forget forgets forgot forgotten lose loses lost spend spends spent send sends sent wear wears wore worn choose chooses chose chosen swim swam swum " +
+    "run runs ran become becomes became fall falls fell fallen grow grows grew grown teach teaches taught catch catches caught fly flies flew flown " +
+    "sell sells sold hear hears heard hold holds held win wins won break breaks broke broken wake wakes woke woken leave leaves left put puts let lets " +
+    "set sets cost costs hurt hurts cut cuts read reads mean means meant lend lent build built rise rose risen");
+  const VERBS = ("work live like love want need use play help ask call try start stop open close watch look listen walk talk cook clean wash visit travel arrive stay plan book order " +
+    "learn study practise practice speak repeat answer park rent change check enjoy finish hope miss move prefer remember rest return share show smile turn wait wonder worry " +
+    "agree allow carry cry dance decide explain follow happen hate improve invite join jump laugh offer pick plant prepare reach receive relax save seem stay taste thank " +
+    "touch trust walk water wish add borrow climb collect complain cover deliver describe enter fill fix hurry introduce kiss land like marry mention notice paint pass " +
+    "post pour print promise pull push rain recommend reply report request reserve ring sign smell snow solve suggest support surprise switch text train type update vote").split(/\s+/);
+  const FORMS = new Map();
+  const add = (f, e) => { if (!FORMS.has(f)) FORMS.set(f, e); };
+  for (const v of VERBS) {
+    add(v, 0);
+    const s = /(s|sh|ch|x|z|o)$/.test(v) ? v + 'es' : /[^aeiou]y$/.test(v) ? v.slice(0, -1) + 'ies' : v + 's'; add(s, s.length - v.length + (s.endsWith('ies') ? 1 : 0));
+    const dbl = /^[^aeiou]*[aeiou][^aeiouwxy]$/.test(v) ? v + v.slice(-1) : v;
+    const ed = /e$/.test(v) ? v + 'd' : /[^aeiou]y$/.test(v) ? v.slice(0, -1) + 'ied' : dbl + 'ed'; add(ed, ed.endsWith('ied') ? 3 : ed.endsWith('d') && /e$/.test(v) ? 1 : 2);
+    const ing = /ie$/.test(v) ? v.slice(0, -2) + 'ying' : /[^e]e$/.test(v) ? v.slice(0, -1) + 'ing' : dbl + 'ing'; add(ing, 3);
+  }
+  const MODAL = ccSet("will would can could should may might must do does did don't doesn't didn't won't can't to let's");
+  const ADVE = ccSet("not ever never always often also just really usually still already sometimes very too so then here there now today yesterday tomorrow please only even all both");
+  function tag(words) {
+    const n = words.length, T = new Array(n).fill('-'), E = new Array(n).fill(0);
+    for (let i = 0; i < n; i++) {
+      const w = words[i], p = words[i - 1] || '';
+      if (IRR.has(w)) { if (!(DET.has(p) && /^(left|run|cut|set|cost|work|fall|break|drink|win)$/.test(w))) T[i] = 'V'; continue; }
+      if (FORMS.has(w)) { if (DET.has(p) || (PREP.has(p) && p !== 'to')) continue; T[i] = 'V'; E[i] = FORMS.get(w); continue; }
+      if (w.length >= 5 && /ing$/.test(w) && (IRR.has(p) || SUBJ.has(p))) { T[i] = 'V'; E[i] = 3; }
+    }
+    for (let i = 1; i < n; i++) { if (T[i] !== '-') continue; const w = words[i], p = words[i - 1]; if ((SUBJ.has(p) || MODAL.has(p)) && /^\p{L}+$/u.test(w) && !ART.has(w) && !PREP.has(w) && !PRON.has(w) && !ADVE.has(w) && !DET.has(w) && w.length > 1 && !/ly$/.test(w)) T[i] = 'V'; }
+    for (let i = 0; i < n; i++) {
+      if (T[i] === 'V') continue; const w = words[i];
+      if (ART.has(w)) T[i] = 'A';
+      else if (w === 'to') T[i] = T[i + 1] === 'V' ? '-' : 'P';
+      else if (PREP.has(w)) T[i] = 'P';
+      else if (PRON.has(w) || (w === 'her' || w === 'his')) T[i] = 'R';
+      else if (w === 'that' && (i === n - 1 || T[i + 1] === 'V')) T[i] = 'R';
+    }
+    return { T, E };
+  }
+  return { tag };
+})();
+// szövegből szavak (az olasz elidált alakot – l'acqua – két szóra bontja)
+function ccTokens(text) {
+  const re = CC_LANG === 'it' ? /[\p{L}\d]+['’]?|[^\p{L}\d]+/gu : /[\p{L}\d]+(?:['’][\p{L}]+)*|[^\p{L}\d]+/gu;
+  const parts = String(text).match(re) || [];
+  return parts.map(t => ({ t, w: /[\p{L}\d]/u.test(t) }));
+}
+function ccAuto(text) {
+  const toks = ccTokens(text), words = toks.filter(x => x.w).map(x => ccNorm(x.t));
+  return (CC_LANG === 'it' ? CCI : CCE).tag(words);
+}
+
+const CC_KEY = 'angolsziget-cc', CC_DATA = 'angolsziget-ccdata';
+let ccOn = false; try { ccOn = localStorage.getItem(CC_KEY) === '1'; } catch {}
+let ccData = loadJSON(CC_DATA, {}); if (!ccData || typeof ccData !== 'object') ccData = {};
+const ccEsc = x => String(x ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const ccHash = text => 'h' + hash(String(text).trim());
+function ccTags(text) {
+  const auto = ccAuto(text), st = ccData[ccHash(text)];
+  if (typeof st === 'string' && st.length === auto.T.length) return { T: st.split(''), E: auto.T.map((t, i) => st[i] === 'V' && t === 'V' ? auto.E[i] : 0), stored: true };
+  return auto;
+}
+// színezett HTML (a színeket a body.cc-on osztály kapcsolja – kikapcsolva sima szövegnek látszik)
+function ccH(text) {
+  if (text == null) return '';
+  const toks = ccTokens(text), { T, E } = ccTags(text); let k = 0;
+  return `<span class="cc" data-h="${ccHash(text)}">` + toks.map(x => {
+    if (!x.w) return ccEsc(x.t);
+    const t = T[k] || '-', e = E[k] || 0, i = k++;
+    const inner = t === 'V' && e > 0 && e < x.t.length ? ccEsc(x.t.slice(0, x.t.length - e)) + '<b class="cc-e">' + ccEsc(x.t.slice(-e)) + '</b>' : ccEsc(x.t);
+    return `<span class="cc-w cc-${t === '-' ? 'n' : t}" data-ci="${i}">${inner}</span>`;
+  }).join('') + '</span>';
+}
+function ccSetEl(el, text) { if (!el || text == null) return; el.innerHTML = ccH(text); }
+function ccApplyBody() {
+  document.body.classList.toggle('cc-on', ccOn);
+  document.body.classList.toggle('cc-edit', ccOn && !!($('ccEdit') && $('ccEdit').checked));
+  document.querySelectorAll('.ccTgl').forEach(c => { c.checked = ccOn; });
+  if (!ccOn && $('ccFix')) $('ccFix').classList.add('hidden');
+}
+// koppintásos javítás: ige → névelő → elöljáró → névmás → semmi
+const CC_CYCLE = ['V', 'A', 'P', 'R', 'n'];
+document.addEventListener('click', e => {
+  if (!document.body.classList.contains('cc-edit')) return;
+  const w = e.target.closest && e.target.closest('.cc-w'); if (!w) return;
+  const wrap = w.closest('.cc'); if (!wrap) return;
+  e.preventDefault(); e.stopPropagation();
+  const words = [...wrap.querySelectorAll('.cc-w')], tags = words.map(x => (CC_CYCLE.find(t => x.classList.contains('cc-' + t)) || 'n'));
+  const i = Number(w.dataset.ci), nt = CC_CYCLE[(CC_CYCLE.indexOf(tags[i]) + 1) % CC_CYCLE.length]; tags[i] = nt;
+  ccData[wrap.dataset.h] = tags.map(t => t === 'n' ? '-' : t).join(''); saveJSON(CC_DATA, ccData);
+  document.querySelectorAll(`.cc[data-h="${wrap.dataset.h}"] .cc-w[data-ci="${i}"]`).forEach(x => { CC_CYCLE.forEach(t => x.classList.remove('cc-' + t)); x.classList.add('cc-' + nt); });
+}, true);
+// Pontosítás a Claude-dal
+let ccFixList = [];
+function ccFixSentences() {
+  if (current && current.pairs && current.pairs.length) return current.pairs.map(p => p.it);
+  if (sess && sess.items) return [...new Set(sess.items.filter(x => x && x.it).map(x => x.it))];
+  return [];
+}
+function ccPrompt(list) {
+  const lines = list.map((t, i) => `${i + 1}: ` + ccTokens(t).filter(x => x.w).map(x => x.t).join(' '));
+  return `Kérlek, jelöld szófajok szerint az alábbi ${'angol'} mondatok szavait. Minden sort pontosan ugyanazokkal a szavakkal, ugyanabban a sorrendben adj vissza (írásjelek nélkül), és mindegyik szó után perjellel írd a jelét:\n` +
+    `V = ige (segédige, főnévi igenév, az összetett igeidő melléknévi igeneve is)\nA = névelő\nP = elöljárószó (névelős elöljáró is)\nR = névmás (személyes, visszaható, birtokos, mutató)\n- = minden más\n` +
+    `Formátum: „szám: szó/JEL szó/JEL …” – csak ezeket a sorokat írd, semmi mást.\n\n` + lines.join('\n');
+}
+async function ccCopy() {
+  ccFixList = ccFixSentences();
+  if (!ccFixList.length) { $('ccStatus').textContent = 'Előbb nyiss meg egy szigetet.'; return; }
+  const txt = ccPrompt(ccFixList);
+  try { await navigator.clipboard.writeText(txt); $('ccStatus').textContent = `📋 A kérés (${ccFixList.length} mondat) a vágólapon van. Illeszd be egy új Claude-beszélgetésbe, aztán a teljes választ másold vissza ide.`; }
+  catch { $('ccIn').value = txt; $('ccIn').select(); $('ccStatus').textContent = 'Nem sikerült a vágólapra tenni – a kérés a mezőben van, másold ki onnan (utána töröld a mezőt, és ide jön a válasz).'; }
+}
+function ccApplyText() {
+  const list = ccFixList.length ? ccFixList : ccFixSentences(); let ok = 0, bad = 0;
+  const norm = w => ccNorm(w).replace(/['’]/g, '');
+  for (const line of String($('ccIn').value).split(/\r?\n/)) {
+    const m = line.match(/^\s*\**\s*(\d+)\s*[:.)]\s*(.+)$/); if (!m) continue;
+    const text = list[Number(m[1]) - 1]; if (!text) { bad++; continue; }
+    const want = ccTokens(text).filter(x => x.w).map(x => norm(x.t));
+    const got = m[2].trim().split(/\s+/).map(t => t.match(/^(.+)\/([VAPR-])$/i)).filter(Boolean);
+    if (got.length !== want.length || got.some((g, i) => norm(g[1].replace(/[.,!?;:«»"()]/g, '')) !== want[i])) { bad++; continue; }
+    ccData[ccHash(text)] = got.map(g => g[2].toUpperCase()).join(''); ok++;
+  }
+  saveJSON(CC_DATA, ccData);
+  $('ccStatus').textContent = ok ? `✅ ${ok} mondat színezése pontosítva${bad ? `, ${bad} sort nem tudtam párosítani (azoknál marad az automatikus)` : ''}.` : '⚠️ Nem találtam feldolgozható sort. A válasz sorai így kezdődjenek: „1: …”, és minden szó után /V, /A, /P, /R vagy /- álljon.';
+  if (ok) { $('ccIn').value = ''; try { render(); } catch {} }
+}
+(() => {
+  document.querySelectorAll('.ccTgl').forEach(c => c.addEventListener('change', () => { ccOn = c.checked; try { localStorage.setItem(CC_KEY, ccOn ? '1' : '0'); } catch {} ccApplyBody(); }));
+  if ($('ccEdit')) $('ccEdit').onchange = ccApplyBody;
+  if ($('ccFixBtn')) $('ccFixBtn').onclick = () => $('ccFix').classList.toggle('hidden');
+  if ($('ccCopy')) $('ccCopy').onclick = ccCopy;
+  if ($('ccApply')) $('ccApply').onclick = ccApplyText;
+  if ($('ccReset')) $('ccReset').onclick = () => { const l = ccFixSentences(); let n = 0; for (const t of l) { if (ccData[ccHash(t)]) { delete ccData[ccHash(t)]; n++; } } saveJSON(CC_DATA, ccData); $('ccStatus').textContent = n ? `${n} mondatnál visszaállt az automatikus színezés.` : 'Ebben a szigetben nincs kézi vagy Claude-os színezés.'; try { render(); } catch {} };
+  ccApplyBody();
 })();
 
 // ============================================================
