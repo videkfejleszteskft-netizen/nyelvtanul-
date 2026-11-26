@@ -236,6 +236,20 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 #bpSeek::-moz-range-progress{height:10px;border-radius:6px;background:var(--coral)}
 #bpSeek::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--coral)}
 #bigPlayer .bp-time{display:flex;justify-content:space-between;font-size:.9rem;color:#52606d;font-variant-numeric:tabular-nums}
+/* V55: 5 kis csempe egy sorban + írásgyakorlás */
+.tabs{grid-template-columns:repeat(20,1fr)}
+.tabs button.main{grid-column:span 5}
+.tabs button.sec{grid-column:span 4}
+@media (max-width:600px){.tabs{grid-template-columns:repeat(20,1fr)}.tabs button.main{grid-column:span 10}.tabs button.sec{grid-column:span 4;padding:6px 1px;flex-direction:column;gap:1px}.tabs button.sec .ti{font-size:1.05rem}.tabs button.sec .tl{font-size:.56rem}}
+#wrRun .wr-q{font-size:1.25rem;font-weight:600;text-align:center;margin:10px 0 6px;line-height:1.4}
+#wrRun .wr-sub{text-align:center;color:#52606d;margin:0 0 8px}
+#wrRun .wr-gap{font-size:1.25rem;line-height:2.2;text-align:center;margin:10px 0}
+#wrRun .wr-gap input{font-size:1.1rem;padding:4px 6px;border:2px solid #9cc3d0;border-radius:8px;text-align:center;margin:0 3px;display:inline-block;max-width:60vw;box-sizing:content-box}
+#wrRun .wr-gap input.ok{border-color:#2e9d5b;background:#eefaf2}#wrRun .wr-gap input.bad{border-color:#d0504a;background:#fdf0ef}#wrRun .wr-gap input.acc{border-color:#d9a400;background:#fff8e1}
+#wrRun .wr-hint{text-align:center;font-family:monospace;font-size:1.05rem;letter-spacing:.5px;color:#0e5470;margin:6px 0}
+#wrRun .wr-bar{height:6px;border-radius:4px;background:#e3edf1;margin:4px 0 10px;overflow:hidden}#wrRun .wr-bar i{display:block;height:100%;background:var(--coral)}
+#wrRun .wr-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+.wr-again{display:flex;justify-content:center}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
@@ -243,7 +257,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>IT</b> Italiano</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">V54</span>
+ <span class="ver" title="Programverzió">V55</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">IL PIANO</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -254,6 +268,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
  <button type="button" role="tab" class="sec" data-tab="nehez" title="koncentráció"><i class="ti">🎯</i><span class="tl">FOCUS</span><span class="ts">koncentráció</span><span class="badge" id="tbHard"></span></button>
  <button type="button" role="tab" class="sec" data-tab="beves" title="bevésés"><i class="ti">📌</i><span class="tl">MEMORIZZA</span><span class="ts">bevésés</span><span class="badge" id="tbBeves"></span></button>
  <button type="button" role="tab" class="sec" data-tab="beszelj" title="beszélj"><i class="ti">🗣️</i><span class="tl">PARLA</span><span class="ts">beszélj</span></button>
+ <button type="button" role="tab" class="sec" data-tab="scrivi" title="írás"><i class="ti">✍️</i><span class="tl">SCRIVI</span><span class="ts">írás</span><span class="badge" id="tbWrite"></span></button>
  <button type="button" role="tab" class="sec" data-tab="szavak" title="szókincs"><i class="ti">🧠</i><span class="tl">VOCABOLI</span><span class="ts">szókincs</span><span class="badge" id="tbWords"></span></button>
 </nav>
 <main>
@@ -449,6 +464,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
  <div id="bvSum"></div>
  <div class="center"><button id="bvDueBtn">▶ Esedékes ismétlések</button><button id="bvKorBtn">🔁 Körkérdezés</button><button id="bvNewBtn" class="alt">▶ Következő új mondat bevésése</button></div>
  <p class="center muted"><label>Leírás az ismétléseknél: <select id="bvWrite"><option value="reggel">a másnap reggelinél + ha akadozott / nem jött (ajánlott)</option><option value="hiba">csak ha akadozott / nem jött</option><option value="mindig">minden ismétlésnél</option></select></label></p>
+ <p class="center muted"><label>Hiba után a helyes megoldás látható: <select class="wrShowSel" id="bvShow"><option value="5">5 mp</option><option value="10">10 mp</option><option value="15">15 mp</option><option value="20">20 mp</option><option value="30">30 mp</option><option value="tap">amíg az „Újra írom” gombra nem koppintok</option></select></label></p>
  <div id="bvRun" class="hidden"></div><p id="bvStatus" class="muted"></p>
 </section>
 <section data-tab="beves" class="box"><details id="bvRules" open><summary><b>📋 A pontos menetrend – hogy semmi ne maradjon ki</b></summary>
@@ -463,7 +479,7 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
  <li><b>Előhívás – előbb segítséggel, aztán anélkül:</b> először csak a kezdőbetűket látod, utána csak a magyart. Mindig <b>előbb mondd ki</b>, csak utána fedd fel. Ha nem ment: olvasd el, az app 10-ig számol, és újra.</li>
  <li><b>Emlékeztető a nehéz elemhez (1 perc):</b> hasonló hangzású magyar szó + bizarr, mozgó kép, amelyben te is benne vagy. Írd le, és képzeld el 5 másodpercig. Ha nem jut eszedbe semmi, kérj ötletet a Claude-tól (a gomb a vágólapra másolja a kérést).</li>
  <li><b>Átalakítás (30 mp):</b> mondj és írj be egy saját változatot – más személy, más idő, kérdés vagy tagadás, vagy egy szó csere.</li>
- <li><b>Leírás fejből:</b> csak a magyart látod, és leírod az idegen nyelvű mondatot. Ha hiba van, megnézed, a mező 5 mp múlva kiürül, és újra leírod – amíg hibátlan nem lesz.</li></ol>
+ <li><b>Leírás fejből:</b> csak a magyart látod, és leírod az idegen nyelvű mondatot. Ha hiba van, megnézed (a beállított ideig, vagy amíg az „Újra írom” gombra nem koppintasz), a mező kiürül, és újra leírod – amíg hibátlan nem lesz.</li></ol>
  <p class="muted">Ha közben félbe kell hagynod, a „Szünet” gombbal később pontosan ott folytatod.</p>
  <h4>C) Körkérdezés – a blokk zárása (ez a legfontosabb erősítő!)</h4>
  <ul><li>2–3 új mondatonként, és a blokk végén mindig: a „🔁 Körkérdezés” gombbal.</li>
@@ -486,6 +502,27 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
  <li>Ha egy mondat kétszer is kiesik, készíts hozzá új emlékeztetőt: vedd ki (✕), jelöld ki újra, és véstesd be elölről.</li></ul>
 </details></section>
 <section data-tab="beves" class="box"><h3>Bevésendő és folyamatban lévő mondatok</h3><div id="bvList"></div></section>
+<section data-tab="scrivi" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Csak írás: a kiválasztott mondatokat olaszul leírod, az app szavanként ellenőrzi, és addig írod újra, amíg hibátlan nem lesz. <b>Miért?</b> Az írás lassabb, mint a felismerés – ezért előjön minden bizonytalanság (végződés, névelő, elöljárószó, dupla mássalhangzó, ékezet), és a mondat sokkal pontosabban rögzül.</p>
+<h4>Így használd</h4><ol><li><b>Miből?</b> – ma esedékes ismétlések, ma / tegnap tanult új mondatok, nehéz mondatok, a 📌 Bevésés mondatai, a korábban írásban elrontottak, vagy szigetek / mappák pipálva.</li><li><b>Miből írod le?</b> – 🇭🇺 magyarból (fordítás) · 🎧 csak hallás után (diktálás, magyar nélkül) · 🎧 + 🇭🇺 hallás után a jelentéssel · 🧩 hiányos mondat (csak a hiányzó 1–3 szót írod be) · 🔀 vegyesen.</li><li>Hiba után a helyes megoldás <b>a beállított ideig</b> látszik (5–30 mp, vagy amíg az „Újra írom” gombra nem koppintasz), aztán újra leírod. A hibás mondatok a kör végén még egyszer visszajönnek.</li><li>💡 Segítség: először a kezdőbetűk, másodszorra a mondat eleje. 🔊 bármikor meghallgatható.</li><li>A kör végén az elrontott mondatokat egy gombbal a 📌 Bevésésbe teheted. Az app megjegyzi őket („Írásban korábban elrontott mondataim”).</li></ol>
+<h4>Az ismétlési rend</h4><p>Alapból az írás <b>nem változtat</b> az ismétlési időpontokon. Ha bekapcsolod az „Az esedékes mondatoknál számítson ismétlésnek” kapcsolót, akkor a ma esedékes mondatoknál az <b>első</b> próbálkozás számít: hibátlan (vagy csak ékezet tér el) = „Jól ment”, kis hiba (70% felett) vagy segítséggel = „Nehéz”, hibás = „Nem ment”. A nem esedékes mondatokat ilyenkor sem érinti.</p></details></section>
+<section data-tab="scrivi" class="box" id="wrBox"><h3>✍️ Írásgyakorlás</h3>
+ <div id="wrSetup">
+  <div class="row">
+   <label>Miből?<br><select id="wrSrc" class="move" style="margin:0;width:100%"><option value="daily">Ma esedékes ismétlések</option><option value="today_done">A ma már átvett mondatok</option><option value="new_today">A ma tanult új mondatok</option><option value="new_yesterday">A tegnap tanult új mondatok</option><option value="hard">Nehéz mondataim (🎯 Focus)</option><option value="beves">A 📌 Bevésés mondatai</option><option value="wrong">Írásban korábban elrontott mondataim</option><option value="current">A megnyitott sziget</option><option value="multi">Szigetek / mappák – én választom ki</option></select></label>
+   <label>Miből írod le?<br><select id="wrPrompt" class="move" style="margin:0;width:100%"><option value="hu">🇭🇺 Magyarból – látod a magyart, olaszul írod</option><option value="ear">🎧 Csak hallás után – diktálás, magyar nélkül</option><option value="earhu">🎧 + 🇭🇺 Hallás után, a magyar jelentés is látszik</option><option value="gap">🧩 Hiányos mondat – a hiányzó szavakat írod be</option><option value="mix">🔀 Vegyesen</option></select></label>
+  </div>
+  <div id="wrMulti" class="hidden" style="margin:6px 0 10px"><div class="ftools"><button class="alt" id="wrSelAll">Mind</button><button class="alt" id="wrSelNone">Egyik sem</button></div><div id="wrPicker"></div><p id="wrSelInfo" class="muted" style="margin:4px 0 0"></p></div>
+  <div class="row">
+   <label>Hány mondat egy körben?<br><select id="wrCount" class="move" style="margin:0;width:100%"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option><option value="20">20</option><option value="0">mind</option></select></label>
+   <label>A helyes megoldás látható hiba után<br><select id="wrShow" class="move wrShowSel" style="margin:0;width:100%"><option value="5">5 mp</option><option value="10">10 mp</option><option value="15">15 mp</option><option value="20">20 mp</option><option value="30">30 mp</option><option value="tap">amíg az „Újra írom” gombra nem koppintok</option></select></label>
+  </div>
+  <label class="bv-chk"><input type="checkbox" id="wrShuffle" checked> Keverve</label>
+  <label class="bv-chk"><input type="checkbox" id="wrSrs"> Az esedékes mondatoknál számítson ismétlésnek (hibátlan elsőre = „Jól ment”, kis hiba = „Nehéz”, hibás = „Nem ment”)</label>
+  <div class="center"><button id="wrStart">✍️ Indítás</button></div>
+  <p id="wrStatus" class="muted"></p>
+ </div>
+ <div id="wrRun" class="hidden"></div>
+</section>
 <section data-tab="beszelj" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary>
 <p class="help-why"><b>Mi ez?</b> Az app az idegen nyelven kérdez, te <b>szóban válaszolsz</b>, a telefon leírja, az app pedig értékeli. Nem a megtanult mondatot kell visszamondanod, hanem <b>alkalmaznod</b>: „Hatan lennétek – hogyan kérnéd?” <b>Miért?</b> A beszédhez az kell, hogy a mondatokat át tudd alakítani és a saját életedre tudd vonatkoztatni – a bemagolt mondat önmagában ehhez kevés.</p>
 <h4>Kétféle kérdés</h4><ul><li><b>Változat:</b> egy tanult mondatot kell átalakítanod (más szám, idő, személy, helyzet). Ezt az app pontozza: ✅ 85% felett, 🟡 60–85%, ❌ alatta. A 🟡 és ❌ válaszok mintája magától bekerül a 📌 Bevésésbe.</li><li><b>Saját válasz:</b> a saját életedről beszélsz (pl. „Mesélj a családodról”). Ezt a gép nem pontozza – a kör végén a Claude javítja ki.</li></ul>
@@ -3947,7 +3984,7 @@ function bvStep() {
     <div class="center"><button class="alt" id="bvPlay1">🔊 Még egyszer meghallgatom</button></div>
     <label class="bv-lab">Az én változatom: <input id="bvVar" value="${bvEsc(x.variant)}" placeholder="saját mondat idegen nyelven"></label>${nextBtn()}`;
   if (s === 6) body = `<h4>7. lépés – Leírás fejből</h4>${hu}
-    <ol class="bv-do"><li>Írd le az idegen nyelvű mondatot <b>fejből</b> – közben mondd is magadban.</li><li>Ha hiba van, megmutatom a helyeset, a mező 5 mp múlva kiürül, és újra leírod – amíg hibátlan nem lesz.</li><li>Az ékezet-eltérés nem számít hibának.</li></ol>
+    <ol class="bv-do"><li>Írd le az idegen nyelvű mondatot <b>fejből</b> – közben mondd is magadban.</li><li>Ha hiba van, megmutatom a helyeset (a beállított ideig, vagy amíg az „Újra írom” gombra nem koppintasz), a mező kiürül, és újra leírod – amíg hibátlan nem lesz.</li><li>Az ékezet-eltérés nem számít hibának.</li></ol>
     <div id="bvWr"></div>${nextBtn('Kész – jöhet a körkérdezés →')}`;
   R.innerHTML = head + body;
   $('bvQuit').onclick = () => { bvTouch(x); bvSave(); bvClose('A bevésés szünetel – a „Félbehagyott bevésés folytatása” gombbal ott folytatod, ahol abbahagytad.'); };
@@ -4014,9 +4051,8 @@ function bvWrite(x, box, cb) {
     const line = (label, toks, states) => `<div><span class="muted">${label} </span>` + toks.map((t, k) => `<span class="w ${states[k]}">${bvEsc(t.raw)}</span>`).join(' ') + '</div>';
     res.innerHTML = `<div class="verdict">${good ? (ok === r.E.length ? '✓ Hibátlan!' : '≈ Jó – csak ékezet tér el.') : `${ok + acc}/${r.E.length} szó stimmel – nézd meg a hibát.`}</div>` + line('Helyesen:', r.E, r.eState) + line('Te írtad:', r.T, r.tState);
     if (good) { inp.disabled = true; btn.disabled = true; cb(first); return; }
-    first = false; inp.disabled = true; btn.disabled = true; let left = 5;
-    const v = res.querySelector('.verdict'); const t0 = v.textContent;
-    clearInterval(bvTimer); bvTimer = setInterval(() => { left--; v.textContent = `${t0} Újra írhatod: ${left} mp`; if (left <= 0) { clearInterval(bvTimer); inp.value = ''; inp.style.height = ''; inp.disabled = false; btn.disabled = false; res.innerHTML = '<div class="verdict">Most írd le újra fejből.</div>'; inp.focus(); } }, 1000);
+    first = false; inp.disabled = true; btn.disabled = true;
+    wrHold(res.querySelector('.verdict'), () => { inp.value = ''; inp.style.height = ''; inp.disabled = false; btn.disabled = false; res.innerHTML = '<div class="verdict">Most írd le újra fejből.</div>'; inp.focus(); });
   };
   btn.onclick = check; inp.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); check(); } };
   setTimeout(() => inp.focus(), 50);
@@ -4431,7 +4467,7 @@ function drillRender(it) {
     box.innerHTML = head + `<h4>${s + 1}. Előhívás ${s === 1 ? 'kezdőbetűkkel' : 'fejből'}</h4><div class="bv-q">${bzEsc(it.hu)}</div><p class="center muted">Mondd ki hangosan, és csak utána fedd fel.</p><div id="drRet"></div>`;
     bvRetrieve(x, go, $('drRet'), s === 1, s === 1 ? 'A kezdőbetűk segítenek:' : 'Most semmi segítség:'); wt();
   } else if (s < L) {
-    box.innerHTML = head + `<h4>4. Leírás fejből</h4><div class="bv-q">${bzEsc(it.hu)}</div><p class="center muted">Írd le fejből. Ha hibás, megmutatom a helyeset, és 5 mp múlva újra leírod – addig, amíg hibátlan nem lesz.</p><div id="drWr"></div><div class="center"><button id="drNext" disabled>Tovább →</button></div>`;
+    box.innerHTML = head + `<h4>4. Leírás fejből</h4><div class="bv-q">${bzEsc(it.hu)}</div><p class="center muted">Írd le fejből. Ha hibás, megmutatom a helyeset, és utána újra leírod – addig, amíg hibátlan nem lesz.</p><div id="drWr"></div><div class="center"><button id="drNext" disabled>Tovább →</button></div>`;
     bvWrite(x, $('drWr'), () => { $('drNext').disabled = false; }); $('drNext').onclick = go;
   } else drillCheck(it, head, L);
 }
@@ -4621,6 +4657,248 @@ function remInit() {
   if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'go-today') try { showTab('terv'); window.scrollTo({ top: 0 }); } catch {} });
 }
 
+
+// ============================================================
+// ✍️ ÍRÁSGYAKORLÁS (SCRIVI)
+// ============================================================
+const WR_SHOW_KEY = 'nyelvisziget-wrshow', WR_WRONG_KEY = 'nyelvisziget-wrwrong', WR_SET_KEY = 'nyelvisziget-wrset', WR_SEL_KEY = 'nyelvisziget-wrsel';
+let wrTimer = null, wr = null;
+function wrShowSec() { try { return localStorage.getItem(WR_SHOW_KEY) || '10'; } catch { return '10'; } }
+function wrShowInit() {
+  document.querySelectorAll('.wrShowSel').forEach(sl => {
+    sl.value = wrShowSec();
+    sl.onchange = () => { try { localStorage.setItem(WR_SHOW_KEY, sl.value); } catch {} document.querySelectorAll('.wrShowSel').forEach(o => { o.value = sl.value; }); };
+  });
+}
+// Hiba után a helyes megoldás a beállított ideig (vagy koppintásig) látszik, aztán jöhet az újraírás.
+function wrHold(v, again) {
+  clearInterval(wrTimer);
+  if (!v) { again(); return; }
+  const t0 = v.textContent, sec = wrShowSec();
+  const box = document.createElement('div'); box.className = 'wr-again';
+  const b = document.createElement('button'); b.className = 'alt'; b.textContent = '✍️ Újra írom'; box.append(b); v.after(box);
+  let done = false;
+  const fin = () => { if (done) return; done = true; clearInterval(wrTimer); box.remove(); again(); };
+  b.onclick = fin;
+  if (sec === 'tap') { v.textContent = t0 + ' Nézd meg nyugodtan, aztán koppints: „Újra írom”.'; return; }
+  let left = Number(sec) || 10; v.textContent = `${t0} Újra írhatod: ${left} mp`;
+  wrTimer = setInterval(() => { if (!v.isConnected) { clearInterval(wrTimer); return; } left--; v.textContent = `${t0} Újra írhatod: ${left} mp`; if (left <= 0) fin(); }, 1000);
+}
+const wrEsc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function wrSaveSet() { saveJSON(WR_SET_KEY, { src: $('wrSrc').value, prompt: $('wrPrompt').value, count: $('wrCount').value, shuffle: $('wrShuffle').checked, srs: $('wrSrs').checked }); }
+function wrLoadSet() {
+  const st = loadJSON(WR_SET_KEY, {});
+  if (st.src) $('wrSrc').value = st.src; if (st.prompt) $('wrPrompt').value = st.prompt; if (st.count !== undefined) $('wrCount').value = st.count;
+  if (st.shuffle !== undefined) $('wrShuffle').checked = !!st.shuffle; if (st.srs !== undefined) $('wrSrs').checked = !!st.srs;
+}
+// ---- szigetválasztó (külön kijelölés, mint az Ascoltában)
+let wrSel = new Set(loadJSON(WR_SEL_KEY, []));
+function wrSaveSel() { saveJSON(WR_SEL_KEY, [...wrSel]); }
+function wrOrderedSelection() { return mixGroups().flatMap(g => g.list).filter(x => wrSel.has(x)); }
+function wrRenderPicker() {
+  const host = $('wrPicker'); $('wrMulti').classList.toggle('hidden', $('wrSrc').value !== 'multi');
+  if ($('wrSrc').value !== 'multi') return;
+  host.innerHTML = '';
+  const groups = mixGroups();
+  if (!groups.length) { host.textContent = 'Még nincs sziget a könyvtárban.'; return; }
+  for (const g of groups) {
+    const n = g.list.filter(x => wrSel.has(x)).length;
+    const grp = makeGroup('wr:' + g.id, '', `(${n}/${g.list.length} kiválasztva)`, false);
+    const sm = grp.el.querySelector('summary'); sm.firstChild.remove();
+    const lab = document.createElement('label'); lab.style.cssText = 'display:inline-flex;gap:8px;align-items:center;font-weight:600';
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = n === g.list.length; cb.indeterminate = n > 0 && n < g.list.length;
+    cb.onclick = e => { e.stopPropagation(); g.list.forEach(x => cb.checked ? wrSel.add(x) : wrSel.delete(x)); wrSaveSel(); wrRenderPicker(); };
+    lab.append(cb, document.createTextNode(g.name)); lab.onclick = e => e.stopPropagation(); sm.prepend(lab);
+    for (const slug of g.list) {
+      const row = document.createElement('label'); row.style.cssText = 'display:flex;gap:8px;align-items:center;padding:5px 2px';
+      const c = document.createElement('input'); c.type = 'checkbox'; c.checked = wrSel.has(slug);
+      c.onchange = () => { c.checked ? wrSel.add(slug) : wrSel.delete(slug); wrSaveSel(); wrRenderPicker(); };
+      const t = getProg(slug).total; row.append(c, document.createTextNode(niceName(slug) + (t ? ` (${t} mondat)` : ''))); grp.body.append(row);
+    }
+    host.append(grp.el);
+  }
+  const sel = wrOrderedSelection(); $('wrSelInfo').textContent = sel.length ? `Kiválasztva: ${sel.length} sziget.` : 'Még nincs kiválasztva sziget.';
+}
+function wrFill() { try { wrRenderPicker(); } catch {} wrBadge(); }
+function wrWrongList() { const l = loadJSON(WR_WRONG_KEY, []); return Array.isArray(l) ? l : []; }
+function wrBadge() { const n = wrWrongList().length, b = $('tbWrite'); if (b) b.textContent = n ? String(n) : ''; }
+function wrMarkWrong(it, bad) {
+  let l = wrWrongList(); const key = it.slug + '|' + it.n, i = l.findIndex(x => x.slug + '|' + x.n === key);
+  if (bad) { if (i >= 0) { l[i].miss = (l[i].miss || 1) + 1; l[i].at = Date.now(); } else l.push({ slug: it.slug, n: it.n, hu: it.hu, it: it.it, miss: 1, at: Date.now() }); }
+  else if (i >= 0) l.splice(i, 1);
+  l = l.sort((a, b) => b.at - a.at).slice(0, 300); saveJSON(WR_WRONG_KEY, l); wrBadge();
+}
+async function wrItems(src) {
+  if (src === 'multi') {
+    const sel = wrOrderedSelection(); if (!sel.length) throw new Error('Pipálj ki legalább egy szigetet vagy mappát.');
+    const out = [];
+    for (let i = 0; i < sel.length; i++) {
+      const slug = sel[i]; $('wrStatus').textContent = `Szigetek betöltése: ${i + 1}/${sel.length} – ${niceName(slug)}…`;
+      let rec = await idb.get('islands', slug).catch(() => null);
+      if ((!rec || !rec.txt) && signedIn() && online() && librarySlugs().includes(slug)) { try { rec = await ensureIslandCached(slug); } catch {} }
+      if (!rec || !rec.txt) continue;
+      try { for (const pp of parse(rec.txt).pairs) out.push({ slug, n: pp.n, hu: pp.hu, it: pp.it }); } catch {}
+    }
+    return out;
+  }
+  if (src === 'current') { if (!current) throw new Error('Előbb nyiss meg egy szigetet a könyvtárból (🏝️ ISOLE).'); return current.pairs.map(pp => ({ slug: current.slug, n: pp.n, hu: pp.hu, it: pp.it })); }
+  if (src === 'wrong') return wrWrongList().map(x => ({ slug: x.slug, n: x.n, hu: x.hu, it: x.it }));
+  if (src === 'beves') return uniqItems(bvLive().map(x => ({ slug: x.slug, n: x.n, hu: x.hu, it: x.it })));
+  try { if (signedIn() && online()) await pullAll(); } catch {}
+  if (src === 'hard') return uniqItems(hardItems());
+  if (src === 'today_done') return uniqItems(reviewedToday(false));
+  if (src === 'new_today') return uniqItems(newOn(studyDay(), true));
+  if (src === 'new_yesterday') return uniqItems(newOn(studyDay(Date.now() - 864e5), false));
+  return uniqItems(await collectDaily(0, false)); // csak az esedékes ismétlések
+}
+const WR_SRC_EMPTY = { daily: 'Most nincs esedékes ismétlés.', today_done: 'Ma még nem értékeltél mondatot.', new_today: 'Ma még nem tanultál új mondatot.', new_yesterday: 'Tegnapról nincs új mondat.', hard: 'Nincs nehéz mondat.', beves: 'A 📌 Bevésés üres.', wrong: 'Nincs írásban elrontott mondat – szép!', current: 'A szigetben nincs mondat.', multi: 'A kiválasztott szigetekben nincs mondat.' };
+async function wrStart() {
+  const btn = $('wrStart'); btn.disabled = true; wrSaveSet();
+  try {
+    let items = await wrItems($('wrSrc').value);
+    if (!items.length) { $('wrStatus').textContent = WR_SRC_EMPTY[$('wrSrc').value] || 'Nincs mondat ehhez a választáshoz.'; return; }
+    if ($('wrShuffle').checked) items = bvShuffle(items);
+    const cnt = Number($('wrCount').value) || 0; if (cnt) items = items.slice(0, cnt);
+    const pm = $('wrPrompt').value, modes = ['hu', 'ear', 'earhu', 'gap'];
+    wr = { items: items.map(x => ({ ...x, mode: pm === 'mix' ? modes[Math.floor(Math.random() * modes.length)] : pm })), pos: 0, srs: $('wrSrs').checked, res: new Map(), srsN: 0, src: $('wrSrc').value };
+    $('wrStatus').textContent = ''; $('wrSetup').classList.add('hidden'); $('wrRun').classList.remove('hidden');
+    wrRender();
+  } catch (e) { $('wrStatus').textContent = '⚠️ ' + (e && e.message ? e.message : e); }
+  finally { btn.disabled = false; }
+}
+function wrKey(it) { return it.slug + '|' + it.n; }
+// hiányos mondat: 1–3 szó kihagyása (inkább a nyelvtanilag „kényes”, rövidebb szavak is szóba jöhetnek)
+function wrMakeGaps(text) {
+  const parts = String(text).split(/(\s+)/), idx = [];
+  parts.forEach((w, i) => { if (!/^\s+$/.test(w) && /\p{L}/u.test(w)) idx.push(i); });
+  const n = idx.length <= 4 ? 1 : idx.length <= 9 ? 2 : 3;
+  const pick = bvShuffle(idx.filter(i => parts[i].replace(/[^\p{L}']/gu, '').length >= 2)).slice(0, n).sort((a, b) => a - b);
+  return { parts, gaps: pick.length ? pick : idx.slice(0, 1) };
+}
+function wrSplitWord(w) { const m = String(w).match(/^([^\p{L}\d']*)(.*?)([^\p{L}\d']*)$/u); return m ? [m[1], m[2], m[3]] : ['', w, '']; }
+function wrNorm(w) { return String(w).replace(/[’`´]/g, "'").toLocaleLowerCase('it').trim(); }
+function wrRender() {
+  clearInterval(wrTimer);
+  if (!wr) return;
+  if (wr.pos >= wr.items.length) return wrEnd();
+  const it = wr.items[wr.pos], host = $('wrRun'), total = wr.items.length;
+  const st = wr.res.get(wrKey(it)) || { tries: 0, hint: 0, first: null }; wr.res.set(wrKey(it), st);
+  st.hint = 0; it.gap = it.mode === 'gap' ? (it.gap || wrMakeGaps(it.it)) : null;
+  const ear = it.mode === 'ear' || it.mode === 'earhu', showHu = it.mode !== 'ear';
+  const label = { hu: '🇭🇺 Írd le olaszul', ear: '🎧 Hallgasd meg, és írd le', earhu: '🎧 Hallgasd meg, és írd le', gap: '🧩 Írd be a hiányzó szavakat' }[it.mode];
+  let body = `<div class="muted" style="display:flex;justify-content:space-between"><span>${wr.pos + 1} / ${total}${it.again ? ' · 🔁 még egyszer' : ''}</span><span>${wrEsc(niceName(it.slug))}</span></div><div class="wr-bar"><i style="width:${Math.round(wr.pos / total * 100)}%"></i></div>`;
+  body += `<p class="wr-sub">${label}</p>`;
+  if (showHu) body += `<div class="wr-q">${wrEsc(it.hu)}</div>`; else body += `<div class="wr-q">🎧</div>`;
+  if (it.mode === 'gap') {
+    const { parts, gaps } = it.gap;
+    body += '<div class="wr-gap">' + parts.map((w, i) => { if (!gaps.includes(i)) return wrEsc(w); const [a, core, z] = wrSplitWord(w); return `${wrEsc(a)}<input data-g="${i}" style="width:${Math.max(3, core.length) + 1}ch" size="${Math.max(3, core.length)}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">${wrEsc(z)}`; }).join('') + '</div>';
+  } else body += `<textarea class="vtype grow" rows="2" id="wrIn" placeholder="Írd le olaszul…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"></textarea>`;
+  body += `<div class="wr-hint" id="wrHint"></div><div class="wr-tools"><button id="wrChk">Ellenőrzés</button><button class="alt" id="wrPlay">🔊</button><button class="alt" id="wrHelp">💡 Segítség</button><button class="alt" id="wrGive">Nem tudom</button></div><div class="tres" id="wrRes"></div>
+    <div class="center" style="margin-top:8px"><button class="alt" id="wrQuit">Kör befejezése</button></div>`;
+  host.innerHTML = body;
+  const inputs = () => [...host.querySelectorAll('[data-g]')], first = it.mode === 'gap' ? inputs()[0] : $('wrIn');
+  const play = async () => { const b = $('wrPlay'); if (!b) return; b.disabled = true; const r = await bvPlay(it, 'it', 1); bvPlayBtn($('wrPlay'), r, '🔊'); };
+  $('wrPlay').onclick = play;
+  $('wrHelp').onclick = () => {
+    st.hint++;
+    const h = $('wrHint');
+    if (it.mode === 'gap') { h.textContent = 'Kezdőbetűk: ' + it.gap.gaps.map(i => { const c = wrSplitWord(it.gap.parts[i])[1]; return c.slice(0, st.hint >= 2 ? 2 : 1) + '…'; }).join('  ·  '); return; }
+    if (st.hint === 1) h.textContent = bvHint(it.it);
+    else { const w = it.it.split(/\s+/); h.textContent = w.slice(0, Math.ceil(w.length / 2)).join(' ') + ' …'; $('wrHelp').disabled = true; }
+  };
+  $('wrChk').onclick = () => wrCheck(it, st, false);
+  $('wrGive').onclick = () => wrCheck(it, st, true);
+  $('wrQuit').onclick = () => wrEnd(true);
+  const enter = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!$('wrChk').disabled) wrCheck(it, st, false); } };
+  if (it.mode === 'gap') inputs().forEach((x, k, all) => { x.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && k < all.length - 1 && !x.value.trim()) return; enter(e); }; });
+  else { $('wrIn').onkeydown = enter; $('wrIn').oninput = () => { try { growTA($('wrIn')); } catch {} }; }
+  setTimeout(() => { try { first.focus(); } catch {} }, 50);
+  if (ear) play();
+}
+function wrGrade(it) {
+  if (it.mode === 'gap') {
+    let ok = 0, acc = 0; const all = [...$('wrRun').querySelectorAll('[data-g]')];
+    for (const inp of all) {
+      const want = wrNorm(wrSplitWord(it.gap.parts[Number(inp.dataset.g)])[1]), got = wrNorm(inp.value).replace(/^[^\p{L}\d']+|[^\p{L}\d']+$/gu, '');
+      const r = got === want ? 'ok' : stripAcc(got) === stripAcc(want) ? 'acc' : 'bad';
+      inp.classList.remove('ok', 'acc', 'bad'); inp.classList.add(r); if (r === 'ok') ok++; else if (r === 'acc') acc++;
+    }
+    const n = all.length, empty = all.every(x => !x.value.trim());
+    return { empty, good: ok + acc === n, perfect: ok === n, pct: n ? (ok + acc) / n : 0, html: `<div><span class="muted">Helyesen: </span>${wrEsc(it.it)}</div>` };
+  }
+  const typed = $('wrIn').value; if (!typed.trim()) return { empty: true };
+  const r = compareAnswer(it.it, typed), ok = r.eState.filter(v => v === 'ok').length, acc = r.eState.filter(v => v === 'acc').length, extra = r.tState.filter(v => v === 'extra').length;
+  const line = (label, toks, states) => `<div><span class="muted">${label} </span>` + toks.map((t, k) => `<span class="w ${states[k]}">${wrEsc(t.raw)}</span>`).join(' ') + '</div>';
+  return { good: ok + acc === r.E.length && !extra, perfect: ok === r.E.length && !extra, pct: Math.max(0, (ok + acc - extra) / Math.max(1, r.E.length)), html: line('Helyesen:', r.E, r.eState) + line('Te írtad:', r.T, r.tState) };
+}
+function wrCheck(it, st, giveUp) {
+  const g = giveUp ? { good: false, perfect: false, pct: 0, html: `<div><span class="muted">Helyesen: </span>${wrEsc(it.it)}</div>` } : wrGrade(it);
+  if (g.empty) { try { ($('wrIn') || $('wrRun').querySelector('[data-g]')).focus(); } catch {} return; }
+  st.tries++;
+  const firstTry = st.first === null && !it.again;
+  if (firstTry) {
+    st.first = g.good ? (st.hint ? 'hint' : g.perfect ? 'perfect' : 'acc') : 'bad'; st.pct = g.pct;
+    if (wr.srs) { const v = g.good ? (st.hint ? 'hard' : 'good') : g.pct >= 0.7 ? 'hard' : 'again'; if (wrApplySrs(it, v)) wr.srsN++; }
+  }
+  const res = $('wrRes'), lock = on => { ['wrChk', 'wrHelp', 'wrGive'].forEach(id => { const b = $(id); if (b) b.disabled = on; }); const t = $('wrIn'); if (t) t.disabled = on; $('wrRun').querySelectorAll('[data-g]').forEach(x => { x.disabled = on; }); };
+  if (g.good) {
+    if (st.first !== 'bad' && !it.again) wrMarkWrong(it, false);
+    res.innerHTML = `<div class="verdict">${g.perfect ? '✓ Hibátlan!' : '≈ Jó – csak ékezet tér el.'}</div>` + g.html + (it.mode === 'ear' ? `<div class="muted">${wrEsc(it.hu)}</div>` : '') + '<div class="center"><button id="wrNext">Következő →</button></div>';
+    lock(true); const nb = $('wrNext'); nb.onclick = () => { wr.pos++; wrRender(); }; setTimeout(() => nb.focus(), 30);
+    return;
+  }
+  wrMarkWrong(it, true);
+  if (!st.requeued) { st.requeued = true; wr.items.push({ ...it, again: true, gap: null, mode: it.mode }); }
+  res.innerHTML = `<div class="verdict">${giveUp ? 'Itt a megoldás – jegyezd meg.' : `${Math.round(g.pct * 100)}% – nézd meg a hibát.`}</div>` + g.html + (it.mode === 'ear' ? `<div class="muted">${wrEsc(it.hu)}</div>` : '');
+  lock(true);
+  wrHold(res.querySelector('.verdict'), () => {
+    lock(false); res.innerHTML = '<div class="verdict">Most írd le újra.</div>';
+    if (it.mode === 'gap') $('wrRun').querySelectorAll('[data-g]').forEach(x => { x.value = ''; x.classList.remove('ok', 'acc', 'bad'); });
+    else { $('wrIn').value = ''; $('wrIn').style.height = ''; }
+    try { ($('wrIn') || $('wrRun').querySelector('[data-g]')).focus(); } catch {}
+  });
+}
+// a kapcsoló: az esedékes mondatoknál az első próbálkozás ismétlésnek számít
+function wrApplySrs(it, v) {
+  try {
+    const k = cardKey(it.hu, it.it), prog = getProg(it.slug), old = prog.cards[k], now = Date.now();
+    if (!old || !old.reps || !(old.due <= now)) return false;
+    const wasLeech = isLeech(old), { card } = schedule(old, v, now, { rt: 0, it: it.it });
+    Object.assign(card, { hu: it.hu, it: it.it, n: it.n, hardDismissedAt: now });
+    if (v === 'again' || v === 'hard') card.hardDay = studyDay(now);
+    prog.cards[k] = card; saveProg(it.slug); recordRating(v, false);
+    if (!wasLeech && isLeech(card)) try { bvAdd([{ slug: it.slug, n: it.n, hu: it.hu, it: it.it }]); } catch {}
+    return true;
+  } catch (e) { console.warn('Írás → ismétlés:', e); return false; }
+}
+function wrEnd(early) {
+  clearInterval(wrTimer); try { bvStopAudio(); } catch {}
+  if (!wr) return;
+  const seen = [...wr.res.entries()].filter(([, s]) => s.first !== null), n = seen.length;
+  const perfect = seen.filter(([, s]) => s.first === 'perfect' || s.first === 'acc').length, hint = seen.filter(([, s]) => s.first === 'hint').length;
+  const badKeys = new Set(seen.filter(([, s]) => s.first === 'bad').map(([k]) => k));
+  const bad = []; for (const it of wr.items) if (badKeys.has(wrKey(it)) && !bad.some(x => wrKey(x) === wrKey(it))) bad.push(it);
+  const host = $('wrRun');
+  host.innerHTML = `<h4>✍️ ${early ? 'A kört befejezted' : 'A kör végére értél'}</h4>
+    <p>${n} mondat: <b>${perfect}</b> elsőre jó${hint ? `, <b>${hint}</b> segítséggel` : ''}, <b>${bad.length}</b> hibával (ezeket addig írtad, amíg jó nem lett).</p>
+    ${wr.srs ? `<p class="muted">${wr.srsN ? `${wr.srsN} esedékes mondat ismétlésként számított.` : 'Esedékes mondat nem volt a körben, így az ismétlési rend nem változott.'}</p>` : '<p class="muted">Az ismétlési rend nem változott.</p>'}
+    ${bad.length ? '<div class="tres">' + bad.map(x => `<div>• ${wrEsc(x.it)} <span class="muted">– ${wrEsc(x.hu)}</span></div>`).join('') + '</div>' : ''}
+    <div class="center">${bad.length ? '<button class="alt" id="wrToBv">📌 A hibás mondatok a Bevésésbe</button>' : ''}<button id="wrAgain">✍️ Új kör</button></div>`;
+  if (bad.length) $('wrToBv').onclick = () => { let a = 0; try { a = bvAdd(bad.map(x => ({ slug: x.slug, n: x.n, hu: x.hu, it: x.it }))).added; } catch {} const b = $('wrToBv'); b.disabled = true; b.textContent = a ? `📌 ${a} mondat bekerült a Bevésésbe` : '📌 Ezek már a Bevésésben vannak'; };
+  $('wrAgain').onclick = () => { wr = null; host.classList.add('hidden'); $('wrSetup').classList.remove('hidden'); wrFill(); };
+  try { renderStats(); loadDailyReview(); renderHard(); } catch {}
+  wr = null;
+}
+(() => {
+  try { wrLoadSet(); } catch {}
+  wrShowInit();
+  ['wrSrc', 'wrPrompt', 'wrCount', 'wrShuffle', 'wrSrs'].forEach(id => $(id).addEventListener('change', () => { wrSaveSet(); if (id === 'wrSrc') wrRenderPicker(); }));
+  $('wrSelAll').onclick = () => { mixGroups().forEach(g => g.list.forEach(x => wrSel.add(x))); wrSaveSel(); wrRenderPicker(); };
+  $('wrSelNone').onclick = () => { wrSel.clear(); wrSaveSel(); wrRenderPicker(); };
+  $('wrStart').onclick = wrStart;
+  wrBadge();
+})();
+
 // ============================================================
 // INDÍTÁS
 // ============================================================
@@ -4637,6 +4915,8 @@ function remInit() {
     if (t === 'beves') try { bvRender(); } catch {}
     if (t !== 'beszelj') try { if (srActive) srStop(); } catch {}
     if (t === 'beszelj') try { bzFill(); } catch {}
+    if (t === 'scrivi') try { wrFill(); } catch {}
+    if (t !== 'scrivi') try { clearInterval(wrTimer); } catch {}
   };
   // gyakorlás közben a menü félreteszi a gyakorlást (nem veszik el), és egy sávval folytatható
   const st = $('study');
