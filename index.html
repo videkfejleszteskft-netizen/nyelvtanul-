@@ -250,20 +250,23 @@ details.help h4{margin:12px 0 4px;font-size:1rem}details.help ol,details.help ul
 #wrRun .wr-bar{height:6px;border-radius:4px;background:#e3edf1;margin:4px 0 10px;overflow:hidden}#wrRun .wr-bar i{display:block;height:100%;background:var(--coral)}
 #wrRun .wr-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
 .wr-again{display:flex;justify-content:center}
-/* V56: színkódolás */
-body.cc-on .cc-w.cc-V{color:#1d5fd1;font-weight:700}
-body.cc-on .cc-w.cc-V .cc-e{color:#0a3685;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
-body.cc-on .cc-w.cc-A{color:#178a43;font-weight:700}
-body.cc-on .cc-w.cc-P{color:#d06a00;font-weight:700}
-body.cc-on .cc-w.cc-R{color:#8a3fc7;font-weight:700}
+/* V58: színkódolás – élesebben elváló színek, halvány háttérrel; főnév is */
+body.cc-on .cc-w.cc-V,body.cc-on .cc-w.cc-N,body.cc-on .cc-w.cc-A,body.cc-on .cc-w.cc-P,body.cc-on .cc-w.cc-R{font-weight:700;border-radius:5px;padding:0 2px}
+body.cc-on .cc-w.cc-V{color:#0b5cff;background:rgba(11,92,255,.11)}
+body.cc-on .cc-w.cc-V .cc-e{color:#00218f;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+body.cc-on .cc-w.cc-N{color:#8a4b0f;background:rgba(138,75,15,.12)}
+body.cc-on .cc-w.cc-A{color:#08883a;background:rgba(8,136,58,.11)}
+body.cc-on .cc-w.cc-P{color:#e0161e;background:rgba(224,22,30,.10)}
+body.cc-on .cc-w.cc-R{color:#c2189b;background:rgba(194,24,155,.11)}
 body.cc-on .cc-w.cc-n{color:#243b53}
 .cc-e{font-weight:inherit}
-.cc-legend{display:none;font-size:.85rem;gap:8px;flex-wrap:wrap}
-.cc-legend .cc-V{color:#1d5fd1;font-weight:700}.cc-legend .cc-A{color:#178a43;font-weight:700}.cc-legend .cc-P{color:#d06a00;font-weight:700}.cc-legend .cc-R{color:#8a3fc7;font-weight:700}
+.cc-legend{display:none;font-size:.85rem;gap:6px;flex-wrap:wrap}
+.cc-legend span{font-weight:700;border-radius:5px;padding:0 4px}
+.cc-legend .cc-V{color:#0b5cff;background:rgba(11,92,255,.11)}.cc-legend .cc-N{color:#8a4b0f;background:rgba(138,75,15,.12)}.cc-legend .cc-A{color:#08883a;background:rgba(8,136,58,.11)}.cc-legend .cc-P{color:#e0161e;background:rgba(224,22,30,.10)}.cc-legend .cc-R{color:#c2189b;background:rgba(194,24,155,.11)}
 body.cc-on .cc-legend{display:inline-flex}
 .cc-only,.cc-line{display:none}
 body.cc-on .cc-only{display:inline-block}body.cc-on .cc-line{display:block;margin-top:4px}
-body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
+body.cc-on.cc-edit .cc-w{cursor:pointer;outline:1px dashed #9aa5b1;outline-offset:1px}
 .cc-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;justify-content:center;margin:2px 0 6px;font-size:.9rem}
 .cc-bar label,.cc-legend-line label{display:inline-flex;align-items:center;gap:5px}
 .cc-legend-line{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:0 0 8px}
@@ -292,7 +295,7 @@ body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
 <header class="hero">
  <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf6b"/><stop offset="1" stop-color="#ff7a59"/></linearGradient><linearGradient id="lgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd0c9"/><stop offset="1" stop-color="#127f8c"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#0e4a6b"/><circle cx="40" cy="24" r="11" fill="url(#lgS)"/><path d="M0 46c8-4 16-4 24 0s16 4 24 0 12-3 16-1v19H0z" fill="url(#lgW)"/><ellipse cx="25" cy="46" rx="15" ry="4.5" fill="#f6d9a0"/><path d="M24 45c0-9 1-15 5-21" stroke="#6b4423" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M29 24c-6-4-12-3-15 1 5-1 9 0 15-1zm0 0c2-6 7-8 12-7-4 2-7 4-12 7zm0 0c6-2 11 0 13 4-5-2-9-2-13-4zm0 0c-3-5-8-6-11-5 4 1 7 2 11 5z" fill="#2fbf71"/><path d="M8 10h17a5 5 0 0 1 5 5v5a5 5 0 0 1-5 5h-9l-5 4v-4H8a5 5 0 0 1-5-5v-5a5 5 0 0 1 5-5z" fill="#fff"/><path d="M11 18a5.5 5.5 0 1 0 2-4.3" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M11 11.5v3.6h3.6" stroke="#ff7a59" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bname">Sayback <span>Island</span></div><div class="blang"><b>IT</b> Italiano</div></div></div>
  <div class="hchips"><span class="hchip" id="hStreak" title="Napos sorozat">🔥 0 nap</span><span class="hchip" id="hGoal" title="Mai cél">🎯 0/50</span></div>
- <span class="ver" title="Programverzió">V57</span>
+ <span class="ver" title="Programverzió">V58</span>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Menü">
  <button type="button" role="tab" data-tab="terv" class="plantab" title="a napi terv"><i class="ti">🗺️</i><span class="tl">IL PIANO</span><span class="ts" id="tbPlan">a mai terv</span></button>
@@ -312,8 +315,8 @@ body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
 <section id="study" class="box hidden">
  <div class="muted studyhead"><span id="island"></span> · <span id="count"></span></div>
  <div id="drillBox"></div>
- <div class="cc-bar" id="ccBar"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">■ ige</span> <span class="cc-A">■ névelő</span> <span class="cc-P">■ elöljáró</span> <span class="cc-R">■ névmás</span></span><label class="cc-only"><input type="checkbox" id="ccEdit"> ✏️ javítás koppintással</label><button type="button" class="alt cc-only" id="ccFixBtn">🎨 Pontosítás a Claude-dal</button></div>
- <div id="ccFix" class="hidden box" style="margin:4px 0 8px;padding:10px"><p class="muted" style="margin:0 0 6px">A színezést az app magától készíti – ez nagyjából 9 szóból 8-at talál el. Ha pontosra szeretnéd: ① „Kérés másolása” → ② illeszd be egy új Claude-beszélgetésbe → ③ a teljes választ másold vissza ide → ④ „Feldolgozás”. Ezt elég szigetenként egyszer megcsinálni, utána az app megjegyzi. Egy-egy szót kézzel is átállíthatsz: kapcsold be a „✏️ javítás koppintással” lehetőséget, és koppints a szóra (ige → névelő → elöljáró → névmás → semmi).</p>
+ <div class="cc-bar" id="ccBar"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">ige</span><span class="cc-N">főnév</span><span class="cc-A">névelő</span><span class="cc-P">elöljáró</span><span class="cc-R">névmás</span></span><label class="cc-only"><input type="checkbox" id="ccEdit"> ✏️ javítás koppintással</label><button type="button" class="alt cc-only" id="ccFixBtn">🎨 Pontosítás a Claude-dal</button></div>
+ <div id="ccFix" class="hidden box" style="margin:4px 0 8px;padding:10px"><p class="muted" style="margin:0 0 6px">A színezést az app magától készíti – ez a legtöbb szót eltalálja, de nem mindet. Ha pontosra szeretnéd: ① „Kérés másolása” → ② illeszd be egy új Claude-beszélgetésbe → ③ a teljes választ másold vissza ide → ④ „Feldolgozás”. Ezt elég szigetenként egyszer megcsinálni, utána az app megjegyzi. Egy-egy szót kézzel is átállíthatsz: kapcsold be a „✏️ javítás koppintással” lehetőséget, és koppints a szóra (ige → főnév → névelő → elöljáró → névmás → semmi).</p>
   <div class="center"><button type="button" id="ccCopy">📋 Kérés másolása (ez a sziget)</button></div>
   <textarea id="ccIn" placeholder="Ide másold vissza a Claude teljes válaszát…"></textarea>
   <div class="center"><button type="button" id="ccApply">Feldolgozás</button><button type="button" class="alt" id="ccReset">Az automatikus színezés visszaállítása</button></div>
@@ -495,7 +498,7 @@ body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
 <section data-tab="nehez" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> Azok a mondatok az összes szigetből, amiket az utóbbi időben többször „Nem ment” vagy „Nehéz” értékeléssel jelöltél. <b>Miért?</b> Ez a kevés mondat okozza a legtöbb felejtést – célzott munkával gyorsan rendbe jön.</p>
 <h4>Ajánlott sorrend</h4><ol><li>Hetente 1–2× <b>„Nehéz mondatok gyakorlása”</b>.</li><li>Ha egy mondat egész szerkezete nem megy: <b>„📌 Mind bevésésre”</b> – a Bevésés a legerősebb módszer.</li><li>Ha csak egy-egy szó a gond: <b>„🧠 Mind a szótanulóba”</b>, és ott kérj hozzá emlékeztetőt.</li></ol><p>A mondatok mindkét esetben a szigetükben is megmaradnak.</p></details></section>
 <section data-tab="nehez" class="box"><h3>Nehéz mondataim</h3>
- <p class="cc-legend-line"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">■ ige</span> <span class="cc-A">■ névelő</span> <span class="cc-P">■ elöljáró</span> <span class="cc-R">■ névmás</span></span></p>
+ <p class="cc-legend-line"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">ige</span><span class="cc-N">főnév</span><span class="cc-A">névelő</span><span class="cc-P">elöljáró</span><span class="cc-R">névmás</span></span></p>
  <p class="muted">Amiket a legutóbbi ismétléseknél többször „Nem ment” vagy „Nehéz” értékeléssel jelöltél, az összes szigetből.</p>
  <button id="hardRefresh" class="alt">Lista frissítése</button><button id="hardPractice">Nehéz mondatok gyakorlása</button><button id="hardToVocab" class="alt">🧠 Mind a szótanulóba</button><button id="hardToBeves" class="alt">📌 Mind bevésésre</button>
  <p id="hardStatus" class="muted"></p><div id="hardList"></div>
@@ -504,7 +507,7 @@ body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
 <section data-tab="beves" class="box helpbox"><details class="help"><summary>Használati útmutató – mi ez, miért hasznos, milyen sorrendben</summary><p class="help-why"><b>Mi ez?</b> A kijelölt, fontos vagy makacs mondatok lépésenkénti rögzítése, utána pontos menetrend szerinti ismétlése. <b>Miért?</b> Ez a legerősebb módszer: többféle előhívás, leírás, emlékeztető és körkérdezés – ettől marad meg másnap is.</p>
 <h4>Ajánlott sorrend</h4><ol><li>Gyakorlás közben jelölj ki mondatot a <b>„📌 Bevésésre”</b> gombbal (napi 5–7 elég).</li><li>Délután itt: <b>„Következő új mondat bevésése”</b> – végigvezet a 7 lépésen.</li><li>2–3 mondatonként és a végén: <b>„🔁 Körkérdezés”</b>.</li><li>Ha a 📌 fülön szám jelenik meg, esedékes ismétlés van – főleg az <b>esti (lefekvés előtt)</b> és a <b>másnap reggeli</b> fontos.</li></ol><p>A részletes menetrend lent, a „📋 A pontos menetrend” résznél van.</p></details></section>
 <section data-tab="beves" class="box" id="bvBox"><h3>📌 Bevésés</h3>
- <p class="cc-legend-line"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">■ ige</span> <span class="cc-A">■ névelő</span> <span class="cc-P">■ elöljáró</span> <span class="cc-R">■ névmás</span></span></p>
+ <p class="cc-legend-line"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">ige</span><span class="cc-N">főnév</span><span class="cc-A">névelő</span><span class="cc-P">elöljáró</span><span class="cc-R">névmás</span></span></p>
  <p class="muted">Ide kerülnek a szigetekből kijelölt mondatok (a szigetben is megmaradnak). Itt lépésről lépésre bevésed őket, utána az app a menetrend szerint visszahozza.</p>
  <div id="bvSum"></div>
  <div class="center"><button id="bvDueBtn">▶ Esedékes ismétlések</button><button id="bvKorBtn">🔁 Körkérdezés</button><button id="bvNewBtn" class="alt">▶ Következő új mondat bevésése</button></div>
@@ -551,7 +554,7 @@ body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
 <h4>Így használd</h4><ol><li><b>Miből?</b> – ma esedékes ismétlések, ma / tegnap tanult új mondatok, nehéz mondatok, a 📌 Bevésés mondatai, a korábban írásban elrontottak, vagy szigetek / mappák pipálva.</li><li><b>Miből írod le?</b> – 🇭🇺 magyarból (fordítás) · 🎧 csak hallás után (diktálás, magyar nélkül) · 🎧 + 🇭🇺 hallás után a jelentéssel · 🧩 hiányos mondat (csak a hiányzó 1–3 szót írod be) · 🔀 vegyesen.</li><li>Hiba után a helyes megoldás <b>a beállított ideig</b> látszik (5–30 mp, vagy amíg az „Újra írom” gombra nem koppintasz), aztán újra leírod. A hibás mondatok a kör végén még egyszer visszajönnek.</li><li>💡 Segítség: először a kezdőbetűk, másodszorra a mondat eleje. 🔊 bármikor meghallgatható.</li><li>A kör végén az elrontott mondatokat egy gombbal a 📌 Bevésésbe teheted. Az app megjegyzi őket („Írásban korábban elrontott mondataim”).</li></ol>
 <h4>Az ismétlési rend</h4><p>Alapból az írás <b>nem változtat</b> az ismétlési időpontokon. Ha bekapcsolod az „Az esedékes mondatoknál számítson ismétlésnek” kapcsolót, akkor a ma esedékes mondatoknál az <b>első</b> próbálkozás számít: hibátlan (vagy csak ékezet tér el) = „Jól ment”, kis hiba (70% felett) vagy segítséggel = „Nehéz”, hibás = „Nem ment”. A nem esedékes mondatokat ilyenkor sem érinti.</p></details></section>
 <section data-tab="scrivi" class="box" id="wrBox"><h3>✍️ Írásgyakorlás</h3>
- <p class="cc-legend-line"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">■ ige</span> <span class="cc-A">■ névelő</span> <span class="cc-P">■ elöljáró</span> <span class="cc-R">■ névmás</span></span></p>
+ <p class="cc-legend-line"><label class="cc-tgl"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás</label><span class="cc-legend"><span class="cc-V">ige</span><span class="cc-N">főnév</span><span class="cc-A">névelő</span><span class="cc-P">elöljáró</span><span class="cc-R">névmás</span></span></p>
  <div id="wrSetup">
   <div class="row">
    <label>Miből?<br><select id="wrSrc" class="move" style="margin:0;width:100%"><option value="daily">Ma esedékes ismétlések</option><option value="today_done">A ma már átvett mondatok</option><option value="new_today">A ma tanult új mondatok</option><option value="new_yesterday">A tegnap tanult új mondatok</option><option value="hard">Nehéz mondataim (🎯 Focus)</option><option value="beves">A 📌 Bevésés mondatai</option><option value="wrong">Írásban korábban elrontott mondataim</option><option value="current">A megnyitott sziget</option><option value="multi">Szigetek / mappák – én választom ki</option></select></label>
@@ -742,7 +745,7 @@ body.cc-on.cc-edit .cc-w{cursor:pointer;border-bottom:1px dashed #9aa5b1}
   <label>Új mondat naponta<br><input id="newLimit" type="number" min="0" max="100" value="10" style="width:90px;padding:8px"></label>
  </div>
  <label class="muted"><input type="checkbox" id="autoAnswer" checked> A válasz felfedésekor szólaljon meg a válasz hangja</label><br>
- <label class="muted"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás – az olasz mondatokban más színű az ige (a végződése aláhúzva), a névelő, az elöljárószó és a névmás</label><br>
+ <label class="muted"><input type="checkbox" class="ccTgl"> 🎨 Színkódolás – az olasz mondatokban más színű az ige (a végződése aláhúzva), a főnév, a névelő, az elöljárószó és a névmás</label><br>
  <label class="muted"><input type="checkbox" id="typeMode"> Gépelős mód – begépelem a választ, és a program ellenőrzi (minden módban működik)</label><br>
  <label class="muted"><input type="checkbox" id="dictMode"> Diktálás – az olasz mondatot csak hallom, és leírom (a szöveg rejtve marad)</label><br>
  <button id="load">Betöltés fájlból</button><button class="alt" id="clear">Haladás törlése (ez a sziget)</button>
@@ -5013,6 +5016,13 @@ const CCI = (() => {
     "fermare festeggiare fumare gestire guarire immaginare informare innaffiare interessare mettere morire nascere notare occupare pesare piantare potare " +
     "prestare raccogliere rallentare rilassare ringraziare risolvere rompere sbagliare scaricare scusare sedere seguire soffrire sorridere spingere stancare " +
     "tirare toccare trasferire uscire vestire collegare connettere installare inviare ricaricare condividere attivare impostare aggiornare spegnere accendere").split(/\s+/);
+  const DETP = ccSet("del dello della dei degli delle dell' al allo alla ai agli alle all' dal dallo dalla dai dagli dalle dall' nel nello nella nei negli nelle nell' sul sullo sulla sui sugli sulle sull' col coi ogni qualche quale quali quanto quanta quanti quante");
+  const SIMPLEP = ccSet("di a da in con su per tra fra senza verso d' contro durante");
+  const NUM = ccSet("due tre quattro cinque sette otto nove dieci undici dodici quindici venti trenta quaranta cinquanta cento mille mezzo mezza primo prima secondo seconda terzo terza");
+  const QUANT = ccSet("molti molte tanti tante pochi poche alcuni alcune altri altre troppi troppe parecchi diversi vari varie certi certe nessun nessuna");
+  const PRENOM = ccSet("bel bello bella bei begli belle buon buono buona buoni buone grande gran grandi piccolo piccola piccoli piccole nuovo nuova nuovi nuove vecchio vecchia vecchi vecchie altro altra altri altre stesso stessa stessi stesse prossimo prossima prossimi prossime ultimo ultima ultimi ultime lungo lunga breve vero vera caro cara cari care unico unica giovane povero povera ottimo ottima solito solita intero intera mezzo mezza piccolissimo vari varie");
+  const CONJ = ccSet("e ed o od ma che se perché come quando dove mentre però quindi oppure né anzi cioè poi allora sì no grazie ecco ciao");
+  const NOTNOUN = ccSet("molto poco tanto troppo bene male meglio peggio così presto tardi insieme subito po po' quanto quanta quanti quante quale quali ogni qualche abbastanza");
   const ISC = ccSet("finire capire preferire pulire spedire restituire chiarire colpire costruire gestire guarire innervosire trasferire suggerire");
   const FORMS = new Map(); // alak -> a végződés hossza (a kiemeléshez)
   const add = (stem, ends) => { for (const e of ends) { const f = stem + e; if (!FORMS.has(f)) FORMS.set(f, e); } };
@@ -5051,7 +5061,7 @@ const CCI = (() => {
     if (w.length >= 5 && PART.test(w) && (AUX.has(prev) || (ADV.has(prev) && AUX.has(prev2)))) return 3;
     return 0;
   }
-  function tag(words) {
+  function tag(words, orig) {
     const n = words.length, T = new Array(n).fill('-'), E = new Array(n).fill(0);
     // 1) igék
     for (let i = 0; i < n; i++) { const w = words[i], v = isVerbWord(w, words[i - 1] || '', words[i - 2] || ''); if (v) { T[i] = 'V'; E[i] = v > 0 ? v : 0; } }
@@ -5071,6 +5081,17 @@ const CCI = (() => {
       else if (PREP.has(w)) T[i] = 'P';
       else if (PRON.has(w)) T[i] = 'R';
     }
+    // 4) főnevek: névelő / névelős elöljáró / birtokos / mutató / számnév után az első „szabad” szó (a főnév elé kerülő melléknevet átugorva),
+    //    puszta elöljáró után álló szó, és a mondat belsejében nagybetűvel írt szó (tulajdonnév)
+    const free = j => j < n && T[j] === '-' && /^\p{L}/u.test(words[j]) && !ADV.has(words[j]) && !CONJ.has(words[j]) && !NOTNOUN.has(words[j]);
+    for (let i = 0; i < n; i++) {
+      const w = words[i];
+      if (T[i] === 'A' || DETP.has(w) || POSS.has(w) || NUM.has(w) || QUANT.has(w)) {
+        let j = i + 1; while (j < n && (PRENOM.has(words[j]) || (POSS.has(words[j]) && T[i] === 'A'))) j++;
+        if (free(j)) T[j] = 'N';
+      } else if (SIMPLEP.has(w) && T[i] === 'P') { if (free(i + 1) && !NUM.has(words[i + 1])) T[i + 1] = 'N'; }
+    }
+    if (orig) for (let i = 1; i < n; i++) if (T[i] === '-' && /^\p{Lu}/u.test(orig[i] || '')) T[i] = 'N';
     return { T, E };
   }
   return { tag };
@@ -5107,9 +5128,12 @@ const CCE = (() => {
     const ed = /e$/.test(v) ? v + 'd' : /[^aeiou]y$/.test(v) ? v.slice(0, -1) + 'ied' : dbl + 'ed'; add(ed, ed.endsWith('ied') ? 3 : ed.endsWith('d') && /e$/.test(v) ? 1 : 2);
     const ing = /ie$/.test(v) ? v.slice(0, -2) + 'ying' : /[^e]e$/.test(v) ? v.slice(0, -1) + 'ing' : dbl + 'ing'; add(ing, 3);
   }
+  const DETN = ccSet("some any every each no many much few several another other two three four five six seven eight nine ten twenty hundred thousand both all");
+  const POSSE = ccSet("my your his her its our their this these those");
+  const CONJE = ccSet("and or but because if when while than as so that yes no thanks please hello hi");
   const MODAL = ccSet("will would can could should may might must do does did don't doesn't didn't won't can't to let's");
   const ADVE = ccSet("not ever never always often also just really usually still already sometimes very too so then here there now today yesterday tomorrow please only even all both");
-  function tag(words) {
+  function tag(words, orig) {
     const n = words.length, T = new Array(n).fill('-'), E = new Array(n).fill(0);
     for (let i = 0; i < n; i++) {
       const w = words[i], p = words[i - 1] || '';
@@ -5126,6 +5150,17 @@ const CCE = (() => {
       else if (PRON.has(w) || (w === 'her' || w === 'his')) T[i] = 'R';
       else if (w === 'that' && (i === n - 1 || T[i + 1] === 'V')) T[i] = 'R';
     }
+    // 4) főnevek: határozó szó (névelő, birtokos, mutató, számnév, mennyiség) vagy elöljáró utáni szócsoport utolsó szava
+    //    (a small village → village), és a mondat belsejében nagybetűs szó (tulajdonnév)
+    const free = j => j < n && T[j] === '-' && /^\p{L}/u.test(words[j]) && !ADVE.has(words[j]) && !CONJE.has(words[j]) && !/ly$/.test(words[j]);
+    for (let i = 0; i < n; i++) {
+      const w = words[i];
+      if (T[i] === 'A' || DETN.has(w) || T[i] === 'P' || (T[i] === 'R' && POSSE.has(w))) {
+        let j = i + 1, last = -1; while (free(j) && j - i <= 3) { last = j; j++; }
+        if (last >= 0) T[last] = 'N';
+      }
+    }
+    if (orig) for (let i = 1; i < n; i++) if (T[i] === '-' && /^\p{Lu}/u.test(orig[i] || '') && words[i] !== 'i') T[i] = 'N';
     return { T, E };
   }
   return { tag };
@@ -5137,10 +5172,9 @@ function ccTokens(text) {
   return parts.map(t => ({ t, w: /[\p{L}\d]/u.test(t) }));
 }
 function ccAuto(text) {
-  const toks = ccTokens(text), words = toks.filter(x => x.w).map(x => ccNorm(x.t));
-  return (CC_LANG === 'it' ? CCI : CCE).tag(words);
+  const toks = ccTokens(text), orig = toks.filter(x => x.w).map(x => x.t), words = orig.map(ccNorm);
+  return (CC_LANG === 'it' ? CCI : CCE).tag(words, orig);
 }
-
 const CC_KEY = 'nyelvisziget-cc', CC_DATA = 'nyelvisziget-ccdata';
 let ccOn = false; try { ccOn = localStorage.getItem(CC_KEY) === '1'; } catch {}
 let ccData = loadJSON(CC_DATA, {}); if (!ccData || typeof ccData !== 'object') ccData = {};
@@ -5169,8 +5203,8 @@ function ccApplyBody() {
   document.querySelectorAll('.ccTgl').forEach(c => { c.checked = ccOn; });
   if (!ccOn && $('ccFix')) $('ccFix').classList.add('hidden');
 }
-// koppintásos javítás: ige → névelő → elöljáró → névmás → semmi
-const CC_CYCLE = ['V', 'A', 'P', 'R', 'n'];
+// koppintásos javítás: ige → főnév → névelő → elöljáró → névmás → semmi
+const CC_CYCLE = ['V', 'N', 'A', 'P', 'R', 'n'];
 document.addEventListener('click', e => {
   if (!document.body.classList.contains('cc-edit')) return;
   const w = e.target.closest && e.target.closest('.cc-w'); if (!w) return;
@@ -5191,7 +5225,7 @@ function ccFixSentences() {
 function ccPrompt(list) {
   const lines = list.map((t, i) => `${i + 1}: ` + ccTokens(t).filter(x => x.w).map(x => x.t).join(' '));
   return `Kérlek, jelöld szófajok szerint az alábbi ${'olasz'} mondatok szavait. Minden sort pontosan ugyanazokkal a szavakkal, ugyanabban a sorrendben adj vissza (írásjelek nélkül), és mindegyik szó után perjellel írd a jelét:\n` +
-    `V = ige (segédige, főnévi igenév, az összetett igeidő melléknévi igeneve is)\nA = névelő\nP = elöljárószó (névelős elöljáró is)\nR = névmás (személyes, visszaható, birtokos, mutató)\n- = minden más\n` +
+    `V = ige (segédige, főnévi igenév, az összetett igeidő melléknévi igeneve is)\nN = főnév (tulajdonnév is)\nA = névelő\nP = elöljárószó (névelős elöljáró is)\nR = névmás (személyes, visszaható, birtokos, mutató)\n- = minden más\n` +
     `Formátum: „szám: szó/JEL szó/JEL …” – csak ezeket a sorokat írd, semmi mást.\n\n` + lines.join('\n');
 }
 async function ccCopy() {
@@ -5208,12 +5242,12 @@ function ccApplyText() {
     const m = line.match(/^\s*\**\s*(\d+)\s*[:.)]\s*(.+)$/); if (!m) continue;
     const text = list[Number(m[1]) - 1]; if (!text) { bad++; continue; }
     const want = ccTokens(text).filter(x => x.w).map(x => norm(x.t));
-    const got = m[2].trim().split(/\s+/).map(t => t.match(/^(.+)\/([VAPR-])$/i)).filter(Boolean);
+    const got = m[2].trim().split(/\s+/).map(t => t.match(/^(.+)\/([VNAPR-])$/i)).filter(Boolean);
     if (got.length !== want.length || got.some((g, i) => norm(g[1].replace(/[.,!?;:«»"()]/g, '')) !== want[i])) { bad++; continue; }
     ccData[ccHash(text)] = got.map(g => g[2].toUpperCase()).join(''); ok++;
   }
   saveJSON(CC_DATA, ccData);
-  $('ccStatus').textContent = ok ? `✅ ${ok} mondat színezése pontosítva${bad ? `, ${bad} sort nem tudtam párosítani (azoknál marad az automatikus)` : ''}.` : '⚠️ Nem találtam feldolgozható sort. A válasz sorai így kezdődjenek: „1: …”, és minden szó után /V, /A, /P, /R vagy /- álljon.';
+  $('ccStatus').textContent = ok ? `✅ ${ok} mondat színezése pontosítva${bad ? `, ${bad} sort nem tudtam párosítani (azoknál marad az automatikus)` : ''}.` : '⚠️ Nem találtam feldolgozható sort. A válasz sorai így kezdődjenek: „1: …”, és minden szó után /V, /N, /A, /P, /R vagy /- álljon.';
   if (ok) { $('ccIn').value = ''; try { render(); } catch {} }
 }
 (() => {
